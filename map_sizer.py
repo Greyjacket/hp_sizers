@@ -105,8 +105,15 @@ writer.writerow(base_tuple)
 
 # write the dictionary, do some calculations on the way
 for item in newCsv:
-	image_width = float(item['ImageWidth'])
-	image_height = float(item['ImageHeight'])
+	try:
+		image_width = float(item['ImageWidth'])
+	except:
+		image_width = 1.0
+	try:
+		image_height = float(item['ImageHeight'])
+	except:
+		image_height = 1.0
+
 	sku = item['Sku']
 	item_sizes = []
 
@@ -118,8 +125,13 @@ for item in newCsv:
 		ratio = round((image_height/image_width), 2) 
 
 	ratio_info  = get_aspect_ratio(ratio)
-	ratio_description = ratio_info[0]
-	ratio = ratio_info[1]
+
+	# if we encountered an exception note it in the record
+	if image_width == 1.0:
+		ratio_description = "error"
+	else:
+		ratio_description = ratio_info[0]
+		ratio = ratio_info[1]
 
 	properties_list = []
 	aspect_ratio = ratio_description
