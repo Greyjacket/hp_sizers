@@ -153,7 +153,7 @@ for item in newCsv:
 	else:
 		orientation = 0
 
-		# calculate both orientations for 24s
+		# calculate both orientations for 24s, 0 for portrait 1 for landscape
 		while (orientation < 2):
 			item_size = calculate_dimensions(24, orientation)
 			if item_size:		
@@ -163,7 +163,7 @@ for item in newCsv:
 		item_size = calculate_dimensions(44, 1)
 
 		# if it's a standard size, check if the 44 sized item is not too close in square inches
-		if item_size and ratio < 2.0 :	
+		if item_size and ratio <= 2.0 :	
 			newItem = {}
 			for item in item_sizes:
 				square_inches1 = item['SqIn']
