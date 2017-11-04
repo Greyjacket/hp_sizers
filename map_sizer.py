@@ -142,6 +142,8 @@ for item in newCsv:
 	# only do one round for square ratios
 	if ratio_description == "1:1":
 		orientation = 1
+		item_size = calculate_dimensions(16, orientation)
+		item_sizes.append(item_size)
 		item_size = calculate_dimensions(24, orientation)
 		item_sizes.append(item_size)
 		item_size = calculate_dimensions(36, orientation)
@@ -151,6 +153,7 @@ for item in newCsv:
 	else:
 		orientation = 0
 
+		# calculate both orientations for 24s
 		while (orientation < 2):
 			item_size = calculate_dimensions(24, orientation)
 			if item_size:		
@@ -159,7 +162,8 @@ for item in newCsv:
 		
 		item_size = calculate_dimensions(44, 1)
 
-		if item_size:	
+		# if it's a standard size, check if the 44 sized item is not too close in square inches
+		if item_size and ratio < 2.0 :	
 			newItem = {}
 			for item in item_sizes:
 				square_inches1 = item['SqIn']
@@ -177,6 +181,9 @@ for item in newCsv:
 
 			if newItem:
 				item_sizes.append(newItem)
+		else:
+			if item_size:		
+				item_sizes.append(item_size)
 
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 	
