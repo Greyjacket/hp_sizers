@@ -33,14 +33,20 @@ writer.writerow(base_tuple)
 
 # write the dictionary, do some calculations on the way
 for item in newCsv:
-	ImageWidth = float(item['ImageWidth'])
-	ImageHeight = float(item['ImageHeight'])
+	try:
+		image_width = float(item['ImageWidth'])
+	except:
+		image_width = 1.0
+	try:
+		image_height = float(item['ImageHeight'])
+	except:
+		image_height = 1.0
 
 	# keep the aspect ratio >= 1
-	if ImageWidth >= ImageHeight:
-		ratio = round((ImageWidth/ImageHeight), 2) 
+	if image_width >= image_height:
+		ratio = round((image_width/image_height), 2) 
 	else: 
-		ratio = round((ImageHeight/ImageWidth), 2) 
+		ratio = round((image_height/image_width), 2) 
 
 	ratio_info  = get_aspect_ratio(ratio)
 	ratio_description = ratio_info[0]
