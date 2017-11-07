@@ -79,14 +79,24 @@ try:
 	filename = sys.argv[1]
 except:
 	print "\nPlease input a valid CSV filename.\n"
-	print "Format: python scriptname filename.\n"
+	print "Format: python scriptname filename operation.\n"
 	exit()
+
+try:
+	operation = sys.argv[2]
+except:
+	operation = ""
+
+if operation == "filter":
+	write_filename = 'NewSizes_temp.csv'
+else:
+	write_filename = 'NewSizes.csv'
 
 # change the base number to scale by, depending on map or photo
 sizes = [24.0, 36.0, 44.0]
 
 newCsv = []
-newFile = open('NewSizes.csv', 'wb') #wb for windows, else you'll see newlines added to csv
+newFile = open(write_filename, 'wb') #wb for windows, else you'll see newlines added to csv
 # open the file from console arguments
 with open(filename, 'rb') as csvfile:
 	reader = csv.DictReader(csvfile)
@@ -105,6 +115,7 @@ writer.writerow(base_tuple)
 
 # write the dictionary, do some calculations on the way
 for item in newCsv:
+
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
@@ -114,7 +125,15 @@ for item in newCsv:
 	except:
 		image_height = 1.0
 
-	sku = item['Sku']
+	try:
+		sku = item['Sku']
+	except:
+		try:
+			sku = item['item_sku']
+		except:
+			print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
+			break
+
 	item_sizes = []
 
 	# keep the aspect ratio >= 1
@@ -165,9 +184,9 @@ for item in newCsv:
 		# if it's a standard size, check if the 44 sized item is not too close in square inches
 		if item_size and ratio <= 2.0 :	
 			newItem = {}
-			for item in item_sizes:
-				square_inches1 = item['SqIn']
-				square_inches2 = item_size['SqIn']
+			for other_item in item_sizes:
+				square_inches1 = other_item['SqIn']
+				square_inches2 = other_item['SqIn']
 
 				if square_inches1 >= square_inches2:
 					square_ratio = square_inches1/square_inches2
@@ -186,7 +205,7 @@ for item in newCsv:
 				item_sizes.append(item_size)
 
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
-	
+
 	for item in item_sizes:
 		properties_list.append(item['Height'])
 		properties_list.append(item['Width'])
@@ -201,3 +220,86 @@ for item in newCsv:
 		write_tuple = write_tuple + (item,)
 
 	writer.writerow(write_tuple)
+
+newFile.close()
+
+if operation == "filter":
+	
+	suggestions = []
+	with open(write_filename, 'rb') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			suggestions.append(row)
+	
+	comparisons = []
+	with open(filename, 'rb') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			comparisons.append(row)
+
+	newFile = open("Filtered.csv", 'wb') #wb for windows, else you'll see newlines added to csv
+	base_tuple = ('parent Sku', 'item_sku', 'relationship_type', 'Image Name','Image Height', 
+		'Image Width', 'Ratio', 'size_name_current', 'size_name_suggested', 'current_price', 'suggested_price')
+
+	# initialize csv writer
+	writer = csv.writer(newFile)
+	writer.writerow(base_tuple)
+
+	for suggestion in suggestions:
+		new_item = {}
+		new_list =[]
+		write = False;
+
+		for comparison in comparisons:
+			if suggestion['Sku'] == comparison['item_sku']:
+
+				comparison_price = comparison['standard_price']
+				comparison_sqin = float(comparison['Sq in'])
+				actual_price = str(calculate_price(comparison_sqin))
+				suggested_price = ""
+				suggested_size = ""
+
+				price_match = False
+
+				if comparison_price != actual_price:
+					suggested_price = actual_price
+					write = True
+
+				comparison_sizename = comparison['size_name Current']
+				
+				size_match = False
+
+				size_list = []
+				for key, value in suggestion.iteritems():
+					if "SizeName" in key:
+						if value is not None:
+							size_list.append(value)
+						if comparison_sizename == value:
+							size_match = True
+
+				if not size_match:
+					suggested_size = "To be Done"
+					write = True
+
+				if(write):
+					new_list.append(comparison['Parent Sku'])
+					new_list.append(comparison['item_sku'])
+					new_list.append(comparison['relationship_type'])
+					new_list.append(comparison['ImageName'])
+					new_list.append(comparison['ImageHeight'])
+					new_list.append(comparison['ImageWidth'])
+					new_list.append(comparison['ratio'])
+					new_list.append(comparison_sizename)
+					new_list.append(suggested_size)
+					new_list.append(comparison_price)	
+					new_list.append(suggested_price)	
+		
+		if(write):
+			write_tuple = ()
+			for item in new_list:
+				write_tuple = write_tuple + (item,)
+			writer.writerow(write_tuple)
+
+	# print item['Size chk 1']
+	#for key, value in item.iteritems():
+	#	print key
