@@ -185,7 +185,7 @@ for item in newCsv:
 		if item_size and ratio <= 2.0 :	
 			newItem = {}
 			for other_item in item_sizes:
-				square_inches1 = other_item['SqIn']
+				square_inches1 = item_size['SqIn']
 				square_inches2 = other_item['SqIn']
 
 				if square_inches1 >= square_inches2:
@@ -252,47 +252,46 @@ if operation == "filter":
 
 		for comparison in comparisons:
 			if suggestion['Sku'] == comparison['item_sku']:
+				try:
+					comparison_sqin = float(comparison['Sqin'])
+				except:
+					print "Error reading SqIn value in Sku " + comparison['item_sku']
+					comparison_sqin = 0
 
 				comparison_price = comparison['standard_price']
-				comparison_sqin = float(comparison['Sq in'])
-				actual_price = str(calculate_price(comparison_sqin))
 				suggested_price = ""
 				suggested_size = ""
-
-				price_match = False
-
-				if comparison_price != actual_price:
-					suggested_price = actual_price
-					write = True
-
 				comparison_sizename = comparison['size_name Current']
-				
+				suggested_sqin = comparison_sqin
+
 				size_match = False
 
-				size_list = []
 				for key, value in suggestion.iteritems():
 					if "SizeName" in key:
-						if value is not None:
-							size_list.append(value)
 						if comparison_sizename == value:
 							size_match = True
 
 				if not size_match:
-
-					#if "24" in comparison_sizename:
 					smallest = 10000
 					number = ""
 					for key, value in suggestion.iteritems():
 						if "SqIn" in key:
 							if value is not None:
-								suggested_sqin = float(value)
-								difference = abs(suggested_sqin - comparison_sqin)
+								temp_sqin = float(value)
+								difference = abs(temp_sqin - comparison_sqin)
 								if difference < smallest:
 									smallest = difference
 									number = str(re.findall(r'\d+', key)[0])
+									suggested_sqin = temp_sqin
 
 					size_name_key = 'SizeName' + number
 					suggested_size = suggestion[size_name_key]
+					write = True
+				
+				actual_price = str(calculate_price(suggested_sqin))
+
+				if comparison_price != actual_price:
+					suggested_price = actual_price
 					write = True
 
 				if(write):
@@ -313,7 +312,3 @@ if operation == "filter":
 			for item in new_list:
 				write_tuple = write_tuple + (item,)
 			writer.writerow(write_tuple)
-
-	# print item['Size chk 1']
-	#for key, value in item.iteritems():
-	#	print key
