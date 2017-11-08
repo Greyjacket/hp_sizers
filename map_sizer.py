@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import csv, sys, math, operator
+import csv, sys, math, operator, re
 from utils import get_aspect_ratio, calculate_price
 
 def calculate_dimensions(size, orientation):
@@ -278,7 +278,21 @@ if operation == "filter":
 							size_match = True
 
 				if not size_match:
-					suggested_size = "To be Done"
+
+					#if "24" in comparison_sizename:
+					smallest = 10000
+					number = ""
+					for key, value in suggestion.iteritems():
+						if "SqIn" in key:
+							if value is not None:
+								suggested_sqin = float(value)
+								difference = abs(suggested_sqin - comparison_sqin)
+								if difference < smallest:
+									smallest = difference
+									number = str(re.findall(r'\d+', key)[0])
+
+					size_name_key = 'SizeName' + number
+					suggested_size = suggestion[size_name_key]
 					write = True
 
 				if(write):
