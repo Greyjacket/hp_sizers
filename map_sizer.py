@@ -295,7 +295,7 @@ if operation == "filter":
 					write = True
 
 				if(write):
-					new_list.append(comparison['Parent Sku'])
+					new_list.append(comparison['ParentSku'])
 					new_list.append(comparison['item_sku'])
 					new_list.append(comparison['relationship_type'])
 					new_list.append(comparison['ImageName'])

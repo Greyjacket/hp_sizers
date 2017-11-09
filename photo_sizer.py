@@ -20,7 +20,7 @@ with open(filename, 'rb') as csvfile:
 	for row in reader:
 		newCsv.append(row)
 
-base_tuple = ('Sku', 'ImageHeight', 'ImageWidth','Ratio', 'Aspect Ratio')
+base_tuple = ('Sku', 'ImageHeight', 'ImageWidth','Ratio', 'AspectRatio')
 
 # set the field names
 for i in range(len(sizes)):
