@@ -12,7 +12,7 @@ except:
 sizes = [8.0, 11.0, 16.0, 24.0, 32.0]
 
 newCsv = []
-newFile = open('NewSizes.csv', 'wb') #wb for windows, else you'll see newlines added to csv
+newFile = open('NewSizes_Photos.csv', 'wb') #wb for windows, else you'll see newlines added to csv
 
 # open the file from console arguments
 with open(filename, 'rb') as csvfile:

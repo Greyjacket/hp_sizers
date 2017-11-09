@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import csv, sys, math, operator, re
+import csv, sys, math, operator, re, os
 from utils import get_aspect_ratio, calculate_price
 
 def calculate_dimensions(size, orientation):
@@ -312,3 +312,5 @@ if operation == "filter":
 			for item in new_list:
 				write_tuple = write_tuple + (item,)
 			writer.writerow(write_tuple)
+
+os.remove('NewSizes_temp.csv')
