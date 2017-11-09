@@ -162,19 +162,9 @@ for item in newCsv:
 		ratio = round((image_height/image_width), 2) 
 
 	ratio_info  = get_aspect_ratio(ratio)
-
-	# if we encountered an exception note it in the record
-	if image_width == 1.0:
-		ratio_description = "error"
-	else:
-		ratio_description = ratio_info[0]
-		ratio = ratio_info[1]
-
-	properties_list = []
+	ratio_description = ratio_info[0]
+	ratio = ratio_info[1]
 	aspect_ratio = ratio_description
-	
-	properties_list.append(str(ratio))
-	properties_list.append(aspect_ratio)
 
 	# only do one round for square ratios
 	if ratio_description == "1:1":
@@ -193,6 +183,7 @@ for item in newCsv:
 		# calculate both orientations for 24s, 0 for portrait 1 for landscape
 		while (orientation < 2):
 			item_size = calculate_dimensions(24, orientation)
+			print item_size
 			if item_size:		
 				item_sizes.append(item_size)
 			orientation+=1
@@ -243,6 +234,7 @@ for item in newCsv:
 	suggested_size = ""
 	suggested_sqin = comparison_sqin
 	size_match = False
+	write = False
 
 	for key,value in newdict.iteritems():
 		if "SizeName" in key:
@@ -303,7 +295,7 @@ for item in newCsv:
 		write_tuple = ()
 		for item in new_list:
 			write_tuple = write_tuple + (item,)
-			
+
 		writer.writerow(write_tuple)
 
 newFile.close()

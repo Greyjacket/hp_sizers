@@ -313,4 +313,4 @@ if operation == "filter":
 				write_tuple = write_tuple + (item,)
 			writer.writerow(write_tuple)
 
-os.remove('NewSizes_temp.csv')
+	os.remove('NewSizes_temp.csv')
