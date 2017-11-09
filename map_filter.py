@@ -82,7 +82,7 @@ except:
 	print "Format: python scriptname filename operation.\n"
 	exit()
 
-write_filename = 'Filtered2.csv'
+write_filename = 'Filtered.csv'
 
 newCsv = []
 newFile = open(write_filename, 'wb') #wb for windows, else you'll see newlines added to csv
@@ -99,17 +99,7 @@ base_tuple = ('ParentSku', 'ItemSku', 'relationship_type', 'ImageName','ImageHei
 writer = csv.writer(newFile)
 writer.writerow(base_tuple)
 
-# write the dictionary, do some calculations on the way
 for item in newCsv:
-
-	try:
-		image_width = float(item['ImageWidth'])
-	except:
-		image_width = 1.0
-	try:
-		image_height = float(item['ImageHeight'])
-	except:
-		image_height = 1.0
 
 	try:
 		sku = item['Sku']
@@ -118,12 +108,54 @@ for item in newCsv:
 			sku = item['item_sku']
 		except:
 			print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
-			break
+			exit()
+
+	try:
+		image_width = float(item['ImageWidth'])
+	except:
+		try:
+			image_width = float(item['Image Width'])
+		except:
+			print "Warning: Blank value found for image width in Sku: " + sku + ". Ignoring this Sku."
+			continue;
+	try:
+		image_height = float(item['ImageHeight'])
+	except:
+		try:
+			image_height = float(item['Image Height'])
+		except:
+			print "Warning: Blank value found for image height in Sku: " + sku + ". Ignoring this Sku."
+			continue;
+
+	comparison_price = item['standard_price']
+	
+	try:
+		comparison_sizename = item['SizeNameCurrent']
+	except:		
+		try:
+			comparison_sizename = item['size_name Current']
+		except:
+			print "Please check your SizeNameCurrent field."
+			exit()
+
+	try:
+		comparison_sqin = float(item['SqIn'])
+	except:		
+		try:
+			comparison_sqin = float(item['Sqin'])
+		except:		
+			try:
+				comparison_sqin = float(item['Sq in'])
+			except:		
+				try:
+					comparison_sqin = float(item['Sq In'])
+				except:
+					print "Please check your SqIn field. It's possible there's a duplicate column name."
+					exit()
 
 	item_sizes = []
 
 	# keep the aspect ratio >= 1
-
 	if image_width >= image_height:
 		ratio = round((image_width/image_height), 2) 
 	else: 
@@ -207,9 +239,6 @@ for item in newCsv:
 	####################### FILTER HERE ###############################
 	new_item = {}
 	new_list =[]
-	comparison_price = item['standard_price']
-	comparison_sizename = item['SizeNameCurrent']
-	comparison_sqin = float(item['SqIn'])
 	suggested_price = ""
 	suggested_size = ""
 	suggested_sqin = comparison_sqin
@@ -244,12 +273,27 @@ for item in newCsv:
 		write = True
 
 	if(write):
-		new_list.append(item['ParentSku'])
+		try:
+			new_list.append(item['ParentSku'])
+		except:
+			try:
+				new_list.append(item['Parent Sku'])
+			except:
+				print "Check your ParentSku field. Should be Parent Sku or ParentSku."
+
 		new_list.append(item['item_sku'])
 		new_list.append(item['relationship_type'])
-		new_list.append(item['ImageName'])
-		new_list.append(item['ImageHeight'])
-		new_list.append(item['ImageWidth'])
+
+		try:
+			new_list.append(item['ImageName'])
+		except:
+			try:
+				new_list.append(item['Image Name'])
+			except:
+				print "Check your ImageName field. Should be Image Name or ImageName."		
+
+		new_list.append(image_height)
+		new_list.append(image_width)
 		new_list.append(item['ratio'])
 		new_list.append(comparison_sizename)
 		new_list.append(suggested_size)
@@ -259,6 +303,7 @@ for item in newCsv:
 		write_tuple = ()
 		for item in new_list:
 			write_tuple = write_tuple + (item,)
+			
 		writer.writerow(write_tuple)
 
 newFile.close()
