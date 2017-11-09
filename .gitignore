@@ -100,5 +100,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+.csv
 *.csv.*
 *.ods
