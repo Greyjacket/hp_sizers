@@ -63,15 +63,25 @@ for item in newCsv:
 
 	item_sizes = []
 
-	ratio = round((image_height/image_width), 2) 
-	ratio_info  = get_aspect_ratio(ratio)
-	ratio_description = ratio_info[0]
-	ratio = ratio_info[1]
+	if image_height > image_width:
+		ratio_raw = round((image_height/image_width), 2) 
+		orientation = 'portrait'
+	else:
+		ratio_raw = round((image_width/image_height), 2) 
+		orientation = 'landscape'
 
-	properties_list = []
+	ratio_info  = get_aspect_ratio(ratio_raw)
+	ratio_description = ratio_info[0]
+	ratio_rounded = ratio_info[1]
 	aspect_ratio = ratio_description
-	
-	properties_list.append(str(ratio))
+
+	if orientation == 'landscape':
+		ratio_normalized = 1.0/ratio_rounded
+	else:
+		ratio_normalized = ratio_rounded
+
+	properties_list = []	
+	properties_list.append(str(ratio_rounded))
 	properties_list.append(aspect_ratio)
 
 	# only do one round for square ratios
@@ -88,19 +98,19 @@ for item in newCsv:
 	else:
 
 		# calculate both orientations for 24s, 0 for portrait 1 for landscape
-		item_size = calculate_dimensions(24, 'down',ratio, sku)
+		item_size = calculate_dimensions(24, 'down',ratio_normalized, sku)
 		if item_size:		
 				item_sizes.append(item_size)
 		
-		item_size = calculate_dimensions(24, 'up',ratio, sku)
+		item_size = calculate_dimensions(24, 'up',ratio_normalized, sku)
 
 		if item_size:		
 			item_sizes.append(item_size)
 
-		item_size = calculate_dimensions(44, 'down', ratio, sku)
+		item_size = calculate_dimensions(44, 'down', ratio_normalized, sku)
 
 		# if it's a standard size, check if the 44 sized item is not too close in square inches
-		if item_size and ratio <= 2.0 :	
+		if item_size and ratio_raw <= 2.0 :	
 			newItem = {}
 			for other_item in item_sizes:
 				square_inches_44 = item_size['SqIn']
@@ -110,8 +120,8 @@ for item in newCsv:
 					square_ratio = square_inches_44/square_inches_24
 				else:
 					square_ratio = square_inches_24/square_inches_44
-				if square_ratio < ratio:
-					newItem = calculate_dimensions(36, 'up', ratio, sku)
+				if square_ratio < ratio_raw:
+					newItem = calculate_dimensions(36, 'up', ratio_normalized, sku)
 					break
 				else:
 					newItem = item_size
