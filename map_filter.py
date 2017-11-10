@@ -1,79 +1,6 @@
 #!/usr/bin/python
-import csv, sys, math, operator, re, os
-from utils import get_aspect_ratio, calculate_price
-
-def calculate_dimensions(size, orientation):
-	item_size = {}
-
-	if(orientation == 0):
-		size2 = size * (ratio)
-	else:
-		size2 = size * (1.0/ratio)
-
-	# this function returns of tuple containing the fractional and integral part of the real number
-	size2_split = math.modf(size2)
-	decimal_part = size2_split[0]
-		
-	# round up from .3
-	if decimal_part >= .3:
-		size2 = math.ceil(size2)
-	else:
-		size2 = math.floor(size2)
-
-	if size2 >= 15.0 and size2 < 16.0:
-		size2 = 16.0
-	if size2 >= 17.0 and size2 < 18.0:
-		size2 = 16.0
-	if size2 >= 19.0 and size2 < 20.0:
-		size2 = 18.0			
-
-	if(orientation == 0):
-		height = size
-		width = size2
-	else:
-		height = size2
-		width = size
-
-	# set the square inches
-	square_inches = height * width
-	if square_inches > 240 and square_inches <= 2400:
-
-		price = calculate_price(square_inches)
-
-		# get the string value
-		height_str = str(height)
-		width_str = str(width)
-
-		int_str1 = str(int(width))
-		int_str2 = str(int(height))
-
-		unique1 = int_str1
-		unique2 = int_str2
-
-		width_int_str = str(int(width))
-		height_int_str = str(int(height))
-
-		# pad a single digit with a zero if need be
-		if len(width_int_str) < 2:
-			unique1 = "0" + int_str1
-		if len(height_int_str) < 2:
-			unique2 = "0" + int_str2
-
-		# create the unique sku
-		unique = unique1 + unique2
-		unique_sku = sku + "_" + unique
-
-		# create the size name
-		size_name = width_int_str + "in" + " x " + height_int_str + "in"
-		
-		item_size['Height'] = height_str
-		item_size['Width'] = width_str
-		item_size['SqIn'] = square_inches
-		item_size['SizeName'] = size_name
-		item_size['UniqueSku'] = unique_sku
-		item_size['Price'] = price
-
-		return item_size
+import csv, sys, operator, re, os
+from utils import get_aspect_ratio, calculate_price, calculate_dimensions
 
 try:
 	filename = sys.argv[1]
@@ -155,58 +82,62 @@ for item in newCsv:
 
 	item_sizes = []
 
-	# keep the aspect ratio >= 1
-	if image_width >= image_height:
-		ratio = round((image_width/image_height), 2) 
-	else: 
-		ratio = round((image_height/image_width), 2) 
+	if image_height > image_width:
+		ratio_raw = round((image_height/image_width), 2) 
+		orientation = 'portrait'
+	else:
+		ratio_raw = round((image_width/image_height), 2) 
+		orientation = 'landscape'
 
-	ratio_info  = get_aspect_ratio(ratio)
+	ratio_info  = get_aspect_ratio(ratio_raw)
 	ratio_description = ratio_info[0]
-	ratio = ratio_info[1]
+	ratio_rounded = ratio_info[1]
 	aspect_ratio = ratio_description
 
+	if orientation == 'landscape':
+		ratio_normalized = 1.0/ratio_rounded
+	else:
+		ratio_normalized = ratio_rounded
 	# only do one round for square ratios
 	if ratio_description == "1:1":
-		orientation = 1
-		item_size = calculate_dimensions(16, orientation)
+		ratio = 1.0
+		item_size = calculate_dimensions(16, 'up', ratio, sku)
 		item_sizes.append(item_size)
-		item_size = calculate_dimensions(24, orientation)
+		item_size = calculate_dimensions(24,'up', ratio, sku)
 		item_sizes.append(item_size)
-		item_size = calculate_dimensions(36, orientation)
+		item_size = calculate_dimensions(36,'up', ratio, sku)
 		item_sizes.append(item_size)
-		item_size = calculate_dimensions(44, orientation)
+		item_size = calculate_dimensions(44, 'up', ratio, sku)
 		item_sizes.append(item_size)
 	else:
-		orientation = 0
 
 		# calculate both orientations for 24s, 0 for portrait 1 for landscape
-		while (orientation < 2):
-			item_size = calculate_dimensions(24, orientation)
-			print item_size
-			if item_size:		
+		item_size = calculate_dimensions(24, 'down',ratio_normalized, sku)
+		if item_size:		
 				item_sizes.append(item_size)
-			orientation+=1
 		
-		item_size = calculate_dimensions(44, 1)
+		item_size = calculate_dimensions(24, 'up',ratio_normalized, sku)
+		if item_size:		
+			item_sizes.append(item_size)
+
+		item_size = calculate_dimensions(44, 'down', ratio_normalized, sku)
 
 		# if it's a standard size, check if the 44 sized item is not too close in square inches
-		if item_size and ratio <= 2.0 :	
+		if item_size and ratio_raw <= 2.0 :	
 			newItem = {}
 			for other_item in item_sizes:
-				square_inches1 = item_size['SqIn']
-				square_inches2 = other_item['SqIn']
+				square_inches_44 = item_size['SqIn']
+				square_inches_24 = other_item['SqIn']
 
-				if square_inches1 >= square_inches2:
-					square_ratio = square_inches1/square_inches2
+				if square_inches_44 >= square_inches_24:
+					square_ratio = square_inches_44/square_inches_24
 				else:
-					square_ratio = square_inches2/square_inches1
-				if square_ratio < ratio:
-					newItem = calculate_dimensions(36, 0)
+					square_ratio = square_inches_24/square_inches_44
+				if square_ratio < ratio_raw:
+					newItem = calculate_dimensions(36, 'up', ratio_normalized, sku)
 					break
 				else:
 					newItem = item_size
-
 			if newItem:
 				item_sizes.append(newItem)
 		else:
@@ -215,7 +146,7 @@ for item in newCsv:
 
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 
-	newdict ={}
+	newdict = {}
 
 	count = 1
 	for record in item_sizes:
@@ -226,6 +157,7 @@ for item in newCsv:
 		newdict['UniqueSku' + str(count)] = record['UniqueSku']
 		newdict['Price' + str(count)] = record['Price']
 		count+=1
+
 
 	####################### FILTER HERE ###############################
 	new_item = {}
