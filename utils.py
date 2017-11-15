@@ -1,5 +1,100 @@
+import math
+
+def process_size(size2):
+	# this function returns of tuple containing the fractional and integral part of the real number
+	size2_split = math.modf(size2)
+	decimal_part = size2_split[0]
+		
+	# round up from .3
+	if decimal_part >= .3:
+		size2 = math.ceil(size2)
+	else:
+		size2 = math.floor(size2)
+
+	if size2 >= 15.0 and size2 < 16.0:
+		size2 = 16.0
+	if size2 >= 17.0 and size2 < 18.0:
+		size2 = 16.0
+	if size2 >= 19.0 and size2 < 20.0:
+		size2 = 18.0
+
+	return size2
+
+def calculate_dimensions(size, orientation, ratio, sku):
+	item_size = {}
+
+	if orientation == 'down':
+		if ratio >= 1.0:
+			size2 = size * (1.0/ratio)
+			size2 = process_size(size2)
+			height = size
+			width = size2
+		else:
+			size2 = size * ratio
+			size2 = process_size(size2)
+			height = size2
+			width = size
+	elif orientation == 'up':
+		if ratio >= 1.0:
+			size2 = size * ratio
+			size2 = process_size(size2)
+			height = size2
+			width = size
+		else:
+			size2 = size * (1.0/ratio)
+			size2 = process_size(size2)
+			height = size
+			width = size2
+	else:
+		print "Faulty orientation."
+		exit()
+
+	# set the square inches
+	square_inches = height * width
+	if square_inches > 240 and square_inches <= 2400:
+
+		price = calculate_price(square_inches)
+
+		# get the string value
+		height_str = str(height)
+		width_str = str(width)
+
+		int_str1 = str(int(width))
+		int_str2 = str(int(height))
+
+		unique1 = int_str1
+		unique2 = int_str2
+
+		width_int_str = str(int(width))
+		height_int_str = str(int(height))
+
+		# pad a single digit with a zero if need be
+		if len(width_int_str) < 2:
+			unique1 = "0" + int_str1
+		if len(height_int_str) < 2:
+			unique2 = "0" + int_str2
+
+		# create the unique sku
+		unique = unique1 + unique2
+		unique_sku = sku + "_" + unique
+
+		# create the size name
+		size_name = width_int_str + "in" + " x " + height_int_str + "in"
+
+		item_size['Height'] = height_str
+		item_size['Width'] = width_str
+		item_size['SqIn'] = square_inches
+		item_size['SizeName'] = size_name
+		item_size['UniqueSku'] = unique_sku
+		item_size['Price'] = price
+
+		return item_size
+
 def get_aspect_ratio(ratio):
 	
+	if ratio < 1:
+		ratio = 1/ratio
+
 	# https://en.wikipedia.org/wiki/Aspect_ratio_(image)
 	if ratio <= 1.09:
 		return ("1:1", 1)
