@@ -196,7 +196,7 @@ for item in newCsv:
 		part_number =  sku + "_" + size['SizeName']
 		parent_child = "" # leave blank for children
 		item_sku = sku + "_" + size['SizeName']
-		relationship_type = "variant"
+		relationship_type = "variation"
 		variation_theme = "size"
 		size_name = size['SizeName']
 		update_delete = ""
