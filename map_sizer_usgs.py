@@ -47,8 +47,12 @@ writer.writerow(header_row3)
 
 # write the dictionary, do some calculations on the way
 
+sku_count = 5000001
+
 for item in newCsv:
 
+	sku = str(sku_count)
+	
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
@@ -57,15 +61,6 @@ for item in newCsv:
 		image_height = float(item['ImageHeight'])
 	except:
 		image_height = 1.0
-
-	try:
-		sku = item['Sku']
-	except:
-		try:
-			sku = item['item_sku']
-		except:
-			print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
-			break
 
 	item_sizes = []
 
@@ -147,9 +142,10 @@ for item in newCsv:
 	product_description = item['product_description']
 	feed_product_type = "art"
 	brand_name = item['brand_name']
+	model = item['part_number']
 	manufacturer = item['manufacturer']
-	part_number = item['part_number'] + "P" 
-	parent_child = "" # leave blank for children
+	part_number =  parent_sku 
+	parent_child = "parent" # leave blank for children
 	item_sku = parent_sku
 	relationship_type = ""
 	variation_theme = "size"
@@ -158,9 +154,9 @@ for item in newCsv:
 	standard_price = ""
 	quantity = ""
 	product_tax_code = ""
-	item_package_quantity = "1"
-	website_shipping_weight = "1"
-	website_shipping_weight_unit_of_measure = "lbs"
+	item_package_quantity = ""
+	website_shipping_weight = ""
+	website_shipping_weight_unit_of_measure = ""
 	bullet_point1 = "Professionally Printed Vintage Map Reproduction"
 	bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
 	bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
@@ -182,13 +178,12 @@ for item in newCsv:
 	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
 	
 	write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
-		sku, part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+		model, part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
 		update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 		website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 		bullet_point5, main_image_url)
 
 	writer.writerow(write_tuple)
-
 
 	for size in item_sizes:
 		item_type = "prints"
@@ -197,7 +192,8 @@ for item in newCsv:
 		feed_product_type = "art"
 		brand_name = item['brand_name']
 		manufacturer = item['manufacturer']
-		part_number = item['part_number'] + "_" + size['SizeName']
+		model = item['part_number']
+		part_number =  sku + "_" + size['SizeName']
 		parent_child = "" # leave blank for children
 		item_sku = sku + "_" + size['SizeName']
 		relationship_type = "variant"
@@ -231,11 +227,12 @@ for item in newCsv:
 		main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
 		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
-			sku, part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+			model, part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 			bullet_point5, main_image_url)
 
 		writer.writerow(write_tuple)
+	sku_count += 1
 
 newFile.close()
