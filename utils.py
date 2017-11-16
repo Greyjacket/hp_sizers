@@ -51,7 +51,7 @@ def calculate_dimensions(size, orientation, ratio, sku):
 
 	# set the square inches
 	square_inches = height * width
-	if square_inches > 240 and square_inches <= 2400:
+	if square_inches > 240 and square_inches <= 3200:
 
 		price = calculate_price(square_inches)
 
@@ -141,9 +141,7 @@ def get_aspect_ratio(ratio):
 
 def calculate_price(square_inches):
 	# price chart
-	if square_inches < 200:
-		price = 19.99
-	elif square_inches >= 200 and square_inches < 299:
+	if square_inches < 299:
 		price = 29.99
 	elif square_inches >= 300 and square_inches <= 399:
 		price = 39.99
@@ -170,24 +168,40 @@ def calculate_price(square_inches):
 	elif square_inches >= 1400 and square_inches <= 1499:
 		price = 99.99	
 	elif square_inches >= 1500 and square_inches <= 1599:
-		price = 104.99
-	elif square_inches >= 1600 and square_inches <= 1699:
-		price = 109.99
-	elif square_inches >= 1700 and square_inches <= 1799:
-		price = 114.99
-	elif square_inches >= 1800 and square_inches <= 1899:
-		price = 119.99
-	elif square_inches >= 1900 and square_inches <= 1999:
-		price = 124.99
-	elif square_inches >= 2000 and square_inches <= 2099:
-		price = 129.99
-	elif square_inches >= 2100 and square_inches <= 2199:
-		price = 134.99
-	elif square_inches >= 2200 and square_inches <= 2299:
-		price = 139.99
-	elif square_inches >= 2300 and square_inches <= 2399:
-		price = 144.99
-	else:
 		price = 149.99
+	elif square_inches >= 1600 and square_inches <= 1699:
+		price = 159.99
+	elif square_inches >= 1700 and square_inches <= 1799:
+		price = 169.99
+	elif square_inches >= 1800 and square_inches <= 1899:
+		price = 179.99
+	elif square_inches >= 1900 and square_inches <= 1999:
+		price = 189.99
+	elif square_inches >= 2000 and square_inches <= 2099:
+		price = 199.99
+	elif square_inches >= 2100 and square_inches <= 2199:
+		price = 209.99
+	elif square_inches >= 2200 and square_inches <= 2299:
+		price = 219.99
+	elif square_inches >= 2300 and square_inches <= 2399:
+		price = 229.99
+	elif square_inches >= 2400 and square_inches <= 2499:
+		price = 239.99
+	elif square_inches >= 2500 and square_inches <= 2599:
+		price = 249.99
+	elif square_inches >= 2600 and square_inches <= 2699:
+		price = 259.99
+	elif square_inches >= 2700 and square_inches <= 2799:
+		price = 269.99
+	elif square_inches >= 2800 and square_inches <= 2899:
+		price = 279.99
+	elif square_inches >= 2900 and square_inches <= 2999:
+		price = 289.99
+	elif square_inches >= 3000 and square_inches <= 3099:
+		price = 299.99
+	elif square_inches >= 3100 and square_inches <= 3199:
+		price = 309.99
+	else:
+		price = 319.99
 
 	return price
