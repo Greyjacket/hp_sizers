@@ -28,12 +28,12 @@ with open(filename, 'rb') as csvfile:
 header_row1 = ('TemplateType=home', 'Version=2014.1119')
 
 header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
-	'Brand Name', 'Manufacturer', 'Model', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
+	'Brand Name', 'Manufacturer', 'Catalog Number', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
 	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
 	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL')
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
-	'brand_name', 'manufacturer', 'model','part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
+	'brand_name', 'manufacturer', 'catalog_number','part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
 	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
 	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url')
 
@@ -142,7 +142,7 @@ for item in newCsv:
 	product_description = item['product_description']
 	feed_product_type = "art"
 	brand_name = item['brand_name']
-	model = item['part_number']
+	catalog = item['part_number']
 	manufacturer = item['manufacturer']
 	part_number =  parent_sku 
 	parent_child = "parent" # leave blank for children
@@ -178,7 +178,7 @@ for item in newCsv:
 	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
 	
 	write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
-		model, part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
+		catalog, part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
 		update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 		website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 		bullet_point5, main_image_url)
@@ -192,8 +192,9 @@ for item in newCsv:
 		feed_product_type = "art"
 		brand_name = item['brand_name']
 		manufacturer = item['manufacturer']
-		model = item['part_number']
-		part_number =  sku + "_" + size['SizeName']
+		catalog = item['part_number']
+		part_number_str = re.sub('[ xin]', '', size['SizeName'])
+		part_number =  sku + "_" + part_number_str
 		parent_child = "" # leave blank for children
 		item_sku = sku + "_" + size['SizeName']
 		relationship_type = "variation"
@@ -227,7 +228,7 @@ for item in newCsv:
 		main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
 		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
-			model, part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+			catalog, part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 			bullet_point5, main_image_url)
