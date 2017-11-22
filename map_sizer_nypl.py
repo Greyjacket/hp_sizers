@@ -9,13 +9,6 @@ except:
 	print "Format: python scriptname filename operation.\n"
 	exit()
 
-try:
-	operation = sys.argv[2]
-	sku_number = int(operation)
-except:
-	print "Please enter a starting Sku number"
-	exit()
-
 write_filename = 'NYPL.csv'
 
 newCsv = []
@@ -49,12 +42,17 @@ writer.writerow(header_row3)
 
 # write the dictionary, do some calculations on the way
 
-sku_count = sku_number
-
 for item in newCsv:
 
-	sku = str(sku_count)
-	
+	try:
+		sku = item['Sku']
+	except:
+		try:
+			sku = item['item_sku']
+		except:
+			print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
+			exit()
+
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
@@ -141,7 +139,7 @@ for item in newCsv:
 
 	item_type = "prints"
 	item_name = item['Item Name']
-	product_description = item['product_description']
+	product_description = "<p>" + item['product_description'] + "</p>"
 	feed_product_type = "art"
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
@@ -162,7 +160,7 @@ for item in newCsv:
 	bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
 	bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 	bullet_point4 = "100% Satisfaction Guaranteed"
-	bullet_point5 = ""
+	bullet_point5 = item_name
 	merchant_shipping_group_name = ""
 	keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
 	
@@ -191,7 +189,7 @@ for item in newCsv:
 	for size in item_sizes:
 		item_type = "prints"
 		item_name = item['Item Name']
-		product_description = item['product_description']
+		product_description = "<p>" + item['product_description'] + "</p>"
 		feed_product_type = "art"
 		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 		part_number =  sku + "_" + part_number_str
@@ -211,7 +209,7 @@ for item in newCsv:
 		bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
 		bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 		bullet_point4 = "100% Satisfaction Guaranteed"
-		bullet_point5 = ""
+		bullet_point5 = item_name
 		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 
 		try:
@@ -225,8 +223,6 @@ for item in newCsv:
 				except:
 					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
 					exit()
-
-		main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
 		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
@@ -235,6 +231,5 @@ for item in newCsv:
 			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
-	sku_count += 1
 
 newFile.close()
