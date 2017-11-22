@@ -103,3 +103,4 @@ venv.bak/
 *.csv
 *.csv#
 *.ods
+*.xls
