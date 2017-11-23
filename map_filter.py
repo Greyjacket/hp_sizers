@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import csv, sys, operator, re, os
+import csv, sys, math, operator, re, os
 from utils import get_aspect_ratio, calculate_price, calculate_dimensions
 
 try:
@@ -9,7 +9,7 @@ except:
 	print "Format: python scriptname filename operation.\n"
 	exit()
 
-write_filename = 'Filtered.csv'
+write_filename = 'filtered_maps.csv'
 
 newCsv = []
 newFile = open(write_filename, 'wb') #wb for windows, else you'll see newlines added to csv
@@ -19,14 +19,33 @@ with open(filename, 'rb') as csvfile:
 	for row in reader:
 		newCsv.append(row)
 
-base_tuple = ('ParentSku', 'ItemSku', 'relationship_type', 'ImageName','ImageHeight', 
-		'ImageWidth', 'Ratio', 'SizeNameCurrent', 'SizeNameSuggested', 'CurrentPrice', 'SuggestedPrice')
+# write amazon's headers
+header_row1 = ('TemplateType=home', 'Version=2014.1119')
+
+header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
+	'Brand Name', 'Manufacturer', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
+	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
+	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms')
+
+header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
+	'brand_name', 'manufacturer', 'part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
+	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
+	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1')
 
 # initialize csv writer
 writer = csv.writer(newFile)
-writer.writerow(base_tuple)
+
+# write the amazon headers
+writer.writerow(header_row1)
+writer.writerow(header_row2)
+writer.writerow(header_row3)
+
+# write the dictionary, do some calculations on the way
 
 for item in newCsv:
+
+	if item['Type'] != "Maps":
+		continue
 
 	try:
 		sku = item['Sku']
@@ -34,51 +53,20 @@ for item in newCsv:
 		try:
 			sku = item['item_sku']
 		except:
-			print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
-			exit()
+			try:
+				sku = item['SKU']
+			except:
+				print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
+				exit()
 
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
-		try:
-			image_width = float(item['Image Width'])
-		except:
-			print "Warning: Blank value found for image width in Sku: " + sku + ". Ignoring this Sku."
-			continue;
+		image_width = 1.0
 	try:
 		image_height = float(item['ImageHeight'])
 	except:
-		try:
-			image_height = float(item['Image Height'])
-		except:
-			print "Warning: Blank value found for image height in Sku: " + sku + ". Ignoring this Sku."
-			continue;
-
-	comparison_price = item['standard_price']
-	
-	try:
-		comparison_sizename = item['SizeNameCurrent']
-	except:		
-		try:
-			comparison_sizename = item['size_name Current']
-		except:
-			print "Please check your SizeNameCurrent field."
-			exit()
-
-	try:
-		comparison_sqin = float(item['SqIn'])
-	except:		
-		try:
-			comparison_sqin = float(item['Sqin'])
-		except:		
-			try:
-				comparison_sqin = float(item['Sq in'])
-			except:		
-				try:
-					comparison_sqin = float(item['Sq In'])
-				except:
-					print "Please check your SqIn field. It's possible there's a duplicate column name."
-					exit()
+		image_height = 1.0
 
 	item_sizes = []
 
@@ -98,6 +86,7 @@ for item in newCsv:
 		ratio_normalized = 1.0/ratio_rounded
 	else:
 		ratio_normalized = ratio_rounded
+
 	# only do one round for square ratios
 	if ratio_description == "1:1":
 		ratio = 1.0
@@ -117,6 +106,7 @@ for item in newCsv:
 				item_sizes.append(item_size)
 		
 		item_size = calculate_dimensions(24, 'up',ratio_normalized, sku)
+
 		if item_size:		
 			item_sizes.append(item_size)
 
@@ -144,91 +134,104 @@ for item in newCsv:
 			if item_size:		
 				item_sizes.append(item_size)
 
+		item_size = calculate_dimensions(44, 'up', ratio_normalized, sku)
+
+		if item_size:
+			item_sizes.append(item_size)
+	
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 
-	newdict = {}
+	parent_sku = sku + "P"
 
-	count = 1
-	for record in item_sizes:
-		newdict['Height' + str(count)] = record['Height']
-		newdict['Width' + str(count)] = record['Width']
-		newdict['SqIn' + str(count)] = record['SqIn']
-		newdict['SizeName' + str(count)] = record['SizeName']
-		newdict['UniqueSku' + str(count)] = record['UniqueSku']
-		newdict['Price' + str(count)] = record['Price']
-		count+=1
-
-
-	####################### FILTER HERE ###############################
-	new_item = {}
-	new_list =[]
-	suggested_price = ""
-	suggested_size = ""
-	suggested_sqin = comparison_sqin
-	size_match = False
-	write = False
-
-	for key,value in newdict.iteritems():
-		if "SizeName" in key:
-			if comparison_sizename == value:
-				size_match = True
-
-	if not size_match:
-		smallest = 10000
-		number = ""
-		for key, value in newdict.iteritems():
-			if "SqIn" in key:
-				if value is not None:
-					temp_sqin = float(value)
-					difference = abs(temp_sqin - comparison_sqin)
-					if difference < smallest:
-						smallest = difference
-						number = str(re.findall(r'\d+', key)[0])
-						suggested_sqin = temp_sqin
-
-		size_name_key = 'SizeName' + number
-		suggested_size = newdict[size_name_key]
-		write = True
-
-	actual_price = str(calculate_price(suggested_sqin))
-
-	if comparison_price != actual_price:
-		suggested_price = actual_price
-		write = True
-
-	if(write):
+	item_type = "prints"
+	item_name = item['Description']
+	product_description = "<p>" + item['Description'] + "</p>"
+	feed_product_type = "art"
+	brand_name = 'Historic Pictoric'
+	manufacturer = 'Historic Pictoric'
+	part_number =  parent_sku 
+	parent_child = "parent" # leave blank for children
+	item_sku = parent_sku
+	relationship_type = ""
+	variation_theme = "size"
+	size_name = ""
+	update_delete = ""
+	standard_price = ""
+	quantity = ""
+	product_tax_code = ""
+	item_package_quantity = ""
+	website_shipping_weight = ""
+	website_shipping_weight_unit_of_measure = ""
+	bullet_point1 = "Professionally Printed Vintage Map Reproduction"
+	bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
+	bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
+	bullet_point4 = "100% Satisfaction Guaranteed"
+	bullet_point5 = item_name
+	merchant_shipping_group_name = ""
+	keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
+	
+	try:
+		image_name = item['ImageName']
+	except:
 		try:
-			new_list.append(item['ParentSku'])
+			image_name = item['Image Name']
 		except:
 			try:
-				new_list.append(item['Parent Sku'])
+				image_name = item['Image_Name']
 			except:
-				print "Check your ParentSku field. Should be Parent Sku or ParentSku."
+				print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
+				exit()
 
-		new_list.append(item['item_sku'])
-		new_list.append(item['relationship_type'])
+	main_image_url = "www.historicpictoric.com/media/AMZWebImg/SoldProductsUpdate/" + image_name
+	
+	write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
+		part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
+		update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
+		website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
+		bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
+
+	writer.writerow(write_tuple)
+
+	for size in item_sizes:
+		item_type = "prints"
+		item_name = item['Description']
+		product_description = "<p>" + item['Description'] + "</p>"
+		feed_product_type = "art"
+		part_number_str = re.sub('[ xin]', '', size['SizeName'])
+		part_number =  sku + "_" + part_number_str
+		parent_child = "" # leave blank for children
+		item_sku = sku + "_" + size['SizeName']
+		relationship_type = "variation"
+		variation_theme = "size"
+		size_name = size['SizeName']
+		update_delete = ""
+		standard_price = size['Price']
+		quantity = "10"
+		product_tax_code = 'a_gen_tax'
+		item_package_quantity = "1"
+		website_shipping_weight = "1"
+		website_shipping_weight_unit_of_measure = "lbs"
+		bullet_point5 = item_name
+		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 
 		try:
-			new_list.append(item['ImageName'])
+			image_name = item['ImageName']
 		except:
 			try:
-				new_list.append(item['Image Name'])
+				image_name = item['Image Name']
 			except:
-				print "Check your ImageName field. Should be Image Name or ImageName."		
-
-		new_list.append(image_height)
-		new_list.append(image_width)
-		new_list.append(item['ratio'])
-		new_list.append(comparison_sizename)
-		new_list.append(suggested_size)
-		new_list.append(comparison_price)	
-		new_list.append(suggested_price)	
-
-		write_tuple = ()
-		for item in new_list:
-			write_tuple = write_tuple + (item,)
+				try:
+					image_name = item['Image_Name']
+				except:
+					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
+					exit()
+		
+		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
+			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
+			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
 
 newFile.close()
-
