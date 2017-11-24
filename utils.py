@@ -80,13 +80,16 @@ def calculate_dimensions(size, orientation, ratio, sku):
 
 		# create the size name
 		size_name = width_int_str + "in" + " x " + height_int_str + "in"
+		size_name2 = height_int_str + "in" + " x " + width_int_str + "in"
 
 		item_size['Height'] = height_str
 		item_size['Width'] = width_str
 		item_size['SqIn'] = square_inches
 		item_size['SizeName'] = size_name
+		item_size['SizeName2'] = size_name2
 		item_size['UniqueSku'] = unique_sku
 		item_size['Price'] = price
+		item_size['Ratio'] = ratio
 
 		return item_size
 
