@@ -25,12 +25,12 @@ header_row1 = ('TemplateType=home', 'Version=2014.1119')
 header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
 	'Brand Name', 'Manufacturer', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
 	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
-	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms')
+	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms', 'Validated')
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer', 'part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
 	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
-	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1')
+	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1', 'validated')
 
 # initialize csv writer
 writer = csv.writer(newFile)
@@ -143,13 +143,24 @@ for item in newCsv:
 	
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 
-# ------------------------------------------------------------------------------------	start filter here
-	
+# ------------------------------------------------------------------------------------ filter here
+	smallest = 10000
+	number = ""
+	comparison_sqin = float(item['SqIn'])
+
+	for testsize in item_sizes:
+		temp_sqin = float(testsize['SqIn'])
+		difference = abs(temp_sqin - comparison_sqin)
+		if difference < smallest:
+			smallest = difference
+			suggested_sizename = testsize['SizeName']
+
+# ------------------------------------------------------------------------------------ end filter
+
 	# if single, create a parent sku
 	if item['Relationship'] == 'Single':
 
 		parent_sku = sku + "P"
-
 		item_type = "prints"
 		item_name = item['Title']
 		product_description = "<p>" + item['Title'] + "</p>"
@@ -176,7 +187,8 @@ for item in newCsv:
 		bullet_point5 = item_name
 		merchant_shipping_group_name = ""
 		keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
-		
+		validated = 'N/A'
+
 		try:
 			image_name = item['ImageName']
 		except:
@@ -195,9 +207,9 @@ for item in newCsv:
 			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
 
-	writer.writerow(write_tuple)
+		writer.writerow(write_tuple)
 
 	for size in item_sizes:
 		item_type = "prints"
@@ -216,21 +228,24 @@ for item in newCsv:
 				except:
 					print "Please format the SizeName field of your input: SizeName, Size Name, or Size_Name"
 
+		number1 = str(re.findall(r'\d+', size['SizeName'])[0])
+		number2 = str(re.findall(r'\d+', size['SizeName'])[1])
+
 		# format the size names so that they're all alike
 		formatted_sizename = re.sub('[ xin]', '', size['SizeName2'])
 		formatted_comparison = re.sub('[ xin]', '', item_sizename)
 		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 
-		print item['SKU'], formatted_sizename, formatted_comparison
-		# print item['Title'], formatted_sizename, formatted_comparison
-		if formatted_sizename == formatted_comparison: # and size['Ratio'] != 1.0:
+		if size['SizeName'] == suggested_sizename:
 			parent_child = "" # leave blank for children
 			part_number = sku
 			item_sku = sku 
+			validated = True
 		else:
 			parent_child = "" # leave blank for children
 			part_number =  sku + "_" + part_number_str
 			item_sku = sku + "_" + size['SizeName']
+			validated = False
 		
 		relationship_type = "variation"
 		variation_theme = "size"
@@ -257,11 +272,19 @@ for item in newCsv:
 					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
 					exit()
 		
+		if item['Option'] == 'Validate Only' and validated == False:
+			continue
+
+		# ignore sizes going up from 44 if the option is set
+		if item['Option'] == '<44':
+			if int(number1) > 44 or int(number2) > 44:
+				continue
+
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
 
 		writer.writerow(write_tuple)
 
