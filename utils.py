@@ -18,6 +18,11 @@ def process_size(size2):
 	if size2 >= 19.0 and size2 < 20.0:
 		size2 = 18.0
 
+	if size2 >= 37.0 and size2 <= 38.0:
+		size2 = 36.0
+	if size2 <= 35.0 and size2 <= 37.0:
+		size2 = 36.0
+
 	return size2
 
 def calculate_dimensions(size, orientation, ratio, sku):
@@ -81,6 +86,9 @@ def calculate_dimensions(size, orientation, ratio, sku):
 		# create the size name
 		size_name = width_int_str + "in" + " x " + height_int_str + "in"
 		size_name2 = height_int_str + "in" + " x " + width_int_str + "in"
+
+		#size_name = width_int_str + height_int_str 
+		#size_name2 = height_int_str + width_int_str
 
 		item_size['Height'] = height_str
 		item_size['Width'] = width_str

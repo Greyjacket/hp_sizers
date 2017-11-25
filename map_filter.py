@@ -244,7 +244,7 @@ for item in newCsv:
 		else:
 			parent_child = "" # leave blank for children
 			part_number =  sku + "_" + part_number_str
-			item_sku = sku + "_" + size['SizeName']
+			item_sku = sku + "_" + part_number_str
 			validated = False
 		
 		relationship_type = "variation"
