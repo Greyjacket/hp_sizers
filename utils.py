@@ -25,6 +25,98 @@ def process_size(size2):
 
 	return size2
 
+def process_photo_size(size, ratio):
+
+	if ratio <= 1.3:
+		if size == 8.0:
+			size2 = 10.0
+		elif size == 11.0:
+			size2 = 14.0
+		elif size == 16.0:
+			size2 = 20.0
+		elif size == 24.0:
+			size2 = 30.0
+		else:
+			size2 = 40.0
+	elif ratio > 1.3 and ratio < 1.45:
+		if size == 11.0:
+			size2 = 14.0
+		elif size == 18.0:
+			size2 = 24.0
+		elif size == 24.0:
+			size2 = 32.0
+		else:
+			size2 = 43.0
+	else:
+		if size == 8.0:
+			size2 = 12.0
+		elif size == 16.0:
+			size2 = 24.0
+		elif size == 20.0:
+			size2 = 30.0
+		elif size == 24.0:
+			size2 = 36.0
+		else:
+			size2 = 44.0
+
+	return size2
+
+def calculate_photo_dimensions(size, orientation, ratio, sku):
+	item_size = {}
+
+	if orientation == 'portrait':
+			size2 = process_photo_size(size, ratio)
+			height = size2
+			width = size
+	else:
+			size2 = process_photo_size(size, ratio)
+			height = size
+			width = size2
+
+	# set the square inches
+	square_inches = height * width
+	if square_inches > 240 and square_inches <= 3200:
+
+		price = calculate_price(square_inches)
+
+		# get the string value
+		height_str = str(height)
+		width_str = str(width)
+
+		int_str1 = str(int(width))
+		int_str2 = str(int(height))
+
+		unique1 = int_str1
+		unique2 = int_str2
+
+		width_int_str = str(int(width))
+		height_int_str = str(int(height))
+
+		# pad a single digit with a zero if need be
+		if len(width_int_str) < 2:
+			unique1 = "0" + int_str1
+		if len(height_int_str) < 2:
+			unique2 = "0" + int_str2
+
+		# create the unique sku
+		unique = unique1 + unique2
+		unique_sku = sku + "_" + unique
+
+		# create the size name
+		size_name = width_int_str + "in" + " x " + height_int_str + "in"
+		size_name2 = height_int_str + "in" + " x " + width_int_str + "in"
+
+		item_size['Height'] = height_str
+		item_size['Width'] = width_str
+		item_size['SqIn'] = square_inches
+		item_size['SizeName'] = size_name
+		item_size['SizeName2'] = size_name2
+		item_size['UniqueSku'] = unique_sku
+		item_size['Price'] = price
+		item_size['Ratio'] = ratio
+
+		return item_size	
+
 def calculate_dimensions(size, orientation, ratio, sku):
 	item_size = {}
 
