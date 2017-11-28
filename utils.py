@@ -179,9 +179,6 @@ def calculate_dimensions(size, orientation, ratio, sku):
 		size_name = width_int_str + "in" + " x " + height_int_str + "in"
 		size_name2 = height_int_str + "in" + " x " + width_int_str + "in"
 
-		#size_name = width_int_str + height_int_str 
-		#size_name2 = height_int_str + width_int_str
-
 		item_size['Height'] = height_str
 		item_size['Width'] = width_str
 		item_size['SqIn'] = square_inches

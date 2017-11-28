@@ -12,7 +12,7 @@ except:
 sizes = [8.0, 11.0, 16.0, 24.0, 32.0]
 
 newCsv = []
-newFile = open('NewSizes_Photos.csv', 'wb') #wb for windows, else you'll see newlines added to csv
+newFile = open('filtered_photos.csv', 'wb') #wb for windows, else you'll see newlines added to csv
 
 # open the file from console arguments
 with open(filename, 'rb') as csvfile:
@@ -124,9 +124,14 @@ for item in newCsv:
 
 # ------------------------------------------------------------------------------------ end filter
 
+	bullet_point1 = "Frame Ready - Professionally Restored Photograph"
+	bullet_point2 = "High Quality Giclee Art Print - Printed on Museum Quality Luster PhotoPaper"
+	bullet_point3 = "Ships Flat - Ready to Frame - Fits Standard Size Frames"
+	bullet_point4 = "100% Satisfaction Guaranteed"
+	bullet_point5 = 'Other sizes available - contact Historic Pictoric'
+
 # if single, create a parent sku
 	if item['Relationship'] == 'Single':
-
 		parent_sku = sku + "P"
 		item_type = "photos"
 		item_name = item['Title']
@@ -147,11 +152,6 @@ for item in newCsv:
 		item_package_quantity = ""
 		website_shipping_weight = ""
 		website_shipping_weight_unit_of_measure = ""
-		bullet_point1 = "Professionally Printed Vintage Map Reproduction"
-		bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
-		bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
-		bullet_point4 = "100% Satisfaction Guaranteed"
-		bullet_point5 = item_name
 		merchant_shipping_group_name = ""
 		keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
 		validated = 'N/A'

@@ -156,7 +156,12 @@ for item in newCsv:
 			suggested_sizename = testsize['SizeName']
 
 # ------------------------------------------------------------------------------------ end filter
-
+	bullet_point1 = "Professionally Printed Vintage Map Reproduction"
+	bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
+	bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
+	bullet_point4 = "100% Satisfaction Guaranteed"
+	bullet_point5 = item_name
+	
 	# if single, create a parent sku
 	if item['Relationship'] == 'Single':
 
@@ -180,11 +185,6 @@ for item in newCsv:
 		item_package_quantity = ""
 		website_shipping_weight = ""
 		website_shipping_weight_unit_of_measure = ""
-		bullet_point1 = "Professionally Printed Vintage Map Reproduction"
-		bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
-		bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
-		bullet_point4 = "100% Satisfaction Guaranteed"
-		bullet_point5 = item_name
 		merchant_shipping_group_name = ""
 		keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
 		validated = 'N/A'
