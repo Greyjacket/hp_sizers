@@ -255,7 +255,7 @@ for item in newCsv:
 			part_number = item['Manufacturer#']
 			item_sku =  sku
 			validated = True
-			update_delete = "Partial Update"
+			update_delete = "PartialUpdate"
 			size_name = item_sizename
 		else:
 			parent_child = "" # leave blank for children

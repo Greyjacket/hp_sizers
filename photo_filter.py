@@ -96,11 +96,11 @@ for item in newCsv:
 	aspect_ratio = ratio_description
 	
 	if ratio_normalized <= 1.3:
-		sizes = [11.0, 16.0, 24.0, 32.0]
+		sizes = [11.0, 16.0, 24.0, 36.0]
 	elif ratio_normalized > 1.3 and ratio_normalized < 1.45:
-		sizes = [11.0, 18.0, 24.0, 32.0]
+		sizes = [16.0, 24.0, 30.0]
 	else:
-		sizes = [16.0, 20.0, 24.0, 30.0]
+		sizes = [11.0, 18.0, 24.0]
 
 	for size in sizes:
 		if orientation == 'portrait':		
@@ -138,7 +138,7 @@ for item in newCsv:
 	bullet_point2 = "High Quality Giclee Art Print - Printed on Museum Quality Luster PhotoPaper"
 	bullet_point3 = "Ships Flat - Ready to Frame - Fits Standard Size Frames"
 	bullet_point4 = "100% Satisfaction Guaranteed"
-	bullet_point5 = 'Other sizes available - contact Historic Pictoric'
+	bullet_point5 = ""
 	keywords = item_name = item['Keywords']
 	#part_number = item['Manufacturer#']
 
@@ -222,10 +222,10 @@ for item in newCsv:
 			part_number = item['Manufacturer#']
 			item_sku =  sku
 			validated = True
-			update_delete = "Partial Update"
+			update_delete = "PartialUpdate"
 			size_name = item_sizename
 		else:
-			parent_child = "" # leave blank for children
+			parent_child = "" # leve blank for children
 			part_number =  sku + "_" + part_number_str
 			item_sku = sku + "_" + part_number_str
 			size_name = size['SizeName']
