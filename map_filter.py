@@ -57,18 +57,24 @@ for item in newCsv:
 				sku = item['SKU']
 			except:
 				print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
-				exit()
+				continue
 
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
-		print "ERROR: Image Width not formatted"
-		exit()
+		try:
+			image_width = float(item['Width'])
+		except:			
+			print "ERROR: Image Width not formatted: use ImageWidth or Width. Check Sku " + sku
+			continue
 	try:
 		image_height = float(item['ImageHeight'])
 	except:
-		print "ERROR: Image Height not formatted"
-		exit()
+		try:
+			image_height = float(item['Height'])
+		except:
+			print "ERROR: Image Height not formatted: use ImageHeight or Height. Check Sku " + sku
+			exit()
 
 	item_sizes = []
 
@@ -146,7 +152,14 @@ for item in newCsv:
 # ------------------------------------------------------------------------------------ filter here
 	smallest = 10000
 	number = ""
-	comparison_sqin = float(item['SqIn'])
+	index = 0
+	try:
+		comparison_sqin = float(item['SqIn'])
+	except:
+		try:
+			comparison_sqin = float(item['Sq in'])
+		except:
+			print "Please format the square inch field: \"SqIn\""
 
 	for testsize in item_sizes:
 		temp_sqin = float(testsize['SqIn'])
@@ -154,20 +167,22 @@ for item in newCsv:
 		if difference < smallest:
 			smallest = difference
 			suggested_sizename = testsize['SizeName']
+			found_index = index
+		index += 1
 
 # ------------------------------------------------------------------------------------ end filter
+	item_name = item['Title']
 	bullet_point1 = "Professionally Printed Vintage Map Reproduction"
 	bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
 	bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = item_name
-	
+
 	# if single, create a parent sku
 	if item['Relationship'] == 'Single':
 
 		parent_sku = sku + "P"
 		item_type = "prints"
-		item_name = item['Title']
 		product_description = "<p>" + item['Title'] + "</p>"
 		feed_product_type = "art"
 		brand_name = 'Historic Pictoric'
@@ -213,7 +228,6 @@ for item in newCsv:
 
 	for size in item_sizes:
 		item_type = "prints"
-		item_name = item['Title']
 		product_description = "<p>" + item['Title'] + "</p>"
 		feed_product_type = "art"
 
@@ -238,19 +252,23 @@ for item in newCsv:
 
 		if size['SizeName'] == suggested_sizename:
 			parent_child = "" # leave blank for children
-			part_number = sku
-			item_sku = sku 
+			part_number = item['Manufacturer#']
+			item_sku =  sku
 			validated = True
+			update_delete = "Partial Update"
+			size_name = item_sizename
 		else:
 			parent_child = "" # leave blank for children
 			part_number =  sku + "_" + part_number_str
 			item_sku = sku + "_" + part_number_str
+			size_name = size['SizeName']
+			update_delete = ""
 			validated = False
 		
 		relationship_type = "variation"
 		variation_theme = "size"
 		size_name = size['SizeName']
-		update_delete = ""
+
 		standard_price = size['Price']
 		quantity = "10"
 		product_tax_code = 'a_gen_tax'
@@ -276,7 +294,7 @@ for item in newCsv:
 			continue
 
 		# ignore sizes going up from 44 if the option is set
-		if item['Option'] == '<44':
+		if item['Option'] == '<=44':
 			if int(number1) > 44 or int(number2) > 44:
 				continue
 

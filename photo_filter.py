@@ -230,12 +230,13 @@ for item in newCsv:
 			item_sku = sku + "_" + part_number_str
 			size_name = size['SizeName']
 			validated = False
+			update_delete = ""
+
 		
 		relationship_type = "variation"
 		variation_theme = "size"
 		# size_name = size['SizeName']
 		#size_name = item_sizename
-		update_delete = ""
 		standard_price = size['Price']
 		quantity = "10"
 		product_tax_code = 'a_gen_tax'
