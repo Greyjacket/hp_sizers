@@ -9,8 +9,6 @@ except:
 	print "Format: python scriptname filename.\n"
 	exit()
 
-sizes = [8.0, 11.0, 16.0, 24.0, 32.0]
-
 newCsv = []
 newFile = open('filtered_photos.csv', 'wb') #wb for windows, else you'll see newlines added to csv
 
@@ -42,11 +40,10 @@ writer.writerow(header_row2)
 writer.writerow(header_row3)
 
 # write the dictionary, do some calculations on the way
-for item in newCsv:
-
+for item in newCsv:	
 	if item['Type'] != "Photograph":
 		continue
-
+	
 	try:
 		sku = item['Sku']
 	except:
@@ -62,13 +59,19 @@ for item in newCsv:
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
-		print "ERROR: Image Width not formatted"
-		exit()
+		try:
+			image_width = float(item['Width'])
+		except:			
+			print "ERROR: Image Width not formatted: use ImageWidth or Width"
+			exit()
 	try:
 		image_height = float(item['ImageHeight'])
 	except:
-		print "ERROR: Image Height not formatted"
-		exit()
+		try:
+			image_height = float(item['Height'])
+		except:
+			print "ERROR: Image Height not formatted: use ImageHeight or Height."
+			exit()
 
 	# keep the aspect ratio >= 1
 	item_sizes = []
@@ -93,11 +96,11 @@ for item in newCsv:
 	aspect_ratio = ratio_description
 	
 	if ratio_normalized <= 1.3:
-		sizes = [8.0, 11.0, 16.0, 24.0, 32.0]
+		sizes = [11.0, 16.0, 24.0, 32.0]
 	elif ratio_normalized > 1.3 and ratio_normalized < 1.45:
 		sizes = [11.0, 18.0, 24.0, 32.0]
 	else:
-		sizes = [8.0, 16.0, 20.0, 24.0, 32.0]
+		sizes = [16.0, 20.0, 24.0, 30.0]
 
 	for size in sizes:
 		if orientation == 'portrait':		
@@ -113,7 +116,14 @@ for item in newCsv:
 # ------------------------------------------------------------------------------------ filter here
 	smallest = 10000
 	number = ""
-	comparison_sqin = float(item['SqIn'])
+
+	try:
+		comparison_sqin = float(item['SqIn'])
+	except:
+		try:
+			comparison_sqin = float(item['Sq in'])
+		except:
+			print "Please format the square inch field: \"SqIn\""
 
 	for testsize in item_sizes:
 		temp_sqin = float(testsize['SqIn'])
@@ -129,17 +139,19 @@ for item in newCsv:
 	bullet_point3 = "Ships Flat - Ready to Frame - Fits Standard Size Frames"
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = 'Other sizes available - contact Historic Pictoric'
+	keywords = item_name = item['Keywords']
+	part_number = item['Manufacturer#']
 
 # if single, create a parent sku
 	if item['Relationship'] == 'Single':
 		parent_sku = sku + "P"
-		item_type = "photos"
+		item_type = "Photograph"
 		item_name = item['Title']
 		product_description = "<p>" + item['Title'] + "</p>"
 		feed_product_type = "art"
 		brand_name = 'Historic Pictoric'
 		manufacturer = 'Historic Pictoric'
-		part_number =  parent_sku 
+		#part_number =  parent_sku 
 		parent_child = "parent" # leave blank for children
 		item_sku = parent_sku
 		relationship_type = ""
@@ -153,7 +165,6 @@ for item in newCsv:
 		website_shipping_weight = ""
 		website_shipping_weight_unit_of_measure = ""
 		merchant_shipping_group_name = ""
-		keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
 		validated = 'N/A'
 
 		try:
@@ -179,10 +190,13 @@ for item in newCsv:
 		writer.writerow(write_tuple)
 
 	for size in item_sizes:
-		item_type = "photos"
+		item_type = "Photograph"
 		item_name = item['Title']
 		product_description = "<p>" + item['Title'] + "</p>"
 		feed_product_type = "art"
+		item_sku = sku
+		#part_number = sku
+		# item_sku = sku + "_" + part_number_str
 
 		try:
 			item_sizename = item['Size Name']
@@ -199,24 +213,26 @@ for item in newCsv:
 		number2 = str(re.findall(r'\d+', size['SizeName'])[1])
 
 		# format the size names so that they're all alike
-		formatted_sizename = re.sub('[ xin]', '', size['SizeName2'])
-		formatted_comparison = re.sub('[ xin]', '', item_sizename)
-		part_number_str = re.sub('[ xin]', '', size['SizeName'])
+		#formatted_sizename = re.sub('[ xin]', '', size['SizeName2'])
+		#formatted_comparison = re.sub('[ xin]', '', item_sizename)
+		# part_number_str = re.sub('[ xin]', '', size['SizeName'])
 
 		if size['SizeName'] == suggested_sizename:
 			parent_child = "" # leave blank for children
-			part_number = sku
-			item_sku = sku 
+			#part_number = sku
+			#item_sku = sku 
 			validated = True
+			update_delete = "Partial Update"
 		else:
 			parent_child = "" # leave blank for children
-			part_number =  sku + "_" + part_number_str
-			item_sku = sku + "_" + part_number_str
+			#part_number =  sku + "_" + part_number_str
+			#item_sku = sku + "_" + part_number_str
 			validated = False
 		
 		relationship_type = "variation"
 		variation_theme = "size"
-		size_name = size['SizeName']
+		# size_name = size['SizeName']
+		size_name = item_sizename
 		update_delete = ""
 		standard_price = size['Price']
 		quantity = "10"
@@ -243,7 +259,7 @@ for item in newCsv:
 			continue
 
 		# ignore sizes going up from 44 if the option is set
-		if item['Option'] == '<44':
+		if item['Option'] == '<=44':
 			if int(number1) > 44 or int(number2) > 44:
 				continue
 

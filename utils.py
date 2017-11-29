@@ -75,7 +75,7 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 
 	# set the square inches
 	square_inches = height * width
-	if square_inches > 240 and square_inches <= 3200:
+	if square_inches >= 80 and square_inches <= 3200:
 
 		price = calculate_price(square_inches)
 
