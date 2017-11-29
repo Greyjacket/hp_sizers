@@ -48,7 +48,7 @@ for item in newCsv:
 		continue
 
 	try:
-		sku = item['Sku']
+		sku = item['Root']
 	except:
 		try:
 			sku = item['item_sku']
@@ -298,6 +298,8 @@ for item in newCsv:
 			if int(number1) > 44 or int(number2) > 44:
 				continue
 
+		if validated == True:
+			del item_sizes[found_index]
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
