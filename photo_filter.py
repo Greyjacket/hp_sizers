@@ -140,7 +140,7 @@ for item in newCsv:
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = 'Other sizes available - contact Historic Pictoric'
 	keywords = item_name = item['Keywords']
-	part_number = item['Manufacturer#']
+	#part_number = item['Manufacturer#']
 
 # if single, create a parent sku
 	if item['Relationship'] == 'Single':
@@ -151,7 +151,7 @@ for item in newCsv:
 		feed_product_type = "art"
 		brand_name = 'Historic Pictoric'
 		manufacturer = 'Historic Pictoric'
-		#part_number =  parent_sku 
+		part_number =  parent_sku 
 		parent_child = "parent" # leave blank for children
 		item_sku = parent_sku
 		relationship_type = ""
@@ -213,26 +213,28 @@ for item in newCsv:
 		number2 = str(re.findall(r'\d+', size['SizeName'])[1])
 
 		# format the size names so that they're all alike
-		#formatted_sizename = re.sub('[ xin]', '', size['SizeName2'])
-		#formatted_comparison = re.sub('[ xin]', '', item_sizename)
-		# part_number_str = re.sub('[ xin]', '', size['SizeName'])
+		formatted_sizename = re.sub('[ xin]', '', size['SizeName2'])
+		formatted_comparison = re.sub('[ xin]', '', item_sizename)
+		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 
 		if size['SizeName'] == suggested_sizename:
 			parent_child = "" # leave blank for children
-			#part_number = sku
-			#item_sku = sku 
+			part_number = item['Manufacturer#']
+			item_sku =  sku
 			validated = True
 			update_delete = "Partial Update"
+			size_name = item_sizename
 		else:
 			parent_child = "" # leave blank for children
-			#part_number =  sku + "_" + part_number_str
-			#item_sku = sku + "_" + part_number_str
+			part_number =  sku + "_" + part_number_str
+			item_sku = sku + "_" + part_number_str
+			size_name = size['SizeName']
 			validated = False
 		
 		relationship_type = "variation"
 		variation_theme = "size"
 		# size_name = size['SizeName']
-		size_name = item_sizename
+		#size_name = item_sizename
 		update_delete = ""
 		standard_price = size['Price']
 		quantity = "10"
