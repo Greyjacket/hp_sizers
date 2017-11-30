@@ -23,12 +23,12 @@ header_row1 = ('TemplateType=home', 'Version=2014.1119')
 
 header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
 	'Brand Name', 'Manufacturer', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
-	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
+	'Variation Theme', 'Size', 'Actual Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
 	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms')
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer', 'part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
-	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
+	'variation_theme', 'size_name', 'size_name2', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
 	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords')
 
 # initialize csv writer
@@ -97,7 +97,7 @@ for item in newCsv:
 	
 	if ratio_normalized < 1.2:
 		sizes = [16.0, 24.0, 36.0]
-	elif ratio_normalized >= 1.2 and <= 1.3
+	elif ratio_normalized >= 1.2 and ratio_normalized <= 1.3:
 		sizes = [11.0, 16.0, 24.0, 36.0]
 	elif ratio_normalized > 1.3 and ratio_normalized < 1.45:
 		sizes = [16.0, 24.0, 30.0]
@@ -168,7 +168,7 @@ for item in newCsv:
 		website_shipping_weight_unit_of_measure = ""
 		merchant_shipping_group_name = ""
 		validated = 'N/A'
-
+		size_name_actual = ""
 		try:
 			image_name = item['ImageName']
 		except:
@@ -184,7 +184,7 @@ for item in newCsv:
 		main_image_url = "www.historicpictoric.com/media/AMZWebImg/SoldProductsUpdate/" + image_name
 		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
-			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
+			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name, size_name_actual,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
@@ -234,11 +234,9 @@ for item in newCsv:
 			validated = False
 			update_delete = ""
 
-		
+		size_name_actual = size['SizeName']		
 		relationship_type = "variation"
 		variation_theme = "size"
-		# size_name = size['SizeName']
-		#size_name = item_sizename
 		standard_price = size['Price']
 		quantity = "10"
 		product_tax_code = 'a_gen_tax'
@@ -269,7 +267,7 @@ for item in newCsv:
 				continue
 
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
-			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name, size_name_actual,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
