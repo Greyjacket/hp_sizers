@@ -25,12 +25,12 @@ header_row1 = ('TemplateType=home', 'Version=2014.1119')
 header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
 	'Brand Name', 'Manufacturer', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
 	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
-	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms', 'Validated')
+	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms')
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer', 'part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
 	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
-	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords', 'validated')
+	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords')
 
 # initialize csv writer
 writer = csv.writer(newFile)
@@ -48,16 +48,19 @@ for item in newCsv:
 		continue
 
 	try:
-		sku = item['Root']
+		sku = item['item_sku']
 	except:
 		try:
-			sku = item['item_sku']
+			sku = item['SKU']
 		except:
-			try:
-				sku = item['SKU']
-			except:
-				print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
-				continue
+			print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
+			continue
+
+	try:
+		root_part = item['Root']
+	except:
+		print "Please provide a root field."
+		exit()
 
 	try:
 		image_width = float(item['ImageWidth'])
@@ -221,7 +224,7 @@ for item in newCsv:
 			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
 
@@ -254,6 +257,7 @@ for item in newCsv:
 		formatted_comparison = re.sub('[ xin]', '', item_sizename)
 		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 
+		# this is the origin sku 
 		if size['SizeName'] == suggested_sizename:
 			parent_child = "" # leave blank for children
 			part_number = item['Manufacturer#']
@@ -263,7 +267,7 @@ for item in newCsv:
 			size_name = item_sizename
 		else:
 			parent_child = "" # leave blank for children
-			part_number =  sku + "_" + part_number_str
+			part_number =  root_part + "_" + part_number_str
 			item_sku = sku + "_" + part_number_str
 			size_name = size['SizeName']
 			update_delete = ""
@@ -279,18 +283,6 @@ for item in newCsv:
 		website_shipping_weight_unit_of_measure = "lbs"
 		bullet_point5 = item_name
 		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
-
-		try:
-			image_name = item['ImageName']
-		except:
-			try:
-				image_name = item['Image Name']
-			except:
-				try:
-					image_name = item['Image_Name']
-				except:
-					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
-					exit()
 		
 		if item['Option'] == 'Validate Only' and validated == False:
 			continue
@@ -307,7 +299,7 @@ for item in newCsv:
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
 
