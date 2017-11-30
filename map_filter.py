@@ -230,7 +230,11 @@ for item in newCsv:
 		item_type = "prints"
 		product_description = "<p>" + item['Title'] + "</p>"
 		feed_product_type = "art"
-		parent_sku = sku + "P"
+
+		if item['Relationship'] == "variation":
+			parent_sku = item['Root']
+		else:
+			parent_sku = sku + "P"
 
 		try:
 			item_sizename = item['Size Name']
