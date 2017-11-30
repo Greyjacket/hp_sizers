@@ -30,7 +30,7 @@ header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Prod
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer', 'part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
 	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
-	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1', 'validated')
+	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords', 'validated')
 
 # initialize csv writer
 writer = csv.writer(newFile)
@@ -171,6 +171,18 @@ for item in newCsv:
 		index += 1
 
 # ------------------------------------------------------------------------------------ end filter
+	try:
+		image_name = item['ImageName']
+	except:
+		try:
+			image_name = item['Image Name']
+		except:
+			try:
+				image_name = item['Image_Name']
+			except:
+				print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
+				exit()
+	
 	item_name = item['Title']
 	bullet_point1 = "Professionally Printed Vintage Map Reproduction"
 	bullet_point2 = "Giclee Art Print - Printed on High Quality Matte Paper"
@@ -178,16 +190,17 @@ for item in newCsv:
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = item_name
 	keywords = item['Keywords']
-
+	brand_name = 'Historic Pictoric'
+	manufacturer = 'Historic Pictoric'
+	main_image_url = "www.historicpictoric.com/media/AMZWebImg/SoldProductsUpdate/" + image_name
+	item_type = "prints"
+	
 	# if single, create a parent sku
 	if item['Relationship'] == 'Single':
 
 		parent_sku = sku + "P"
-		item_type = "prints"
 		product_description = "<p>" + item['Title'] + "</p>"
 		feed_product_type = "art"
-		brand_name = 'Historic Pictoric'
-		manufacturer = 'Historic Pictoric'
 		part_number =  parent_sku 
 		parent_child = "parent" # leave blank for children
 		item_sku = parent_sku
@@ -203,21 +216,7 @@ for item in newCsv:
 		website_shipping_weight_unit_of_measure = ""
 		merchant_shipping_group_name = ""
 		validated = 'N/A'
-
-		try:
-			image_name = item['ImageName']
-		except:
-			try:
-				image_name = item['Image Name']
-			except:
-				try:
-					image_name = item['Image_Name']
-				except:
-					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
-					exit()
-
-		main_image_url = "www.historicpictoric.com/media/AMZWebImg/SoldProductsUpdate/" + image_name
-		
+	
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
@@ -272,8 +271,6 @@ for item in newCsv:
 		
 		relationship_type = "variation"
 		variation_theme = "size"
-		size_name = size['SizeName']
-
 		standard_price = size['Price']
 		quantity = "10"
 		product_tax_code = 'a_gen_tax'
