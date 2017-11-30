@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import csv, sys, math
+import csv, sys, math, operator, re, os
 from utils import get_aspect_ratio, calculate_price, calculate_photo_dimensions
 
 try:
@@ -8,8 +8,6 @@ except:
 	print "\nPlease input a valid CSV filename.\n"
 	print "Format: python scriptname filename.\n"
 	exit()
-
-sizes = [8.0, 11.0, 16.0, 24.0, 32.0]
 
 newCsv = []
 newFile = open('NewSizes_Photos.csv', 'wb') #wb for windows, else you'll see newlines added to csv
@@ -20,15 +18,16 @@ with open(filename, 'rb') as csvfile:
 	for row in reader:
 		newCsv.append(row)
 
+# initialize csv writer
+writer = csv.writer(newFile)
+
 base_tuple = ('Sku', 'ImageHeight', 'ImageWidth','Ratio', 'AspectRatio')
 
 # set the field names
-for i in range(len(sizes)):
+for i in range(5):
 	i += 1
  	base_tuple = base_tuple + ('Height' + str(i), 'Width' + str(i), 'SqIn' + str(i), 'SizeName' + str(i), 'UniqueSku' + str(i), 'Price' + str(i))
 
-# initialize csv writer
-writer = csv.writer(newFile)
 writer.writerow(base_tuple)
 
 # write the dictionary, do some calculations on the way
@@ -44,8 +43,7 @@ for item in newCsv:
 				sku = item['SKU']
 			except:
 				print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
-				exit()
-
+				sku = item['Title']
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
@@ -77,17 +75,19 @@ for item in newCsv:
 		ratio_normalized = ratio_rounded
 
 	aspect_ratio = ratio_description
-	
+
+	if ratio_normalized < 1.2:
+		sizes = [16.0, 24.0, 36.0]
+	elif ratio_normalized >= 1.2 and ratio_normalized <= 1.3:
+		sizes = [11.0, 16.0, 24.0, 36.0]
+	elif ratio_normalized > 1.3 and ratio_normalized < 1.45:
+		sizes = [16.0, 24.0, 30.0]
+	else:
+		sizes = [11.0, 18.0, 24.0]
+
 	properties_list = []	
 	properties_list.append(str(ratio_rounded))
 	properties_list.append(aspect_ratio)
-
-	if ratio_normalized <= 1.3:
-		sizes = [8.0, 11.0, 16.0, 24.0, 32.0]
-	elif ratio_normalized > 1.3 and ratio_normalized < 1.45:
-		sizes = [11.0, 18.0, 24.0, 32.0]
-	else:
-		sizes = [8.0, 16.0, 20.0, 24.0, 32.0]
 
 	for size in sizes:
 		if orientation == 'portrait':		
@@ -100,7 +100,7 @@ for item in newCsv:
 	
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 
-	write_tuple = (item['Sku'], item['ImageHeight'], item['ImageWidth'])
+	write_tuple = (sku, item['ImageHeight'], item['ImageWidth'])
 
 	for item in item_sizes:
 		properties_list.append(item['Height'])

@@ -266,6 +266,14 @@ for item in newCsv:
 			validated = True
 			update_delete = "PartialUpdate"
 			size_name = item_sizename
+
+		else if item['Relationship'] == "variation":
+			parent_child = "" # leave blank for children
+			part_number =  root_part + "_" + part_number_str
+			item_sku = root_part + "_" + part_number_str
+			size_name = size['SizeName']
+			update_delete = ""
+			validated = False
 		else:
 			parent_child = "" # leave blank for children
 			part_number =  root_part + "_" + part_number_str
@@ -273,7 +281,7 @@ for item in newCsv:
 			size_name = size['SizeName']
 			update_delete = ""
 			validated = False
-			
+
 		size_name_actual = size['SizeName']
 		relationship_type = "variation"
 		variation_theme = "size"
