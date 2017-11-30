@@ -202,7 +202,6 @@ for item in newCsv:
 		website_shipping_weight = ""
 		website_shipping_weight_unit_of_measure = ""
 		merchant_shipping_group_name = ""
-		keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
 		validated = 'N/A'
 
 		try:
@@ -266,7 +265,6 @@ for item in newCsv:
 			update_delete = ""
 			validated = False
 		
-		print size['SizeName']		
 		relationship_type = "variation"
 		variation_theme = "size"
 		size_name = size['SizeName']
