@@ -177,7 +177,7 @@ for item in newCsv:
 	bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = item_name
-	keywords = item_name = item['Keywords']
+	keywords = item['Keywords']
 
 	# if single, create a parent sku
 	if item['Relationship'] == 'Single':
