@@ -26,8 +26,17 @@ def process_size(size2):
 	return size2
 
 def process_photo_size(size, ratio):
+	
+	if ratio < 1.2:
+		if size == 16.0:
+			size2 = 16.0
+		elif size == 24.0:
+			size2 = 24.0
+		else: 
+			size2 = 36.0
+		
 
-	if ratio <= 1.3:
+	if ratio >= 1.2 and ratio <= 1.3:
 		if size == 8.0:
 			size2 = 10.0
 		elif size == 11.0:
