@@ -177,6 +177,7 @@ for item in newCsv:
 	bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = item_name
+	keywords = item_name = item['Keywords']
 
 	# if single, create a parent sku
 	if item['Relationship'] == 'Single':
@@ -265,6 +266,7 @@ for item in newCsv:
 			update_delete = ""
 			validated = False
 		
+		print size['SizeName']		
 		relationship_type = "variation"
 		variation_theme = "size"
 		size_name = size['SizeName']
@@ -299,7 +301,8 @@ for item in newCsv:
 				continue
 
 		if validated == True:
-			del item_sizes[found_index]
+			pass#del item_sizes[found_index]
+		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
