@@ -267,7 +267,7 @@ for item in newCsv:
 			update_delete = "PartialUpdate"
 			size_name = item_sizename
 
-		else if item['Relationship'] == "variation":
+		elif item['Relationship'] == "variation":
 			parent_child = "" # leave blank for children
 			part_number =  root_part + "_" + part_number_str
 			item_sku = root_part + "_" + part_number_str

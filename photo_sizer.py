@@ -42,7 +42,7 @@ for item in newCsv:
 			try:
 				sku = item['SKU']
 			except:
-				print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
+				#print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
 				sku = item['Title']
 	try:
 		image_width = float(item['ImageWidth'])
@@ -76,14 +76,16 @@ for item in newCsv:
 
 	aspect_ratio = ratio_description
 
-	if ratio_normalized < 1.2:
+	if ratio_rounded < 1.2:
 		sizes = [16.0, 24.0, 36.0]
-	elif ratio_normalized >= 1.2 and ratio_normalized <= 1.3:
+	elif ratio_rounded >= 1.2 and ratio_rounded <= 1.3:
 		sizes = [11.0, 16.0, 24.0, 36.0]
-	elif ratio_normalized > 1.3 and ratio_normalized < 1.45:
-		sizes = [16.0, 24.0, 30.0]
-	else:
+	elif ratio_rounded > 1.3 and ratio_rounded <= 1.45:
 		sizes = [11.0, 18.0, 24.0]
+	elif ratio_rounded > 1.45 and ratio_rounded <= 1.9:
+		sizes = [8.0, 16.0, 24.0, 30]
+	else:
+		sizes = [16.0, 24.0, 36.0]
 
 	properties_list = []	
 	properties_list.append(str(ratio_rounded))
@@ -91,9 +93,9 @@ for item in newCsv:
 
 	for size in sizes:
 		if orientation == 'portrait':		
-			item_size = calculate_photo_dimensions(size, 'portrait', ratio_normalized, sku)
+			item_size = calculate_photo_dimensions(size, 'portrait', ratio_rounded, sku)
 		else:
-			item_size = calculate_photo_dimensions(size, 'landscape',ratio_normalized, sku)
+			item_size = calculate_photo_dimensions(size, 'landscape',ratio_rounded, sku)
 
 		if item_size:		
 				item_sizes.append(item_size)

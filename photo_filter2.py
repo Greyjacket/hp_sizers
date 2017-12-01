@@ -55,6 +55,12 @@ for item in newCsv:
 			except:
 				print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
 				exit()
+	
+	try:
+		root_part = item['Root']
+	except:
+		print "Please provide a root field."
+		exit()
 
 	try:
 		image_width = float(item['ImageWidth'])
@@ -95,20 +101,22 @@ for item in newCsv:
 
 	aspect_ratio = ratio_description
 	
-	if ratio_normalized < 1.2:
+	if ratio_rounded < 1.2:
 		sizes = [16.0, 24.0, 36.0]
-	elif ratio_normalized >= 1.2 and ratio_normalized <= 1.3:
+	elif ratio_rounded >= 1.2 and ratio_rounded <= 1.3:
 		sizes = [11.0, 16.0, 24.0, 36.0]
-	elif ratio_normalized > 1.3 and ratio_normalized < 1.45:
-		sizes = [16.0, 24.0, 30.0]
-	else:
+	elif ratio_rounded > 1.3 and ratio_rounded <= 1.45:
 		sizes = [11.0, 18.0, 24.0]
+	elif ratio_rounded > 1.45 and ratio_rounded <= 1.9:
+		sizes = [8.0, 16.0, 24.0, 30]
+	else:
+		sizes = [16.0, 24.0, 36.0]
 
 	for size in sizes:
 		if orientation == 'portrait':		
-			item_size = calculate_photo_dimensions(size, 'portrait', ratio_normalized, sku)
+			item_size = calculate_photo_dimensions(size, 'portrait', ratio_rounded, sku)
 		else:
-			item_size = calculate_photo_dimensions(size, 'landscape',ratio_normalized, sku)
+			item_size = calculate_photo_dimensions(size, 'landscape',ratio_rounded, sku)
 
 		if item_size:		
 				item_sizes.append(item_size)
@@ -135,6 +143,17 @@ for item in newCsv:
 			suggested_sizename = testsize['SizeName']
 
 # ------------------------------------------------------------------------------------ end filter
+	try:
+		image_name = item['ImageName']
+	except:
+		try:
+			image_name = item['Image Name']
+		except:
+			try:
+				image_name = item['Image_Name']
+			except:
+				print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
+				exit()
 
 	bullet_point1 = "Frame Ready - Professionally Restored Photograph"
 	bullet_point2 = "High Quality Giclee Art Print - Printed on Museum Quality Luster PhotoPaper"
@@ -142,17 +161,28 @@ for item in newCsv:
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = ""
 	keywords = item_name = item['Keywords']
-	#part_number = item['Manufacturer#']
+	brand_name = 'Historic Pictoric'
+	manufacturer = 'Historic Pictoric'
+	main_image_url = "www.historicpictoric.com/media/AMZWebImg/SoldProductsUpdate/" + image_name
+	feed_product_type = "art"
+	item_type = "Photograph"
+	item_name = item['Title']
+	
+	try:
+		item_sizename = item['Size Name']
+	except:
+		try:
+			item_sizename = item['SizeName']
+		except:
+			try:
+				item_sizename = item['Size_Name']
+			except:
+				print "Please format the SizeName field of your input: SizeName, Size Name, or Size_Name"
 
 # if single, create a parent sku
 	if item['Relationship'] == 'Single':
 		parent_sku = sku + "P"
-		item_type = "Photograph"
-		item_name = item['Title']
-		product_description = "<p>" + item['Title'] + "</p>"
-		feed_product_type = "art"
-		brand_name = 'Historic Pictoric'
-		manufacturer = 'Historic Pictoric'
+		product_description = "<p>" + item_name + "</p>"
 		part_number =  parent_sku 
 		parent_child = "parent" # leave blank for children
 		item_sku = parent_sku
@@ -169,47 +199,18 @@ for item in newCsv:
 		merchant_shipping_group_name = ""
 		validated = 'N/A'
 		size_name_actual = ""
-		try:
-			image_name = item['ImageName']
-		except:
-			try:
-				image_name = item['Image Name']
-			except:
-				try:
-					image_name = item['Image_Name']
-				except:
-					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
-					exit()
-
-		main_image_url = "www.historicpictoric.com/media/AMZWebImg/SoldProductsUpdate/" + image_name
 		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name, size_name_actual,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
 
 	for size in item_sizes:
-		item_type = "Photograph"
-		item_name = item['Title']
-		product_description = "<p>" + item['Title'] + "</p>"
-		feed_product_type = "art"
+		product_description = "<p>" + item_name + "</p>"
 		item_sku = sku
-		#part_number = sku
-		# item_sku = sku + "_" + part_number_str
-
-		try:
-			item_sizename = item['Size Name']
-		except:
-			try:
-				item_sizename = item['SizeName']
-			except:
-				try:
-					item_sizename = item['Size_Name']
-				except:
-					print "Please format the SizeName field of your input: SizeName, Size Name, or Size_Name"
 
 		number1 = str(re.findall(r'\d+', size['SizeName'])[0])
 		number2 = str(re.findall(r'\d+', size['SizeName'])[1])
@@ -219,6 +220,7 @@ for item in newCsv:
 		formatted_comparison = re.sub('[ xin]', '', item_sizename)
 		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 
+		# this is the origin sku 
 		if size['SizeName'] == suggested_sizename:
 			parent_child = "" # leave blank for children
 			part_number = item['Manufacturer#']
@@ -226,13 +228,21 @@ for item in newCsv:
 			validated = True
 			update_delete = "PartialUpdate"
 			size_name = item_sizename
-		else:
-			parent_child = "" # leve blank for children
-			part_number =  sku + "_" + part_number_str
-			item_sku = sku + "_" + part_number_str
+
+		elif item['Relationship'] == "variation":
+			parent_child = "" # leave blank for children
+			part_number =  root_part + "_" + part_number_str
+			item_sku = root_part + "_" + part_number_str
 			size_name = size['SizeName']
-			validated = False
 			update_delete = ""
+			validated = False
+		else:
+			parent_child = "" # leave blank for children
+			part_number =  root_part + "_" + part_number_str
+			item_sku = root_part + "_" + part_number_str
+			size_name = size['SizeName']
+			update_delete = ""
+			validated = False
 
 		size_name_actual = size['SizeName']		
 		relationship_type = "variation"
@@ -270,7 +280,7 @@ for item in newCsv:
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name, size_name_actual,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, validated)
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
 

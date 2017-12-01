@@ -33,9 +33,9 @@ def process_photo_size(size, ratio):
 		elif size == 24.0:
 			size2 = 24.0
 		else: 
-			size2 = 36.0		
+			size2 = 36.0
 
-	if ratio >= 1.2 and ratio <= 1.3:
+	elif ratio >= 1.2 and ratio <= 1.3:
 		if size == 8.0:
 			size2 = 10.0
 		elif size == 11.0:
@@ -46,22 +46,29 @@ def process_photo_size(size, ratio):
 			size2 = 30.0
 		else:
 			size2 = 44.0
-	elif ratio > 1.3 and ratio < 1.45:
-		if size == 16.0:
+	elif ratio > 1.3 and ratio <= 1.45:
+		if size == 11.0:
+			size2 = 14.0
+		elif size == 18.0:
 			size2 = 24.0
-		elif size == 20.0:
-			size2 = 30.0
+		else:
+			size2 = 32.0
+	elif ratio > 1.45 and ratio <= 1.9:
+		if size == 8.0:
+			size2 = 12.0
+		elif size == 16.0:
+			size2 = 24.0
 		elif size == 24.0:
 			size2 = 36.0
 		else:
 			size2 = 44.0
 	else:
-		if size == 11.0:
-			size2 = 14.0
-		elif size == 18.0:
-			size2 = 24.0
+		if size == 16.0:
+			size2 = 32.0
+		elif size == 24.0:
+			size2 = 48.0
 		else: 
-			size2 = 32.0		
+			size2 = 72.0		
 
 	return size2
 
@@ -69,16 +76,17 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 	item_size = {}
 
 	if orientation == 'portrait':
-			size2 = process_photo_size(size, ratio)
-			height = size2
-			width = size
+		size2 = process_photo_size(size, ratio)
+		height = size2
+		width = size
 	else:
-			size2 = process_photo_size(size, ratio)
-			height = size
-			width = size2
+		size2 = process_photo_size(size, ratio)
+		height = size
+		width = size2
 
 	# set the square inches
 	square_inches = height * width
+
 	if square_inches >= 80 and square_inches <= 3200:
 
 		price = calculate_price(square_inches)
@@ -206,8 +214,6 @@ def get_aspect_ratio(ratio):
 		return ("6:5", 1.2)
 	elif ratio > 1.2 and ratio <= 1.3:
 		return ("5:4", 1.25)
-	#elif ratio > 1.26 and ratio <= 1.28:
-	#	return ("11R", 1.27)
 	elif ratio > 1.3 and ratio <= 1.365:
 		return ("4:3", 1.33)
 	elif ratio > 1.365 and ratio <= 1.4:
