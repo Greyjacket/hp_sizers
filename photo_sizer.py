@@ -18,17 +18,25 @@ with open(filename, 'rb') as csvfile:
 	for row in reader:
 		newCsv.append(row)
 
+header_row1 = ('TemplateType=home', 'Version=2014.1119')
+
+header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
+	'Brand Name', 'Manufacturer', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
+	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
+	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template')
+
+header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
+	'brand_name', 'manufacturer','part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
+	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
+	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name')
+
 # initialize csv writer
 writer = csv.writer(newFile)
 
-base_tuple = ('Sku', 'ImageHeight', 'ImageWidth','Ratio', 'AspectRatio')
-
-# set the field names
-for i in range(5):
-	i += 1
- 	base_tuple = base_tuple + ('Height' + str(i), 'Width' + str(i), 'SqIn' + str(i), 'SizeName' + str(i), 'UniqueSku' + str(i), 'Price' + str(i))
-
-writer.writerow(base_tuple)
+# write the amazon headers
+writer.writerow(header_row1)
+writer.writerow(header_row2)
+writer.writerow(header_row3)
 
 # write the dictionary, do some calculations on the way
 for item in newCsv:
@@ -87,10 +95,6 @@ for item in newCsv:
 	else:
 		sizes = [16.0, 24.0, 36.0]
 
-	properties_list = []	
-	properties_list.append(str(ratio_rounded))
-	properties_list.append(aspect_ratio)
-
 	for size in sizes:
 		if orientation == 'portrait':		
 			item_size = calculate_photo_dimensions(size, 'portrait', ratio_rounded, sku)
@@ -102,20 +106,93 @@ for item in newCsv:
 	
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 
-	write_tuple = (sku, item['ImageHeight'], item['ImageWidth'])
+	try:
+		image_name = item['ImageName']
+	except:
+		try:
+			image_name = item['Image Name']
+		except:
+			try:
+				image_name = item['Image_Name']
+			except:
+				print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
+				exit()
 
-	for item in item_sizes:
-		properties_list.append(item['Height'])
-		properties_list.append(item['Width'])
-		properties_list.append(str(item['SqIn']))
-		properties_list.append(item['SizeName'])
-		properties_list.append(item['UniqueSku'])
-		properties_list.append(str(item['Price']))
+	bullet_point1 = "Frame Ready - Professionally Restored Photograph"
+	bullet_point2 = "High Quality Giclee Art Print - Printed on Museum Quality Luster PhotoPaper"
+	bullet_point3 = "Ships Flat - Ready to Frame - Fits Standard Size Frames"
+	bullet_point4 = "100% Satisfaction Guaranteed"
+	bullet_point5 = ""
+	brand_name = 'Historic Pictoric'
+	manufacturer = 'Historic Pictoric'
+	keywords = item['Generic Keywords']
+	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
+	feed_product_type = "art"
+	item_name = item['Item Name']
+	product_description = "<p>" + item['product_description'] + "</p>"
+	variation_theme = "size"
 
-	write_tuple = (sku, image_height, image_width)
+	#-------------------------- Generate Parent
 
-	for item in properties_list:
-		write_tuple = write_tuple + (item,)
+	parent_sku = sku + "P"
+	item_type = "prints"	
+	part_number =  parent_sku 
+	parent_child = "parent" # leave blank for children
+	item_sku = parent_sku
+	relationship_type = ""
+	size_name = ""
+	update_delete = ""
+	standard_price = ""
+	quantity = ""
+	product_tax_code = ""
+	item_package_quantity = ""
+	website_shipping_weight = ""
+	website_shipping_weight_unit_of_measure = ""
+	merchant_shipping_group_name = ""
+	
+	write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
+		part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
+		update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
+		website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
+		bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 	writer.writerow(write_tuple)
 
+	for size in item_sizes:
+		part_number_str = re.sub('[ xin]', '', size['SizeName'])
+		part_number =  sku + "_" + part_number_str
+		parent_child = "" # leave blank for children
+		item_sku = part_number
+		relationship_type = "variation"
+		size_name = size['SizeName']
+		update_delete = ""
+		standard_price = size['Price']
+		quantity = "10"
+		product_tax_code = 'a_gen_tax'
+		item_package_quantity = "1"
+		website_shipping_weight = "1"
+		website_shipping_weight_unit_of_measure = "lbs"
+		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
+
+		try:
+			image_name = item['ImageName']
+		except:
+			try:
+				image_name = item['Image Name']
+			except:
+				try:
+					image_name = item['Image_Name']
+				except:
+					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
+					exit()
+
+		main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
+		
+		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
+			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
+			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
+
+		writer.writerow(write_tuple)
+newFile.close()
