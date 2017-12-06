@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import csv, sys, math, operator, re, os
-from utils import get_aspect_ratio, calculate_price, calculate_photo_dimensions
+from utils import photo_sizer
 
 try:
 	filename = sys.argv[1]
@@ -10,7 +10,8 @@ except:
 	exit()
 
 newCsv = []
-newFile = open('NewSizes_Photos.csv', 'wb') #wb for windows, else you'll see newlines added to csv
+output = 'photo_print_amazon_sizes.csv'
+newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
 
 # open the file from console arguments
 with open(filename, 'rb') as csvfile:
@@ -50,61 +51,21 @@ for item in newCsv:
 			try:
 				sku = item['SKU']
 			except:
-				#print "Please format the CSV file with a Sku field. Try \"Sku\" or \"item sku\""
 				sku = item['Title']
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
-		print "ERROR: Image Width not formatted"
-		exit()
+		print "Warning: Image Width not formatted in SKU: " + sku
+		continue
 	try:
 		image_height = float(item['ImageHeight'])
 	except:
-		print "ERROR: Image Height not formatted"
-		exit()
+		print "Warning: Image Height not formatted in SKU: " + sku
+		continue
 
-	item_sizes = []
+	item_sizes = photo_sizer(image_height, image_width, sku)
 
-	if image_height > image_width:
-		ratio_raw = round((image_height/image_width), 2) 
-		orientation = 'portrait'
-	else:
-		ratio_raw = round((image_width/image_height), 2) 
-		orientation = 'landscape'
-
-	ratio_info  = get_aspect_ratio(ratio_raw)
-	ratio_description = ratio_info[0]
-	ratio_rounded = ratio_info[1]
-	aspect_ratio = ratio_description
-
-	if orientation == 'landscape':
-		ratio_normalized = 1.0/ratio_rounded
-	else:
-		ratio_normalized = ratio_rounded
-
-	aspect_ratio = ratio_description
-
-	if ratio_rounded < 1.2:
-		sizes = [16.0, 24.0, 36.0]
-	elif ratio_rounded >= 1.2 and ratio_rounded <= 1.3:
-		sizes = [11.0, 16.0, 24.0, 36.0]
-	elif ratio_rounded > 1.3 and ratio_rounded <= 1.45:
-		sizes = [11.0, 18.0, 24.0]
-	elif ratio_rounded > 1.45 and ratio_rounded <= 1.9:
-		sizes = [8.0, 16.0, 24.0, 30]
-	else:
-		sizes = [16.0, 24.0, 36.0]
-
-	for size in sizes:
-		if orientation == 'portrait':		
-			item_size = calculate_photo_dimensions(size, 'portrait', ratio_rounded, sku)
-		else:
-			item_size = calculate_photo_dimensions(size, 'landscape',ratio_rounded, sku)
-
-		if item_size:		
-				item_sizes.append(item_size)
-	
-	item_sizes.sort(key=operator.itemgetter('SqIn'))
+	#-------------------------- General Fields Here
 
 	try:
 		image_name = item['ImageName']
@@ -115,33 +76,59 @@ for item in newCsv:
 			try:
 				image_name = item['Image_Name']
 			except:
-				print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
-				exit()
+				print "Warning: Image Name not formatted in SKU: " + sku
+				continue
 
-	bullet_point1 = "Frame Ready - Professionally Restored Photograph"
-	bullet_point2 = "High Quality Giclee Art Print - Printed on Museum Quality Luster PhotoPaper"
-	bullet_point3 = "Ships Flat - Ready to Frame - Fits Standard Size Frames"
-	bullet_point4 = "100% Satisfaction Guaranteed"
-	bullet_point5 = ""
+	if len(item['product_description']) > 200:
+		print "Warning: Product description character count in SKU: " + sku + " exceeds 200 characters."
+	try:
+		kind = item['kind']
+	except:
+		try:
+			kind = item['Kind']
+		except:
+			print "Error: Format the input to include an item kind: Photos or Prints."
+			exit()
+
+	if kind == "Photograph":
+		bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
+		bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
+		bullet_point3 = "Perfect for the home or office; makes a great gift"
+		bullet_point4 = "100% Satisfaction Guaranteed"
+		try:
+			bullet_point5 = item['Title']
+		except:
+			bullet_point5 = ""
+	else:
+		bullet_point1 = "Giclee Art Print - Printed on High Quality Archival Matte Paper"
+		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
+		bullet_point3 = "Perfect for the home or office; makes a great gift"
+		bullet_point4 = "100% Satisfaction Guaranteed"
+		try:
+			bullet_point5 = item['Title']
+		except:
+			bullet_point5 = ""	
+	
+	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
+
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	keywords = item['Generic Keywords']
-	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
 	feed_product_type = "art"
 	item_name = item['Item Name']
 	product_description = "<p>" + item['product_description'] + "</p>"
 	variation_theme = "size"
+	item_type = "prints"
+	update_delete = ""
 
 	#-------------------------- Generate Parent
 
-	parent_sku = sku + "P"
-	item_type = "prints"	
+	parent_sku = sku + "P"	
 	part_number =  parent_sku 
-	parent_child = "parent" # leave blank for children
+	parent_child = "parent" 
 	item_sku = parent_sku
 	relationship_type = ""
 	size_name = ""
-	update_delete = ""
 	standard_price = ""
 	quantity = ""
 	product_tax_code = ""
@@ -158,6 +145,8 @@ for item in newCsv:
 
 	writer.writerow(write_tuple)
 
+	#-------------------------- Generate Variations
+
 	for size in item_sizes:
 		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 		part_number =  sku + "_" + part_number_str
@@ -165,7 +154,6 @@ for item in newCsv:
 		item_sku = part_number
 		relationship_type = "variation"
 		size_name = size['SizeName']
-		update_delete = ""
 		standard_price = size['Price']
 		quantity = "10"
 		product_tax_code = 'a_gen_tax'
@@ -173,20 +161,6 @@ for item in newCsv:
 		website_shipping_weight = "1"
 		website_shipping_weight_unit_of_measure = "lbs"
 		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
-
-		try:
-			image_name = item['ImageName']
-		except:
-			try:
-				image_name = item['Image Name']
-			except:
-				try:
-					image_name = item['Image_Name']
-				except:
-					print "Please format the ImageName field: ImageName. Image Name, or Image_Name."
-					exit()
-
-		main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
 		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
@@ -195,4 +169,6 @@ for item in newCsv:
 			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
+
+print "File written to " + output
 newFile.close()

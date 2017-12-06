@@ -1,29 +1,4 @@
-import math
-
-def process_size(size2):
-	# this function returns of tuple containing the fractional and integral part of the real number
-	size2_split = math.modf(size2)
-	decimal_part = size2_split[0]
-		
-	# round up from .3
-	if decimal_part >= .3:
-		size2 = math.ceil(size2)
-	else:
-		size2 = math.floor(size2)
-
-	if size2 >= 15.0 and size2 < 16.0:
-		size2 = 16.0
-	if size2 >= 17.0 and size2 < 18.0:
-		size2 = 16.0
-	if size2 >= 19.0 and size2 < 20.0:
-		size2 = 18.0
-
-	if size2 >= 37.0 and size2 <= 38.0:
-		size2 = 36.0
-	if size2 >= 35.0 and size2 <= 37.0:
-		size = 36.0
-
-	return size2
+import math, operator
 
 def process_photo_size(size, ratio):
 	
@@ -71,6 +46,54 @@ def process_photo_size(size, ratio):
 			size2 = 72.0		
 
 	return size2
+
+def photo_sizer(image_height, image_width, sku):
+
+	item_sizes = []
+
+	if image_height > image_width:
+		ratio_raw = round((image_height/image_width), 2) 
+		orientation = 'portrait'
+	else:
+		ratio_raw = round((image_width/image_height), 2) 
+		orientation = 'landscape'
+
+	ratio_info  = get_aspect_ratio(ratio_raw)
+	ratio_description = ratio_info[0]
+	ratio_rounded = ratio_info[1]
+	aspect_ratio = ratio_description
+
+	if orientation == 'landscape':
+		ratio_normalized = 1.0/ratio_rounded
+	else:
+		ratio_normalized = ratio_rounded
+
+	aspect_ratio = ratio_description
+
+	if ratio_rounded < 1.2:
+		sizes = [16.0, 24.0, 36.0]
+	# for photos, 4:3 and 5:4 are sized the same
+	elif ratio_rounded >= 1.2 and ratio_rounded <= 1.45:
+		sizes = [11.0, 16.0, 24.0, 36.0]
+	#elif ratio_rounded > 1.3 and ratio_rounded <= 1.45:
+	#	sizes = [11.0, 18.0, 24.0] 
+	elif ratio_rounded > 1.45 and ratio_rounded <= 1.9:
+		sizes = [8.0, 16.0, 24.0, 30]
+	else:
+		sizes = [16.0, 24.0, 36.0]
+
+	for size in sizes:
+		if orientation == 'portrait':		
+			item_size = calculate_photo_dimensions(size, 'portrait', ratio_rounded, sku)
+		else:
+			item_size = calculate_photo_dimensions(size, 'landscape',ratio_rounded, sku)
+
+		if item_size:		
+			item_sizes.append(item_size)
+	
+	item_sizes.sort(key=operator.itemgetter('SqIn'))
+
+	return item_sizes
 
 def calculate_photo_dimensions(size, orientation, ratio, sku):
 	item_size = {}
@@ -128,6 +151,31 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 		item_size['Ratio'] = ratio
 
 		return item_size	
+
+def process_size(size2):
+	# this function returns of tuple containing the fractional and integral part of the real number
+	size2_split = math.modf(size2)
+	decimal_part = size2_split[0]
+		
+	# round up from .3
+	if decimal_part >= .3:
+		size2 = math.ceil(size2)
+	else:
+		size2 = math.floor(size2)
+
+	if size2 >= 15.0 and size2 < 16.0:
+		size2 = 16.0
+	if size2 >= 17.0 and size2 < 18.0:
+		size2 = 16.0
+	if size2 >= 19.0 and size2 < 20.0:
+		size2 = 18.0
+
+	if size2 >= 37.0 and size2 <= 38.0:
+		size2 = 36.0
+	if size2 >= 35.0 and size2 <= 37.0:
+		size = 36.0
+
+	return size2
 
 def calculate_dimensions(size, orientation, ratio, sku):
 	item_size = {}
