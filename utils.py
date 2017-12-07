@@ -173,8 +173,11 @@ def process_size(size2):
 	if size2 >= 37.0 and size2 <= 38.0:
 		size2 = 36.0
 	if size2 >= 35.0 and size2 <= 37.0:
-		size = 36.0
-
+		size2 = 36.0
+	if size2 >= 29.0 and size2 < 30.0:
+		size2 = 30.0
+	if size2 >= 31.0 and size2 < 32.0:
+		size2 = 32.0
 	return size2
 
 def calculate_dimensions(size, orientation, ratio, sku):
