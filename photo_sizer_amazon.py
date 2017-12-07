@@ -93,7 +93,7 @@ for item in newCsv:
 	if kind == "Photograph":
 		bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
-		bullet_point3 = "Perfect for the home or office; makes a great gift"
+		bullet_point3 = "Perfect for the home or office - makes a great gift"
 		bullet_point4 = "100% Satisfaction Guaranteed"
 		try:
 			bullet_point5 = item['Title']
@@ -102,7 +102,7 @@ for item in newCsv:
 	else:
 		bullet_point1 = "Giclee Art Print - Printed on High Quality Archival Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
-		bullet_point3 = "Perfect for the home or office; makes a great gift"
+		bullet_point3 = "Perfect for the home or office - makes a great gift"
 		bullet_point4 = "100% Satisfaction Guaranteed"
 		try:
 			bullet_point5 = item['Title']
