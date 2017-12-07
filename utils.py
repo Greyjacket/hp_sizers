@@ -75,8 +75,6 @@ def photo_sizer(image_height, image_width, sku):
 	# for photos, 4:3 and 5:4 are sized the same
 	elif ratio_rounded >= 1.2 and ratio_rounded <= 1.45:
 		sizes = [11.0, 16.0, 24.0, 36.0]
-	#elif ratio_rounded > 1.3 and ratio_rounded <= 1.45:
-	#	sizes = [11.0, 18.0, 24.0] 
 	elif ratio_rounded > 1.45 and ratio_rounded <= 1.9:
 		sizes = [8.0, 16.0, 24.0, 30]
 	else:
@@ -138,8 +136,8 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 		unique_sku = sku + "_" + unique
 
 		# create the size name
-		size_name = width_int_str + "in" + " x " + height_int_str + "in"
-		size_name2 = height_int_str + "in" + " x " + width_int_str + "in"
+		size_name = unique1 + "in" + " x " + unique2 + "in"
+		size_name2 = unique1 + "in" + " x " + unique2 + "in"
 
 		item_size['Height'] = height_str
 		item_size['Width'] = width_str
@@ -233,7 +231,6 @@ def calculate_dimensions(size, orientation, ratio, sku):
 			unique1 = "0" + int_str1
 		if len(height_int_str) < 2:
 			unique2 = "0" + int_str2
-
 		# create the unique sku
 		unique = unique1 + unique2
 		unique_sku = sku + "_" + unique

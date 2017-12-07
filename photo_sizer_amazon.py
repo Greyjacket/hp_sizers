@@ -78,9 +78,16 @@ for item in newCsv:
 			except:
 				print "Warning: Image Name not formatted in SKU: " + sku
 				continue
+	try:
+		item_name = item['Title']
+	except:
+		try: 
+			item_name = item['Item Name']
+		except:
+			print "Please format the input with a Title/ItemName Field"
 
-	if len(item['product_description']) > 200:
-		print "Warning: Product description character count in SKU: " + sku + " exceeds 200 characters."
+	if len(item_name) > 200:
+		print "Warning: Title character count in SKU: " + sku + " exceeds 200 characters."
 	try:
 		kind = item['kind']
 	except:
