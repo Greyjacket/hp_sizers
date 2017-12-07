@@ -127,9 +127,9 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 
 		# pad a single digit with a zero if need be
 		if len(width_int_str) < 2:
-			unique1 = "0" + int_str1
+			unique1 = "0" + width_int_str
 		if len(height_int_str) < 2:
-			unique2 = "0" + int_str2
+			unique2 = "0" + height_int_str
 
 		# create the unique sku
 		unique = unique1 + unique2
@@ -137,7 +137,7 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 
 		# create the size name
 		size_name = unique1 + "in" + " x " + unique2 + "in"
-		size_name2 = unique1 + "in" + " x " + unique2 + "in"
+		size_name2 = unique2 + "in" + " x " + unique1 + "in"
 
 		item_size['Height'] = height_str
 		item_size['Width'] = width_str
