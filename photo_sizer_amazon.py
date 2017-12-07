@@ -116,7 +116,7 @@ for item in newCsv:
 	keywords = item['Generic Keywords']
 	feed_product_type = "art"
 	item_name = item['Item Name']
-	product_description = "<p>" + item['product_description'] + "</p>"
+	product_description = item['product_description'] 
 	variation_theme = "size"
 	item_type = "prints"
 	update_delete = ""
