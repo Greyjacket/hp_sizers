@@ -135,6 +135,7 @@ for item in newCsv:
 	
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 
+
 	parent_sku = sku + "P"
 
 	item_type = "prints"
@@ -163,7 +164,7 @@ for item in newCsv:
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = ""
 	merchant_shipping_group_name = ""
-	keywords = 'relief contour aerial geographic earth geology geopolitics topography physiography topology chorography geopolitical physiographics photograph photographic survey mapping photomapping aerophotogrammetric phototopographic aeroplane airborne aerosurveying photogrammetric reconnaissance geological aerophotography aerophototopography aerography aerology climatology hydrostatics kinetics meteorology'
+	keywords = item['Generic Keywords']
 
 	try:
 		image_name = item['ImageName']
