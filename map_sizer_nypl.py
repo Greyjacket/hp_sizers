@@ -2,6 +2,7 @@
 import csv, sys, math, operator, re, os
 from utils import get_aspect_ratio, calculate_price, calculate_dimensions
 
+
 try:
 	filename = sys.argv[1]
 except:
@@ -9,6 +10,7 @@ except:
 	print "Format: python scriptname filename operation.\n"
 	exit()
 
+#filename = './CSVs/nypl_sample.csv'
 write_filename = 'NYPL.csv'
 
 newCsv = []
@@ -194,7 +196,7 @@ for item in newCsv:
 		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 		part_number =  sku + "_" + part_number_str
 		parent_child = "" # leave blank for children
-		item_sku = sku + "_" + size['SizeName']
+		item_sku = sku + "_" + part_number_str
 		relationship_type = "variation"
 		variation_theme = "size"
 		size_name = size['SizeName']
