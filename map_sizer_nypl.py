@@ -164,7 +164,7 @@ for item in newCsv:
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = item_name
 	merchant_shipping_group_name = ""
-	keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
+	keywords = item['Generic Keywords']
 	
 	try:
 		image_name = item['ImageName']
