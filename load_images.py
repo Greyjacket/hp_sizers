@@ -40,8 +40,8 @@ for item in newCsv:
 	    c.execute("INSERT INTO {tn} VALUES ({value1} , {value2}, {value3}, {value4})".\
         format(tn=table_name1, value1=image_sku, value2=image_width, value3=image_height, value4=image_name))
         '''
-        query = "INSERT INTO Images VALUES (?,?,?,?);"
-       	c.execute(query, (image_sku,image_width,image_height,image_name,))
+
+       	c.execute("""INSERT INTO Images VALUES (?,?,?,?)""", (image_sku,image_width,image_height,image_name,))
 
 	except sqlite3.IntegrityError:
 	    print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))

@@ -2,7 +2,6 @@
 import csv, sys, math, operator, re, os
 from utils import get_aspect_ratio, calculate_price, calculate_dimensions
 
-
 try:
 	filename = sys.argv[1]
 except:
