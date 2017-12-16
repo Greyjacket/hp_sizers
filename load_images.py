@@ -32,16 +32,13 @@ for item in newCsv:
 	image_height = item["ImageHeight"]
 	image_name = item['ImageName']
 	image_sku = item['Sku']
-
-	# collection_name = item["Collection"]
+	collection = "blah"
+	url = "todo"
 
 	try:
-		'''
-	    c.execute("INSERT INTO {tn} VALUES ({value1} , {value2}, {value3}, {value4})".\
-        format(tn=table_name1, value1=image_sku, value2=image_width, value3=image_height, value4=image_name))
-        '''
-
-       	c.execute("""INSERT INTO Images VALUES (?,?,?,?)""", (image_sku,image_width,image_height,image_name,))
+		format_str = """INSERT INTO Images (Sku, ImageName, ImageURL, ImageHeight, ImageWidth, Collection) VALUES ("{Sku}", "{ImageName}", "{ImageURL}", "{ImageHeight}", "{ImageWidth}", "{Collection}");"""
+		sql_command = format_str.format(Sku=image_sku, ImageName=image_name, ImageURL=url, ImageHeight=image_height, ImageWidth=image_width, Collection=collection)
+		c.execute(sql_command)
 
 	except sqlite3.IntegrityError:
 	    print('ERROR: ID already exists in PRIMARY KEY column {}'.format(id_column))
