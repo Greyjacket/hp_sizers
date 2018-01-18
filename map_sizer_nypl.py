@@ -9,7 +9,6 @@ except:
 	print "Format: python scriptname filename operation.\n"
 	exit()
 
-#filename = './CSVs/nypl_sample.csv'
 write_filename = 'NYPL.csv'
 
 newCsv = []
@@ -163,7 +162,7 @@ for item in newCsv:
 	bullet_point4 = "100% Satisfaction Guaranteed"
 	bullet_point5 = item_name
 	merchant_shipping_group_name = ""
-	keywords = item['Generic Keywords']
+	keywords = 'rare map,rare maps,antique map,antique maps, historic maps,historic map,decorative maps,decorative map'
 	
 	try:
 		image_name = item['ImageName']
@@ -195,7 +194,7 @@ for item in newCsv:
 		part_number_str = re.sub('[ xin]', '', size['SizeName'])
 		part_number =  sku + "_" + part_number_str
 		parent_child = "" # leave blank for children
-		item_sku = sku + "_" + part_number_str
+		item_sku = sku + "_" + size['SizeName']
 		relationship_type = "variation"
 		variation_theme = "size"
 		size_name = size['SizeName']
