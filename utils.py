@@ -3,13 +3,14 @@ import math, operator
 def process_photo_size(size, ratio):
 	
 	if ratio < 1.2:
-		if size == 16.0:
+		if size == 12.0:
+			size2 = 12.0
+		elif size == 16.0:
 			size2 = 16.0
 		elif size == 24.0:
 			size2 = 24.0
 		else: 
 			size2 = 36.0
-
 	elif ratio >= 1.2 and ratio <= 1.3:
 		if size == 8.0:
 			size2 = 10.0
@@ -29,10 +30,10 @@ def process_photo_size(size, ratio):
 		else:
 			size2 = 32.0
 	elif ratio > 1.45 and ratio <= 1.9:
-		if size == 8.0:
-			size2 = 12.0
-		elif size == 16.0:
+		if size == 16.0:
 			size2 = 24.0
+		elif size == 20.0:
+			size2 = 30.0
 		elif size == 24.0:
 			size2 = 36.0
 		else:
@@ -46,6 +47,21 @@ def process_photo_size(size, ratio):
 			size2 = 72.0		
 
 	return size2
+
+def get_size_list(ratio):
+
+	if ratio < 1.2:
+		sizes = [12.0, 16.0, 24.0, 36.0]
+	elif ratio >= 1.2 and ratio <= 1.3:
+		sizes = [11.0, 16.0, 24.0]
+	elif ratio > 1.3 and ratio <= 1.45:
+		sizes = [11.0, 18.0, 24.0]
+	elif ratio > 1.45 and ratio <= 1.9:
+		sizes = [16.0, 20.0, 24.0]
+	else:
+		sizes = [16.0, 20.0, 24.0]
+
+	return sizes
 
 def photo_sizer(image_height, image_width, sku):
 
@@ -70,15 +86,7 @@ def photo_sizer(image_height, image_width, sku):
 
 	aspect_ratio = ratio_description
 
-	if ratio_rounded < 1.2:
-		sizes = [16.0, 24.0, 36.0]
-	# for photos, 4:3 and 5:4 are sized the same
-	elif ratio_rounded >= 1.2 and ratio_rounded <= 1.45:
-		sizes = [11.0, 16.0, 24.0, 36.0]
-	elif ratio_rounded > 1.45 and ratio_rounded <= 1.9:
-		sizes = [8.0, 16.0, 24.0, 30]
-	else:
-		sizes = [16.0, 24.0, 36.0]
+	sizes = get_size_list(ratio_rounded)
 
 	for size in sizes:
 		if orientation == 'portrait':		
@@ -161,21 +169,19 @@ def process_size(size2):
 	else:
 		size2 = math.floor(size2)
 
-	if size2 >= 15.0 and size2 < 16.0:
+	if abs(16.0 - size2) <= 1.0:
 		size2 = 16.0
-	if size2 >= 17.0 and size2 < 18.0:
-		size2 = 16.0
-	if size2 >= 19.0 and size2 < 20.0:
+	elif size2 >= 19.0 and size2 < 20.0:
 		size2 = 18.0
-
-	if size2 >= 37.0 and size2 <= 38.0:
-		size2 = 36.0
-	if size2 >= 35.0 and size2 <= 37.0:
-		size2 = 36.0
-	if size2 >= 29.0 and size2 < 30.0:
+	elif abs(24.0 - size2) <= 1.0:
+		size2 = 24.0
+	elif size2 >= 29.0 and size2 < 30.0:
 		size2 = 30.0
-	if size2 >= 31.0 and size2 < 32.0:
+	elif abs(32.0 - size2) <= 1.0:
 		size2 = 32.0
+	elif abs(36.0 - size2) <= 1.0:
+		size2 = 36.0
+
 	return size2
 
 def calculate_dimensions(size, orientation, ratio, sku):
