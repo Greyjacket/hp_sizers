@@ -1,6 +1,8 @@
-#!/usr/bin/python
-import csv, sys, math, operator, re, os
+# -- coding: utf-8 --
+
+import sys, math, operator, re, os, io
 from utils import photo_sizer
+from backports import csv
 
 try:
 	filename = sys.argv[1]
@@ -11,10 +13,10 @@ except:
 
 newCsv = []
 output = 'photo_print_amazon_sizes.csv'
-newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
+newFile = io.open(output, 'w', encoding = 'utf-8') #wb for windows, else you'll see newlines added to csv
 
 # open the file from console arguments
-with open(filename, 'rb') as csvfile:
+with io.open(filename, 'r', encoding = 'utf-8') as csvfile:
 	reader = csv.DictReader(csvfile)
 	for row in reader:
 		newCsv.append(row)
@@ -123,7 +125,7 @@ for item in newCsv:
 	keywords = item['Generic Keywords']
 	feed_product_type = "art"
 	item_name = item['Item Name']
-	product_description = item['product_description'] 
+	product_description = item['product_description']
 	variation_theme = "size"
 	item_type = "prints"
 	update_delete = ""
