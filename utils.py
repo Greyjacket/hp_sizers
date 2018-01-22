@@ -81,11 +81,12 @@ def photo_sizer(image_height, image_width, sku):
 	ratio_rounded = ratio_info[1]
 	aspect_ratio = ratio_description
 
+	'''
 	if orientation == 'landscape':
 		ratio_normalized = 1.0/ratio_rounded
 	else:
 		ratio_normalized = ratio_rounded
-
+	'''
 	aspect_ratio = ratio_description
 
 	sizes = get_size_list(ratio_rounded)
@@ -160,7 +161,85 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 
 		return item_size	
 
-def process_size(size2):
+def map_sizer(image_height, image_width, sku):
+# only do one round for square ratios
+	item_sizes = []
+	
+	if image_height > image_width:
+		ratio_raw = round((image_height/image_width), 2) 
+		orientation = 'portrait'
+	else:
+		ratio_raw = round((image_width/image_height), 2) 
+		orientation = 'landscape'
+
+	ratio_info  = get_aspect_ratio(ratio_raw)
+	ratio_description = ratio_info[0]
+	ratio_rounded = ratio_info[1]
+	aspect_ratio = ratio_description
+
+	if orientation == 'landscape':
+		ratio_normalized = 1.0/ratio_rounded
+	else:
+		ratio_normalized = ratio_rounded
+
+	aspect_ratio = ratio_description
+
+	if ratio_description == "1:1":
+		ratio = 1.0
+		item_size = calculate_dimensions(16, 'up', ratio_normalized, sku)
+		item_sizes.append(item_size)
+		item_size = calculate_dimensions(24,'up', ratio_normalized, sku)
+		item_sizes.append(item_size)
+		item_size = calculate_dimensions(36,'up', ratio_normalized, sku)
+		item_sizes.append(item_size)
+		item_size = calculate_dimensions(44, 'up', ratio_normalized, sku)
+		item_sizes.append(item_size)
+	else:
+
+		# calculate both orientations for 24s, 0 for portrait 1 for landscape
+		item_size = calculate_dimensions(24, 'down',ratio_normalized, sku)
+		if item_size:		
+				item_sizes.append(item_size)
+		
+		item_size = calculate_dimensions(24, 'up',ratio_normalized, sku)
+
+		if item_size:		
+			item_sizes.append(item_size)
+
+		item_size = calculate_dimensions(44, 'down', ratio_normalized, sku)
+
+		# if it's a standard size, check if the 44 sized item is not too close in square inches
+		if item_size and ratio_raw <= 2.0 :	
+			newItem = {}
+			for other_item in item_sizes:
+				square_inches_44 = item_size['SqIn']
+				square_inches_24 = other_item['SqIn']
+
+				if square_inches_44 >= square_inches_24:
+					square_ratio = square_inches_44/square_inches_24
+				else:
+					square_ratio = square_inches_24/square_inches_44
+				if square_ratio < ratio_raw:
+					newItem = calculate_dimensions(36, 'up', ratio_normalized, sku)
+					break
+				else:
+					newItem = item_size
+			if newItem:
+				item_sizes.append(newItem)
+		else:
+			if item_size:		
+				item_sizes.append(item_size)
+
+		item_size = calculate_dimensions(44, 'up', ratio_normalized, sku)
+
+		if item_size:
+			item_sizes.append(item_size)
+	
+	item_sizes.sort(key=operator.itemgetter('SqIn'))
+
+	return item_sizes
+
+def process_second_size(size2):
 	# this function returns of tuple containing the fractional and integral part of the real number
 	size2_split = math.modf(size2)
 	decimal_part = size2_split[0]
@@ -192,23 +271,23 @@ def calculate_dimensions(size, orientation, ratio, sku):
 	if orientation == 'down':
 		if ratio >= 1.0:
 			size2 = size * (1.0/ratio)
-			size2 = process_size(size2)
+			size2 = process_second_size(size2)
 			height = size
 			width = size2
 		else:
 			size2 = size * ratio
-			size2 = process_size(size2)
+			size2 = process_second_size(size2)
 			height = size2
 			width = size
 	elif orientation == 'up':
 		if ratio >= 1.0:
 			size2 = size * ratio
-			size2 = process_size(size2)
+			size2 = process_second_size(size2)
 			height = size2
 			width = size
 		else:
 			size2 = size * (1.0/ratio)
-			size2 = process_size(size2)
+			size2 = process_second_size(size2)
 			height = size
 			width = size2
 	else:
@@ -244,8 +323,8 @@ def calculate_dimensions(size, orientation, ratio, sku):
 		unique_sku = sku + "_" + unique
 
 		# create the size name
-		size_name = width_int_str + "in" + " x " + height_int_str + "in"
-		size_name2 = height_int_str + "in" + " x " + width_int_str + "in"
+		size_name = unique1 + "in" + " x " + unique2 + "in"
+		size_name2 = unique2 + "in" + " x " + unique1 + "in"
 
 		item_size['Height'] = height_str
 		item_size['Width'] = width_str
