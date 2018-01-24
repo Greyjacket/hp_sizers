@@ -53,6 +53,9 @@ for item in newCsv:
 	if count % mod == 0:
 		print str(percent) + '% completed.', "\r"
 		percent += 5
+	
+	#-------------------------- General Fields Here
+
 	try:
 		sku = item['Sku']
 	except:
@@ -66,16 +69,20 @@ for item in newCsv:
 	try:
 		image_width = float(item['ImageWidth'])
 	except:
-		print "Warning: Image Width not formatted in SKU: " + sku
-		continue
+		try:
+			image_width = float(item['Image Width'])
+		except:
+			print "Warning: Image Width not formatted in SKU: " + sku
+			continue
+
 	try:
 		image_height = float(item['ImageHeight'])
 	except:
-		print "Warning: Image Height not formatted in SKU: " + sku
+		try:
+			image_height = float(item['Image Height'])
+		except:
+			print "Warning: Image Height not formatted in SKU: " + sku
 		continue
-
-
-	#-------------------------- General Fields Here
 
 	try:
 		image_name = item['ImageName']
@@ -89,12 +96,15 @@ for item in newCsv:
 				print "Warning: Image Name not formatted in SKU: " + sku
 				continue
 	try:
-		item_name = item['Title']
+		item_name = item['ItemName']
 	except:
 		try: 
 			item_name = item['Item Name']
 		except:
-			print "Please format the input with a Title/ItemName Field"
+			try:
+				item_name = item['Title']
+			except:
+				print "Please format the input with a Title/ItemName Field"
 
 	if len(item_name) > 200:
 		print "Warning: Title character count in SKU: " + sku + " exceeds 200 characters."
@@ -107,6 +117,23 @@ for item in newCsv:
 		except:
 			print "Error: Format the input to include an item kind: Photos or Prints."
 			exit()
+
+	try:
+		keywords = item['Generic Keywords']
+	except:
+		try:
+			keywords = item['GenericKeywords']
+		except:
+			print "Error: Format the input to include a Generic Keywords field."
+			exit()
+
+	try:
+		product_description = item['product_description'] 
+	except:
+		try:
+			product_description = item['product description']
+		except:
+			print "Warning: No product description found for SKU: " + sku
 
 	# size the image accordingly: map, photo, or print. Prints and photos are sized the same.
 	if kind == "Map":
@@ -125,13 +152,10 @@ for item in newCsv:
 
 	bullet_point5 = item_name	
 	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
-
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
-	keywords = item['Generic Keywords']
 	feed_product_type = "art"
 	item_name = item['Item Name']
-	product_description = item['product_description'] 
 	variation_theme = "size"
 	item_type = "prints"
 	update_delete = ""
