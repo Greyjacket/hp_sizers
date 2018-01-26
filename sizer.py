@@ -45,14 +45,19 @@ bullet_point4 = "100% Satisfaction Guaranteed."
 
 # write the dictionary, do some calculations on the way
 count = 0;
-mod = totallines/20
+mod = math.ceil(totallines/20.0)
 percent = 0
+
 for item in newCsv:
+	
+	#-------------------------- Progress Bar
+
 	count += 1
 
 	if count % mod == 0:
-		print str(percent) + '% completed.', "\r"
-		percent += 5
+		percent += 5    
+		sys.stdout.write("\r" + str(percent) + "% completed.")
+    	sys.stdout.flush()    	
 	
 	#-------------------------- General Fields Here
 
@@ -209,5 +214,5 @@ for item in newCsv:
 
 		writer.writerow(write_tuple)
 
-print "File written to " + output
+print "\nFile written to " + output
 newFile.close()
