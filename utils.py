@@ -250,17 +250,17 @@ def process_second_size(size2):
 	else:
 		size2 = math.floor(size2)
 
-	if abs(16.0 - size2) <= 1.0:
+	if size2 >= 15 and size2 < 17.0
 		size2 = 16.0
-	elif size2 >= 19.0 and size2 < 20.0:
+	elif size2 >= 17.0 and size2 < 20.0:
 		size2 = 18.0
 	elif abs(24.0 - size2) <= 1.0:
 		size2 = 24.0
-	elif size2 >= 29.0 and size2 < 30.0:
+	elif size2 >= 28.0 and size2 < 31.0:
 		size2 = 30.0
-	elif abs(32.0 - size2) <= 1.0:
+	elif size2 <= 31.0 and size2 <= 34.0:
 		size2 = 32.0
-	elif abs(36.0 - size2) <= 1.0:
+	elif size2 <= 35.0 and size2 <= 38.0:
 		size2 = 36.0
 
 	return size2
