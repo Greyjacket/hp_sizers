@@ -345,7 +345,9 @@ def get_aspect_ratio(ratio):
 	# https://en.wikipedia.org/wiki/Aspect_ratio_(image)
 	if ratio <= 1.09:
 		return ("1:1", 1)
-	elif ratio > 1.09 and ratio <= 1.2:
+	elif ratio >= 1.09 and ratio <= 1.15:
+		return ('', 1.1)
+	elif ratio > 1.15 and ratio <= 1.2:
 		return ("6:5", 1.2)
 	elif ratio > 1.2 and ratio <= 1.3:
 		return ("5:4", 1.25)
