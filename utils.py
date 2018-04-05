@@ -2,7 +2,7 @@ import math, operator
 
 def process_photo_size(size, ratio):
 	
-	if ratio < 1.2:
+	if ratio < 1.1:
 		if size == 12.0:
 			size2 = 12.0
 		elif size == 16.0:
@@ -13,7 +13,7 @@ def process_photo_size(size, ratio):
 			size2 = 36.0
 		else: 
 			size2 = 44.0
-	elif ratio >= 1.2 and ratio < 1.3:
+	elif ratio >= 1.1 and ratio < 1.3:
 		if size == 8.0:
 			size2 = 10.0
 		elif size == 11.0:
@@ -28,7 +28,7 @@ def process_photo_size(size, ratio):
 			size2 = 44.0		
 		else:
 			size2 = 55.0
-	elif ratio >= 1.3 and ratio < 1.45:
+	elif ratio >= 1.3 and ratio < 1.415:
 		if size == 8.0:
 			size2 = 10.0
 		elif size == 11.0:
@@ -43,7 +43,7 @@ def process_photo_size(size, ratio):
 			size2 = 44.0		
 		else:
 			size2 = 60.0
-	elif ratio > 1.45 and ratio < 1.9:
+	elif ratio >= 1.415 and ratio < 1.9:
 		if size == 8.0:
 			size2 = 12.0
 		elif size == 16.0:
@@ -75,89 +75,13 @@ def process_photo_size(size, ratio):
 			size2 = math.floor(size2)	
 	return size2
 
-def process_map_size(size, ratio, direction):
-
-	if ratio == 1.0:
-		if size == 12.0:
-			size2 = 12.0
-		elif size == 16.0:
-			size2 = 16.0
-		elif size == 24.0:
-			size2 = 24.0		
-		elif size == 36.0:
-			size2 = 36.0
-		else: 
-			size2 = 44.0
-	elif ratio == 1.1:
-		if size == 16.0:
-			size2 = 18.0
-		elif size == 24.0:
-			size2 = 22.0
-		elif size == 36.0:
-			size2 = 32.0
-		elif size == 44.0 and direction == 'down':
-			size2 = 40.0
-		else:
-			size2 = 49.0
-	elif ratio == 1.25:
-		if size == 16.0:
-			size2 = 20.0
-		elif size == 24.0 and direction == 'down':
-			size2 = 18.0
-		elif size == 24.0 and direction == 'up':
-			size2 = 30.0
-		elif size == 44.0 and direction == 'down':
-			size2 = 32.0
-		else:
-			size2 = 55.0
-	elif ratio == 1.33:
-		if size == 16.0:
-			size2 = 20.0
-		elif size == 24.0 and direction == 'down':
-			size2 = 18.0
-		elif size == 24.0 and direction == 'up':
-			size2 = 32.0
-		elif size == 44.0 and direction == 'down':
-			size2 = 32.0
-		else:
-			size2 = 60.0
-	elif ratio == 1.5:
-		if size == 24.0 and direction == 'down':
-			size2 = 16.0
-		elif size == 24.0 and direction == 'up':
-			size2 = 36.0
-		elif size == 44.0 and direction == 'down':
-			size2 = 30.0
-		else:
-			size2 = 66.0
-	elif ratio == 2.0:
-		if size == 16.0:
-			size2 = 32.0
-		elif size == 20.0:
-			size2 = 40.0
-		elif size == 24.0:
-			size2 = 48.0
-		else: 
-			size2 = 88.0			
-	else:
-		size2 = size * 1/ratio
-		size_split = math.modf(size2)
-		decimal_part = size_split[0]
-		
-		# round up from .5
-		if decimal_part >= .5:
-			size2 = math.ceil(size2)
-		else:
-			size2 = math.floor(size2)	
-	return size2
-
 def get_size_list(ratio):
 
-	if ratio < 1.2:
+	if ratio < 1.1:
 		sizes = [12.0, 16.0, 24.0, 36.0, 44.0]
-	elif ratio >= 1.2 and ratio < 1.45:
+	elif ratio >= 1.1 and ratio < 1.415:
 		sizes = [8.0, 11.0, 16.0, 18.0, 24.0, 32.0, 44.0]
-	elif ratio >= 1.45 and ratio < 1.9:
+	elif ratio >= 1.415 and ratio < 1.9:
 		sizes = [8.0, 16.0, 24.0, 30.0, 44.0]
 	elif ratio >= 1.9 and ratio < 3.0:
 		sizes = [16.0, 20.0, 24.0, 44.0]
@@ -253,6 +177,84 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 
 		return item_size	
 
+#------------------------------------------------------------- Map Sizer below
+
+def process_map_size(size, ratio, direction):
+
+	if ratio == 1.0:
+		if size == 12.0:
+			size2 = 12.0
+		elif size == 16.0:
+			size2 = 16.0
+		elif size == 24.0:
+			size2 = 24.0		
+		elif size == 36.0:
+			size2 = 36.0
+		else: 
+			size2 = 44.0
+	elif ratio == 1.1:
+		if size == 16.0:
+			size2 = 18.0
+		elif size == 24.0:
+			size2 = 22.0
+		elif size == 36.0:
+			size2 = 32.0
+		elif size == 44.0 and direction == 'down':
+			size2 = 40.0
+		else:
+			size2 = 49.0
+	elif ratio == 1.25:
+		if size == 16.0:
+			size2 = 20.0
+		elif size == 24.0 and direction == 'down':
+			size2 = 18.0
+		elif size == 24.0 and direction == 'up':
+			size2 = 30.0
+		elif size == 44.0 and direction == 'down':
+			size2 = 32.0
+		else:
+			size2 = 55.0
+	elif ratio == 1.33:
+		if size == 16.0:
+			size2 = 20.0
+		elif size == 24.0 and direction == 'down':
+			size2 = 18.0
+		elif size == 24.0 and direction == 'up':
+			size2 = 32.0
+		elif size == 44.0 and direction == 'down':
+			size2 = 32.0
+		else:
+			size2 = 60.0
+	elif ratio == 1.5:
+		if size == 24.0 and direction == 'down':
+			size2 = 16.0
+		elif size == 24.0 and direction == 'up':
+			size2 = 32.0
+		elif size == 44.0 and direction == 'down':
+			size2 = 30.0
+		else:
+			size2 = 66.0
+	elif ratio == 2.0:
+		if size == 16.0:
+			size2 = 32.0
+		elif size == 20.0:
+			size2 = 40.0
+		elif size == 24.0:
+			size2 = 48.0
+		else: 
+			size2 = 88.0			
+	else:
+		size2 = size * 1/ratio
+		size_split = math.modf(size2)
+		decimal_part = size_split[0]
+		
+		# round up from .5
+		if decimal_part >= .5:
+			size2 = math.ceil(size2)
+		else:
+			size2 = math.floor(size2)	
+	return size2
+
 def map_sizer(image_height, image_width, sku):
 	# only do one round for square ratios
 	item_sizes = []
@@ -297,7 +299,7 @@ def map_sizer(image_height, image_width, sku):
 		if item_size:
 			item_sizes.append(item_size)
 
-	if ratio_rounded == 1.1:
+	elif ratio_rounded == 1.1:
 		item_size = calculate_dimensions(16, 'up',ratio_normalized, sku)
 		if item_size:		
 			item_sizes.append(item_size)
@@ -361,19 +363,19 @@ def map_sizer(image_height, image_width, sku):
 			item_sizes.append(item_size)
 
 	elif ratio_rounded == 1.5:
-		item_size = calculate_dimensions(16, 'up',ratio_normalized, sku)
+		item_size = calculate_dimensions(24.0, 'down',ratio_normalized, sku)
 		if item_size:		
 			item_sizes.append(item_size)
 
-		item_size = calculate_dimensions(24, 'up',ratio_normalized, sku)
+		item_size = calculate_dimensions(24.0, 'up',ratio_normalized, sku)
 		if item_size:		
 			item_sizes.append(item_size)
 
-		item_size = calculate_dimensions(44, 'down',ratio_normalized, sku)
+		item_size = calculate_dimensions(44.0, 'down',ratio_normalized, sku)
 		if item_size:
 			item_sizes.append(item_size)
 
-		item_size = calculate_dimensions(44, 'up',ratio_normalized, sku)
+		item_size = calculate_dimensions(44.0, 'up',ratio_normalized, sku)
 		if item_size:
 			item_sizes.append(item_size)
 
@@ -456,7 +458,7 @@ def calculate_dimensions(size, orientation, ratio, sku):
 
 	# set the square inches
 	square_inches = height * width
-	if square_inches > 240 and square_inches <= 4800:
+	if square_inches >= 144 and square_inches <= 4800:
 
 		price = calculate_price(square_inches)
 

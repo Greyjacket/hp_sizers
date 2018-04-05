@@ -43,7 +43,6 @@ writer.writerow(header_row3)
 bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 bullet_point4 = "100% Satisfaction Guaranteed."
 
-# write the dictionary, do some calculations on the way
 count = 0;
 mod = math.ceil(totallines/20.0)
 percent = 0
@@ -140,16 +139,16 @@ for item in newCsv:
 		except:
 			print "Warning: No product description found for SKU: " + sku
 
-	# size the image accordingly: map, photo, or print. Prints and photos are sized the same.
-	if kind == "Map":
-		bullet_point1 = "Giclee Art Print - Printed on High Quality Matte Paper"
+	# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
+	if kind == "Map" or kind == "Maps":
+		bullet_point1 = "Giclee Art Print on High Quality Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Map Reproduction"
 		item_sizes = map_sizer(image_height, image_width, sku)
 	else:
-		bullet_point1 = "Giclee Art Print - Printed on High Quality Archival Matte Paper"
+		bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
 
-	 	if kind == "Photograph":
+	 	if kind == "Photograph" or kind == "Photo":
 			bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
@@ -160,7 +159,6 @@ for item in newCsv:
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
-	item_name = item['Item Name']
 	variation_theme = "size"
 	item_type = "prints"
 	update_delete = ""
