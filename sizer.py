@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import csv, sys, math, operator, re, os
+import csv, sys, math, operator, re, os, time
 from utils import photo_sizer, map_sizer
 
 try:
@@ -15,7 +15,10 @@ except:
 	options = 1000.0
 
 newCsv = []
-output = 'amazon_sizes.csv'
+
+input_name = os.path.splitext(filename)[0]
+output = 'AMZ_' + input_name + '_' + time.strftime("%d_%m_%Y") + '.csv'
+
 newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
 totallines = 0
 # open the file from console arguments
@@ -30,12 +33,12 @@ header_row1 = ('TemplateType=home', 'Version=2014.1119')
 header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
 	'Brand Name', 'Manufacturer', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
 	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
-	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Keywords')
+	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms')
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer','part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
 	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
-	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'Keywords')
+	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1')
 
 # initialize csv writer
 writer = csv.writer(newFile)
@@ -158,6 +161,16 @@ for item in newCsv:
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
 		item_sizes = photo_sizer(image_height, image_width, sku, options)
+
+	if options != "":
+		options = int(options)	
+		long_side_squared = options * options
+
+		for i in xrange(len(item_sizes) -1, -1, -1):
+			size = item_sizes[i]					
+			sqin = int(size['SqIn'])
+			if long_side_squared < sqin:
+				del item_sizes[i]
 
 	bullet_point5 = item_name	
 	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
