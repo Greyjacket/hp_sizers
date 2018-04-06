@@ -9,6 +9,11 @@ except:
 	print "Format: python scriptname filename.\n"
 	exit()
 
+try:
+	options = float(sys.argv[2])
+except:
+	options = 1000.0
+
 newCsv = []
 output = 'amazon_sizes.csv'
 newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
@@ -143,7 +148,7 @@ for item in newCsv:
 	if kind == "Map" or kind == "Maps":
 		bullet_point1 = "Giclee Art Print on High Quality Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Map Reproduction"
-		item_sizes = map_sizer(image_height, image_width, sku)
+		item_sizes = map_sizer(image_height, image_width, sku, options)
 	else:
 		bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
@@ -152,7 +157,7 @@ for item in newCsv:
 			bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
-		item_sizes = photo_sizer(image_height, image_width, sku)
+		item_sizes = photo_sizer(image_height, image_width, sku, options)
 
 	bullet_point5 = item_name	
 	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name

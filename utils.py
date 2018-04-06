@@ -75,21 +75,9 @@ def process_photo_size(size, ratio):
 			size2 = math.floor(size2)	
 	return size2
 
-def get_size_list(ratio):
 
-	if ratio < 1.1:
-		sizes = [12.0, 16.0, 24.0, 36.0, 44.0]
-	elif ratio >= 1.1 and ratio < 1.415:
-		sizes = [8.0, 11.0, 16.0, 18.0, 24.0, 32.0, 44.0]
-	elif ratio >= 1.415 and ratio < 1.9:
-		sizes = [8.0, 16.0, 24.0, 30.0, 44.0]
-	elif ratio >= 1.9 and ratio < 3.0:
-		sizes = [16.0, 20.0, 24.0, 44.0]
-	else:
-		sizes = [44.0]
-	return sizes
 
-def photo_sizer(image_height, image_width, sku):
+def photo_sizer(image_height, image_width, sku, options):
 
 	item_sizes = []
 
@@ -107,6 +95,15 @@ def photo_sizer(image_height, image_width, sku):
 
 	sizes = get_size_list(ratio_rounded)
 
+	options_list = {}
+
+	# filter by options
+	for i in xrange(len(sizes) - 1, -1, -1):
+		size = sizes[i]
+		
+		if size > options:
+			del sizes[i]
+
 	for size in sizes:
 		if orientation == 'portrait':		
 			item_size = calculate_photo_dimensions(size, 'portrait', ratio_rounded, sku)
@@ -119,6 +116,20 @@ def photo_sizer(image_height, image_width, sku):
 	item_sizes.sort(key=operator.itemgetter('SqIn'))
 
 	return item_sizes
+
+def get_size_list(ratio):
+
+	if ratio < 1.1:
+		sizes = [12.0, 16.0, 24.0, 36.0, 44.0]
+	elif ratio >= 1.1 and ratio < 1.415:
+		sizes = [11.0, 16.0, 18.0, 24.0, 32.0, 44.0]
+	elif ratio >= 1.415 and ratio < 1.9:
+		sizes = [8.0, 16.0, 24.0, 30.0, 44.0]
+	elif ratio >= 1.9 and ratio < 3.0:
+		sizes = [16.0, 20.0, 24.0, 44.0]
+	else:
+		sizes = [44.0]
+	return sizes
 
 def calculate_photo_dimensions(size, orientation, ratio, sku):
 	item_size = {}
