@@ -151,7 +151,7 @@ for item in newCsv:
 	if kind == "Map" or kind == "Maps":
 		bullet_point1 = "Giclee Art Print on High Quality Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Map Reproduction"
-		item_sizes = map_sizer(image_height, image_width, sku, options)
+		item_sizes = map_sizer(image_height, image_width, sku)
 	else:
 		bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
@@ -160,7 +160,7 @@ for item in newCsv:
 			bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
-		item_sizes = photo_sizer(image_height, image_width, sku, options)
+		item_sizes = photo_sizer(image_height, image_width, sku)
 
 	if options != "":
 		options = int(options)	
