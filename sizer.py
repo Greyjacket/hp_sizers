@@ -17,7 +17,7 @@ except:
 newCsv = []
 
 input_name = os.path.splitext(filename)[0]
-output = 'AMZ_' + input_name + '_' + time.strftime("%d_%m_%Y") + '.csv'
+output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
 newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
 totallines = 0
@@ -69,7 +69,7 @@ for item in newCsv:
 	#-------------------------- General Fields Here
 
 	try:
-		sku = item['Sku']
+		sku = item['sku']
 	except:
 		try:
 			sku = item['item_sku']
@@ -79,28 +79,28 @@ for item in newCsv:
 			except:
 				sku = item['Title']
 	try:
-		image_width = float(item['ImageWidth'])
+		image_width = float(item['image_width'])
 	except:
 		try:
-			image_width = float(item['Image Width'])
+			image_width = float(item['ImageWidth'])
 		except:
-			print "Warning: Image Width not formatted in SKU: " + sku
+			print "Warning: image_width not formatted in SKU: " + sku
 			continue
 
 	try:
-		image_height = float(item['ImageHeight'])
+		image_height = float(item['image_height'])
 	except:
 		try:
-			image_height = float(item['Image Height'])
+			image_height = float(item['ImageHeight'])
 		except:
 			print "Warning: Image Height not formatted in SKU: " + sku
 		continue
 
 	try:
-		image_name = item['ImageName']
+		image_name = item['image_name']
 	except:
 		try:
-			image_name = item['Image Name']
+			image_name = item['ImageName']
 		except:
 			try:
 				image_name = item['Image_Name']
@@ -108,18 +108,18 @@ for item in newCsv:
 				print "Warning: Image Name not formatted in SKU: " + sku
 				continue
 	try:
-		item_name = item['ItemName']
+		item_name = item['item_name']
 	except:
 		try: 
-			item_name = item['Item Name']
+			item_name = item['ItemName']
 		except:
 			try:
-				item_name = item['Title']
+				item_name = item['title']
 			except:
 				print "Please format the input with a Title/ItemName Field"
 
-	if len(item_name) > 200:
-		print "Warning: Title character count in SKU: " + sku + " exceeds 200 characters."
+	if len(item_name) > 188:
+		print "Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
 	
 	try:
 		kind = item['kind']
@@ -131,12 +131,24 @@ for item in newCsv:
 			exit()
 
 	try:
-		keywords = item['Generic Keywords']
+		keywords = item['keywords']
 	except:
 		try:
-			keywords = item['GenericKeywords']
+			keywords = item['Keywords']
 		except:
 			print "Error: Format the input to include a Generic Keywords field."
+			exit()
+
+	if len(keywords) > 250:
+		print "Warning: Description character count in SKU: " + sku + " exceeds 250 characters."
+
+	try:
+		image_folder = item['image_folder']
+	except:
+		try:
+			kind = item['ImageFolder']
+		except:
+			print "Error: Format the input to include an an image folder."
 			exit()
 
 	try:
@@ -146,6 +158,10 @@ for item in newCsv:
 			product_description = item['product description']
 		except:
 			print "Warning: No product description found for SKU: " + sku
+	
+	if len(product_description) > 2000:
+		print "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
+		exit()
 
 	# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
 	if kind == "Map" or kind == "Maps":
@@ -162,6 +178,7 @@ for item in newCsv:
 
 		item_sizes = photo_sizer(image_height, image_width, sku, options)
 
+	# 
 	if options != "":
 		options = int(options)	
 		long_side_squared = options * options
@@ -173,7 +190,7 @@ for item in newCsv:
 				del item_sizes[i]
 
 	bullet_point5 = item_name	
-	main_image_url = "www.historicpictoric.com/media/AMZWebImg/USGS/USGSNew/" + image_name
+	main_image_url = "www.historicpictoric.com/media/" + image_folder + '/' + image_name
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
@@ -221,6 +238,7 @@ for item in newCsv:
 		website_shipping_weight = "1"
 		website_shipping_weight_unit_of_measure = "lbs"
 		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
+		item_name = item_name + " " + size_name
 		
 		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
