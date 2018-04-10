@@ -208,7 +208,7 @@ for item in newCsv:
 	size_name = ""
 	standard_price = ""
 	quantity = ""
-	product_tax_code = ""
+	product_tax_code = 'a_gen_tax'
 	item_package_quantity = ""
 	website_shipping_weight = ""
 	website_shipping_weight_unit_of_measure = ""
@@ -233,7 +233,6 @@ for item in newCsv:
 		size_name = size['SizeName']
 		standard_price = size['Price']
 		quantity = "10"
-		product_tax_code = 'a_gen_tax'
 		item_package_quantity = "1"
 		website_shipping_weight = "1"
 		website_shipping_weight_unit_of_measure = "lbs"
