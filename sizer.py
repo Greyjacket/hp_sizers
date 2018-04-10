@@ -172,7 +172,7 @@ for item in newCsv:
 		bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
 
-	 	if kind == "Photograph" or kind == "Photo":
+	 	if kind == "Photograph" or kind == "Photo" or kind == "photo":
 			bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
@@ -190,7 +190,7 @@ for item in newCsv:
 				del item_sizes[i]
 
 	bullet_point5 = item_name	
-	main_image_url = "www.historicpictoric.com/media/" + image_folder + '/' + image_name
+	main_image_url = "www.historicpictoric.com/media" + image_folder +  image_name
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
@@ -238,15 +238,17 @@ for item in newCsv:
 		website_shipping_weight = "1"
 		website_shipping_weight_unit_of_measure = "lbs"
 		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
-		item_name = item_name + " " + size_name
+		item_name_with_size = item_name + " " + size_name
 		
-		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
+		write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
 
 		writer.writerow(write_tuple)
+
+		item_name_with_size = ""
 
 print "\nFile written to " + output
 newFile.close()

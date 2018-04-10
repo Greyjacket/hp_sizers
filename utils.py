@@ -97,13 +97,6 @@ def photo_sizer(image_height, image_width, sku):
 
 	options_list = {}
 
-	# filter by options
-	for i in xrange(len(sizes) - 1, -1, -1):
-		size = sizes[i]
-		
-		if size > options:
-			del sizes[i]
-
 	for size in sizes:
 		if orientation == 'portrait':		
 			item_size = calculate_photo_dimensions(size, 'portrait', ratio_rounded, sku)
