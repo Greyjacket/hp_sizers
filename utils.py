@@ -77,7 +77,7 @@ def process_photo_size(size, ratio):
 
 
 
-def photo_sizer(image_height, image_width, sku, options):
+def photo_sizer(image_height, image_width, sku):
 
 	item_sizes = []
 
