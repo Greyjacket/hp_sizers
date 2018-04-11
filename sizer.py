@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import csv, sys, math, operator, re, os, time
 from utils import photo_sizer, map_sizer
+from collections import deque
 
 try:
 	filename = sys.argv[1]
@@ -55,6 +56,9 @@ count = 0;
 mod = math.ceil(totallines/20.0)
 percent = 0
 
+#this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
+deque = deque( maxlen= 200)
+
 for item in newCsv:
 	
 	#-------------------------- Progress Bar
@@ -64,7 +68,7 @@ for item in newCsv:
 	if count % mod == 0:
 		percent += 5    
 		sys.stdout.write("\r" + str(percent) + "% completed.")
-    	sys.stdout.flush()    	
+		sys.stdout.flush()    	
 	
 	#-------------------------- General Fields Here
 
@@ -111,7 +115,7 @@ for item in newCsv:
 		item_name = item['item_name']
 	except:
 		try: 
-			item_name = item['ItemName']
+			item_name = item['Title']
 		except:
 			try:
 				item_name = item['title']
@@ -121,6 +125,13 @@ for item in newCsv:
 	if len(item_name) > 188:
 		print "Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
 	
+	# check if item_name already exists previously
+	if item_name in deque:
+		print ("\nError: duplicate item name in SKU: " + sku)
+		exit()
+	#
+	deque.append(item_name)
+
 	try:
 		kind = item['kind']
 	except:
@@ -136,7 +147,7 @@ for item in newCsv:
 		try:
 			keywords = item['Keywords']
 		except:
-			print "Error: Format the input to include a Generic Keywords field."
+			print "Error: Format the input to include a Keywords/keywords field."
 			exit()
 
 	if len(keywords) > 250:
@@ -172,7 +183,7 @@ for item in newCsv:
 		bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
 
-	 	if kind == "Photograph" or kind == "Photo" or kind == "photo":
+		if kind == "Photograph" or kind == "Photo" or kind == "photo":
 			bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
