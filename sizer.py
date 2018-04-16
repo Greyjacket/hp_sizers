@@ -56,9 +56,6 @@ count = 0;
 mod = math.ceil(totallines/20.0)
 percent = 0
 
-#this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
-deque = deque( maxlen= 200)
-
 for item in newCsv:
 	
 	#-------------------------- Progress Bar
@@ -129,8 +126,6 @@ for item in newCsv:
 	if item_name in deque:
 		print ("\nError: duplicate item name in SKU: " + sku)
 		exit()
-	#
-	deque.append(item_name)
 
 	try:
 		kind = item['kind']
