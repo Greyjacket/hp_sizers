@@ -325,10 +325,7 @@ def map_sizer(image_height, image_width, sku):
 			item_sizes.append(item_size)
 
 	elif ratio_rounded == 1.25:
-		item_size = calculate_dimensions(16, 'up',ratio_normalized, sku)
-		if item_size:		
-			item_sizes.append(item_size)
-		
+
 		item_size = calculate_dimensions(24, 'down',ratio_normalized, sku)
 		if item_size:		
 			item_sizes.append(item_size)
@@ -346,9 +343,6 @@ def map_sizer(image_height, image_width, sku):
 			item_sizes.append(item_size)
 
 	elif ratio_rounded == 1.33:
-		item_size = calculate_dimensions(16, 'up',ratio_normalized, sku)
-		if item_size:		
-			item_sizes.append(item_size)
 		
 		item_size = calculate_dimensions(24, 'down',ratio_normalized, sku)
 		if item_size:		

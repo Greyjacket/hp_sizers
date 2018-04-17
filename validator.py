@@ -54,10 +54,30 @@ upload_writer.writerow(header_row1)
 upload_writer.writerow(header_row2)
 upload_writer.writerow(header_row3)
 
-fieldnames = ['item_sku']
+header_row2 = ('SKU', 'Update Delete')
+header_row3 = ('item_sku', 'update_delete')
+delete_writer = csv.writer(delete_file)
+delete_writer.writerow(header_row1)
+delete_writer.writerow(header_row2)
+delete_writer.writerow(header_row3)
+
+header_row2 = ('SKU', 'Update Delete', 'Standard Price')
+header_row3 = ('item_sku', 'update_delete', 'standard_price')
+price_writer = csv.writer(price_file)
+price_writer.writerow(header_row1)
+price_writer.writerow(header_row2)
+price_writer.writerow(header_row3)
+'''
+delete_fieldnames = ['item_sku']
+
+
 delete_writer = csv.DictWriter(delete_file, fieldnames=fieldnames)
 price_writer = csv.DictWriter(price_file, fieldnames=fieldnames)
 
+
+delete_writer.writeheader()
+price_writer.writeheader()
+'''
 count = 0;
 mod = math.ceil(totallines/20.0)
 percent = 0
@@ -264,10 +284,12 @@ for i in range(len(newCsv)):
 					valid = True	
 					del item_sizes[i]		
 					if record['Price'] != item_price:
-						price_writer.writerow({'item_sku': item['item_sku']})
+						price_tuple = (item['item_sku'], 'PartialUpdate', item_price)
+						price_writer.writerow(price_tuple)
 
 			if valid == False:
-				delete_writer.writerow({'item_sku': item['item_sku']})	
+				delete_tuple = (item['item_sku'], 'Delete')
+				delete_writer.writerow(delete_tuple)	
 
 			if next_item != None:
 				if next_item['is_parent'] == 't':
