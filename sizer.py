@@ -69,21 +69,22 @@ for item in newCsv:
 	
 	#-------------------------- General Fields Here
 
-	try:
-		sku = item['sku']
+	try:			
+		sku = item['item_sku']
 	except:
 		try:
-			sku = item['item_sku']
+			sku = item['sku']
 		except:
 			try:
 				sku = item['SKU']
 			except:
 				sku = item['Title']
+
 	try:
 		image_width = float(item['image_width'])
 	except:
 		try:
-			image_width = float(item['ImageWidth'])
+			image_width = float(item['width'])
 		except:
 			print "Warning: image_width not formatted in SKU: " + sku
 			continue
@@ -92,16 +93,16 @@ for item in newCsv:
 		image_height = float(item['image_height'])
 	except:
 		try:
-			image_height = float(item['ImageHeight'])
+			image_height = float(item['height'])
 		except:
 			print "Warning: Image Height not formatted in SKU: " + sku
-		continue
+			continue
 
 	try:
 		image_name = item['image_name']
 	except:
 		try:
-			image_name = item['ImageName']
+			image_name = item['name']
 		except:
 			try:
 				image_name = item['Image_Name']
@@ -122,20 +123,17 @@ for item in newCsv:
 	if len(item_name) > 188:
 		print "Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
 	
-	# check if item_name already exists previously
-	if item_name in deque:
-		print ("\nError: duplicate item name in SKU: " + sku)
-		exit()
-
 	try:
 		kind = item['kind']
 	except:
 		try:
 			kind = item['Kind']
 		except:
-			print "Error: Format the input to include an item kind: Photos or Prints."
-			exit()
-
+			try:
+				kind = item['category']				
+			except:
+				print "Error: Format the input to include an item kind or category: Photos, Maps or Prints."
+				exit()
 	try:
 		keywords = item['keywords']
 	except:

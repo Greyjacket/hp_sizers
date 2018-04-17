@@ -119,7 +119,8 @@ for i in range(len(newCsv)):
 			try:
 				sku = item['SKU']
 			except:
-				sku = item['Title']
+				print "Warning: image_width not formatted in SKU: " + sku
+				continue
 
 	try:
 		image_width = float(item['image_width'])
@@ -171,9 +172,9 @@ for i in range(len(newCsv)):
 			kind = item['Kind']
 		except:
 			try:
-				kind = item['material_type']				
+				kind = item['category']				
 			except:
-				print "Error: Format the input to include an item kind: Photos, Maps or Prints."
+				print "Error: Format the input to include an item kind or category: Photos, Maps or Prints."
 				exit()
 	try:
 		keywords = item['keywords']
