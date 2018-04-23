@@ -39,23 +39,23 @@ The validator outputs three files:
 
 The CSV's fields must be formatted according to the schema below:
 
-item_sku OR Sku OR SKU 
+item_sku **OR** Sku **OR** SKU 
 
-image_name OR name OR Image_Name or name
+image_name **OR** name **OR** Image_Name **OR** name
 
-image_height OR height
+image_height **OR** height
 
-image_width OR width
+image_width **OR** width
 
-kind OR Kind or category
+kind **OR** Kind **OR** category
 
-item_name OR Title OR title
+item_name **OR** Title **OR** title
 
-product_description OR product description
+product_description **OR** product description
 
-keywords OR Keywords
+keywords **OR** Keywords
 
-image_folder OR ImageFolder
+image_folder **OR** ImageFolder
 
 ---------------------------------------------------------------------------------
 
