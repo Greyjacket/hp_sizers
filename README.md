@@ -1,10 +1,10 @@
 # BMW Utilities
 Amazon Sizer and Validator for Historic Pictoric
 
-###Log:
+### Log:
 
--4/17 Removed 16x20 item sizes for maps
--4/15 Created Validator
+- 4/17 Removed 16x20 item sizes for maps
+- 4/15 Created Validator
 
 ---------------------------------------------------------------------------------
 To run sizer:
