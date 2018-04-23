@@ -65,7 +65,7 @@ Title must be <= 188 characters.
 
 ---------------------------------------------------------------------------------
 
-Photo/print sizing:
+#### Photo/print sizing:
 
 	if ratio less 1.1:
 		12 x 12
@@ -105,7 +105,7 @@ Photo/print sizing:
 		44 x 88
 
 ---------------------------------------------------------------------------------
-map sizing:
+#### Map sizing:
 
 For maps, the ratio is rounded to one of the ratios below.
 
@@ -149,7 +149,7 @@ For maps, the ratio is rounded to one of the ratios below.
 
 ---------------------------------------------------------------------------------
 
-Pricing table:
+#### Pricing Table:
 
 	square_inches < 299:
 		price = 29.99
