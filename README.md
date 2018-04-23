@@ -1,10 +1,10 @@
-# hp_sizers
+# BMW Utilities
 Amazon Sizer and Validator for Historic Pictoric
 
-Log:
+###Log:
 
-4/17 Removed 16x20 item sizes for maps
-4/15 Created Validator
+-4/17 Removed 16x20 item sizes for maps
+-4/15 Created Validator
 
 ---------------------------------------------------------------------------------
 To run sizer:
@@ -15,9 +15,9 @@ python sizer.py FILENAME.csv options
 
 FILENAME being the name of the csv file you wish to process.
 
-options is an integer representing the longest side of the sizes you wish to generate.
+**options** is an integer representing the longest side of the sizes you wish to generate.
 
-The file created is named "AMZ_' + input_filename + '_' + ("%m_%d_%Y") + '.csv"
+The file created will be outputted as "AMZ_' + input_filename + '_' + ("%m_%d_%Y") + '.csv"
 
 ---------------------------------------------------------------------------------
 
@@ -27,16 +27,15 @@ python validator.py FILENAME.csv options
 
 FILENAME being the name of the csv file you wish to process.
 
-options is an integer representing the longest side of the sizes you wish to generate.
+**options** is an integer representing the longest side of the sizes you wish to generate.
 
 The validator outputs three files:
 
-'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '.csv'
-'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_delete.csv'
-'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_price.csv'
+- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '.csv'
+- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_delete.csv'
+- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_price.csv'
 
 ---------------------------------------------------------------------------------
-
 
 The CSV's fields must be formatted according to the schema below:
 
@@ -99,7 +98,7 @@ Photo/print sizing:
 		30 x 44
 		44 x 66
 
-	 ratio >= 1.9 and ratio < 3.0:
+	 ratio between 1.9 and 3.0:
 		16 x 32
 		20 x 40
 		24 x 48
