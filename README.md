@@ -57,6 +57,8 @@ keywords **OR** Keywords
 
 image_folder **OR** ImageFolder
 
+** When using the validator, include is_parent. The data must be retrieved from the most recent database**
+
 ---------------------------------------------------------------------------------
 
 Constraints:
