@@ -3,6 +3,7 @@ Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
 
+- 4/25 Changed bullets according to standard sizes
 - 4/17 Removed 16x20 item sizes for maps
 - 4/15 Created Validator
 
@@ -15,8 +16,6 @@ python sizer.py FILENAME.csv options
 
 FILENAME being the name of the csv file you wish to process.
 
-**options** is an integer representing the longest side of the sizes you wish to generate.
-
 The file created will be outputted as "AMZ_' + input_filename + '_' + ("%m_%d_%Y") + '.csv"
 
 ---------------------------------------------------------------------------------
@@ -27,13 +26,17 @@ python validator.py FILENAME.csv options
 
 FILENAME being the name of the csv file you wish to process.
 
-**options** is an integer representing the longest side of the sizes you wish to generate.
-
 The validator outputs three files:
 
 - 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '.csv'
 - 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_delete.csv'
 - 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_price.csv'
+
+---------------------------------------------------------------------------------
+
+**options** is an integer representing the longest side of the sizes you wish to generate.
+
+If no value is specified for options, then all sizes will be generated.
 
 ---------------------------------------------------------------------------------
 

@@ -49,14 +49,20 @@ writer.writerow(header_row1)
 writer.writerow(header_row2)
 writer.writerow(header_row3)
 
-bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
-bullet_point4 = "100% Satisfaction Guaranteed."
 
+
+standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
+						'18in x 24in', '16in x 24in', '24in x 30in', '24in x 36in', '10in x 08in', '12in x 08in',
+						'14in x 11in', '20in x 16in', '24in x 18in', '24in x 16in', '30in x 24in', '36in x 24in']
 count = 0;
 mod = math.ceil(totallines/20.0)
 percent = 0
 
 for item in newCsv:
+	
+	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
+	bullet_point4 = "Perfect for the Home or Office. Makes a great gift!"
+	bullet_point5 = "100% Satisfaction Guaranteed."
 	
 	#-------------------------- Progress Bar
 
@@ -193,7 +199,6 @@ for item in newCsv:
 			if long_side_squared < sqin:
 				del item_sizes[i]
 
-	bullet_point5 = item_name	
 	main_image_url = "www.historicpictoric.com/media" + image_folder +  image_name
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
@@ -235,6 +240,14 @@ for item in newCsv:
 		item_sku = part_number
 		relationship_type = "variation"
 		size_name = size['SizeName']
+
+		# check if size is standard, if not, change the bullets.
+		if size_name not in standard_size_names:
+
+			bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
+			bullet_point4 = "100% Satisfaction Guaranteed."
+			bullet_point5 = item_name
+
 		standard_price = size['Price']
 		quantity = "10"
 		item_package_quantity = "1"

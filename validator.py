@@ -67,17 +67,7 @@ price_writer = csv.writer(price_file)
 price_writer.writerow(header_row1)
 price_writer.writerow(header_row2)
 price_writer.writerow(header_row3)
-'''
-delete_fieldnames = ['item_sku']
 
-
-delete_writer = csv.DictWriter(delete_file, fieldnames=fieldnames)
-price_writer = csv.DictWriter(price_file, fieldnames=fieldnames)
-
-
-delete_writer.writeheader()
-price_writer.writeheader()
-'''
 count = 0;
 mod = math.ceil(totallines/20.0)
 percent = 0
@@ -86,14 +76,18 @@ price_list = []
 upload_list = []
 item_sizes = []
 parent_name = ""
+standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
+						'18in x 24in', '16in x 24in', '24in x 30in', '24in x 36in', '10in x 08in', '12in x 08in',
+						'14in x 11in', '20in x 16in', '24in x 18in', '24in x 16in', '30in x 24in', '36in x 24in']
 
-bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
-bullet_point4 = "100% Satisfaction Guaranteed."
 
 #for item in newCsv:
 
 for i in range(len(newCsv)):
 
+	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
+	bullet_point4 = "Perfect for the Home or Office. Makes a great gift!"
+	bullet_point5 = "100% Satisfaction Guaranteed."
 	#-------------------------- Progress Bar
 
 	count += 1
@@ -209,7 +203,6 @@ for i in range(len(newCsv)):
 		print "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
 		exit()
 
-	bullet_point5 = item_name	
 	main_image_url = "www.historicpictoric.com/media" + image_folder +  image_name
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
@@ -309,6 +302,13 @@ for i in range(len(newCsv)):
 						merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 						item_name_with_size = item_name + " " + size_name
 						
+						# check if size is standard, if not, change the bullets.
+						if size_name not in standard_size_names:
+
+							bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
+							bullet_point4 = "100% Satisfaction Guaranteed."
+							bullet_point5 = item_name
+
 						write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 							part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 							update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
@@ -331,7 +331,14 @@ for i in range(len(newCsv)):
 					website_shipping_weight_unit_of_measure = "lbs"
 					merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 					item_name_with_size = item_name + " " + size_name
-					
+
+					# check if size is standard, if not, change the bullets.
+					if size_name not in standard_size_names:
+
+						bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
+						bullet_point4 = "100% Satisfaction Guaranteed."
+						bullet_point5 = item_name	
+
 					write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 						part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
