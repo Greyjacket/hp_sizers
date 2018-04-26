@@ -233,7 +233,7 @@ def process_map_size(size, ratio, direction):
 		if size == 24.0 and direction == 'down':
 			size2 = 16.0
 		elif size == 24.0 and direction == 'up':
-			size2 = 32.0
+			size2 = 36.0
 		elif size == 44.0 and direction == 'down':
 			size2 = 30.0
 		else:
