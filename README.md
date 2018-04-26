@@ -3,6 +3,7 @@ Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
 
+- 4/26 Changed map sizing to scale with the natural ratio for 44 sizes.
 - 4/25 Changed bullets according to standard sizes
 - 4/17 Removed 16x20 item sizes for maps
 - 4/15 Created Validator
