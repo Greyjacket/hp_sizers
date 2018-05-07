@@ -112,9 +112,9 @@ def get_size_list(ratio):
 
 	if ratio < 1.1:
 		sizes = [12.0, 16.0, 24.0, 36.0, 44.0]
-	elif ratio >= 1.1 and ratio < 1.415:
+	elif ratio >= 1.1 and ratio < 1.39:
 		sizes = [11.0, 16.0, 18.0, 24.0, 32.0, 44.0]
-	elif ratio >= 1.415 and ratio < 1.9:
+	elif ratio >= 1.39 and ratio < 1.9:
 		sizes = [8.0, 16.0, 24.0, 30.0, 44.0]
 	elif ratio >= 1.9 and ratio < 3.0:
 		sizes = [16.0, 20.0, 24.0, 44.0]

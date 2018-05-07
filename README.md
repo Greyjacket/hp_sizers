@@ -3,6 +3,7 @@ Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
 
+- 5/07 Changed 3:2 grouping to 1.39 and above, as opposed to 1.415.
 - 4/26 Changed map sizing to scale with the natural ratio for 44 sizes.
 - 4/25 Changed bullets according to standard sizes
 - 4/17 Removed 16x20 item sizes for maps
@@ -88,7 +89,7 @@ Title must be <= 188 characters.
 		32 x 44
 		44 x 55
 
-	ratio between 1.3 and 1.415:
+	ratio between 1.3 and 1.39:
 		8 x 10
 		11 x 14
 		16 x 20
@@ -97,7 +98,7 @@ Title must be <= 188 characters.
 		32 x 44
 		44 x 60
 
-	ratio between 1.415 and 1.9:
+	ratio between 1.39 and 1.9:
 		8 x 12
 		16 x 24
 		24 x 36
