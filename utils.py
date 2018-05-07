@@ -209,7 +209,7 @@ def process_map_size(size, ratio, ratio_raw, direction):
 	elif ratio == 1.25:
 
 		if size == 24.0 and direction == 'down':
-			size2 = 18.0
+			size2 = 20.0
 		elif size == 24.0 and direction == 'up':
 			size2 = 30.0
 		elif size == 44.0 and direction == 'down':
@@ -222,7 +222,7 @@ def process_map_size(size, ratio, ratio_raw, direction):
 		if size == 24.0 and direction == 'down':
 			size2 = 18.0
 		elif size == 24.0 and direction == 'up':
-			size2 = 32.0
+			size2 = 30.0
 		elif size == 44.0 and direction == 'down':
 			size2 = process_second_map_size(44.0 * 1/ratio_raw)
 		else:
@@ -489,9 +489,9 @@ def get_aspect_ratio(ratio):
 		return ('', 1.1)
 	elif ratio >= 1.15 and ratio < 1.3:
 		return ("6:5", 1.25)
-	elif ratio >= 1.3 and ratio < 1.45:
+	elif ratio >= 1.3 and ratio < 1.39:
 		return ("4:3", 1.33)
-	elif ratio >= 1.45 and ratio < 1.9:
+	elif ratio >= 1.39 and ratio < 1.9:
 		return ("3:2", 1.5)
 	elif ratio >= 1.9 and ratio < 3.0:
 		return ("2:1", 2.0)
