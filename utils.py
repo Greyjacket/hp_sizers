@@ -91,7 +91,7 @@ def photo_sizer(image_height, image_width, sku):
 	ratio_rounded = ratio_info[1]
 	aspect_ratio = ratio_description
 
-	sizes = get_size_list(ratio_rounded)
+	sizes = get_photo_sizes(ratio_rounded)
 
 	options_list = {}
 
@@ -108,7 +108,7 @@ def photo_sizer(image_height, image_width, sku):
 
 	return item_sizes
 
-def get_size_list(ratio):
+def get_photo_sizes(ratio):
 
 	if ratio < 1.1:
 		sizes = [12.0, 16.0, 24.0, 36.0, 44.0]
