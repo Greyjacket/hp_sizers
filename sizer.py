@@ -63,7 +63,7 @@ for item in newCsv:
 	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
 	bullet_point4 = "Perfect for the Home or Office. Makes a great gift!"
 	bullet_point5 = "100% Satisfaction Guaranteed."
-	
+
 	#-------------------------- Progress Bar
 
 	count += 1
@@ -149,8 +149,8 @@ for item in newCsv:
 			print "Error: Format the input to include a Keywords/keywords field."
 			exit()
 
-	if len(keywords) > 250:
-		print "Warning: Description character count in SKU: " + sku + " exceeds 250 characters."
+	if len(keywords) > 2000:
+		print "Warning: Keyword character count in SKU: " + sku + " exceeds 250 characters."
 
 	try:
 		image_folder = item['image_folder']
