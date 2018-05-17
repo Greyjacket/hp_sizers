@@ -6,14 +6,19 @@ from collections import deque
 try:
 	filename = sys.argv[1]
 except:
-	print "\nPlease input a valid CSV filename.\n"
-	print "Format: python scriptname filename.\n"
+	print ("\nPlease input a valid CSV filename.\n")
+	print ("Format: python scriptname filename.\n")
 	exit()
 
 try:
 	options = float(sys.argv[2])
 except:
 	options = 1000.0
+
+try:
+	check_titles = (sys.argv[3])
+except:
+	check_titles = ""
 
 newCsv = []
 
@@ -24,15 +29,15 @@ price_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_price.c
 
 totallines = 0
 # open the file from console arguments
-with open(filename, 'rb') as csvfile:
+with open(filename) as csvfile:
 	reader = csv.DictReader(csvfile)
 	for row in reader:
 		newCsv.append(row)
 		totallines += 1
 
-delete_file = open(delete_output, 'wb') #wb for windows, else you'll see newlines added to csv
-upload_file = open(upload_output, 'wb') 
-price_file = open(price_output, 'wb')
+delete_file = open(delete_output, 'w') #wb for windows, else you'll see newlines added to csv
+upload_file = open(upload_output, 'w') 
+price_file = open(price_output, 'w')
 
 header_row1 = ('TemplateType=home', 'Version=2014.1119')
 
@@ -76,10 +81,13 @@ price_list = []
 upload_list = []
 item_sizes = []
 parent_name = ""
+
+#this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
+deque = deque(maxlen= 200)
+
 standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
 						'18in x 24in', '16in x 24in', '24in x 30in', '24in x 36in', '10in x 08in', '12in x 08in',
 						'14in x 11in', '20in x 16in', '24in x 18in', '24in x 16in', '30in x 24in', '36in x 24in']
-
 
 #for item in newCsv:
 
@@ -88,6 +96,7 @@ for i in range(len(newCsv)):
 	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
 	bullet_point4 = "Perfect for the Home or Office. Makes a great gift!"
 	bullet_point5 = "100% Satisfaction Guaranteed."
+
 	#-------------------------- Progress Bar
 
 	count += 1
@@ -113,7 +122,7 @@ for i in range(len(newCsv)):
 			try:
 				sku = item['SKU']
 			except:
-				print "Warning: image_width not formatted in SKU: " + sku
+				print( "Warning: image_width not formatted in SKU: " + sku)
 				continue
 
 	try:
@@ -122,7 +131,7 @@ for i in range(len(newCsv)):
 		try:
 			image_width = float(item['width'])
 		except:
-			print "Warning: image_width not formatted in SKU: " + sku
+			print ("Warning: image_width not formatted in SKU: " + sku)
 			continue
 
 	try:
@@ -131,7 +140,7 @@ for i in range(len(newCsv)):
 		try:
 			image_height = float(item['height'])
 		except:
-			print "Warning: Image Height not formatted in SKU: " + sku
+			print ("Warning: Image Height not formatted in SKU: " + sku)
 			continue
 
 	try:
@@ -143,7 +152,7 @@ for i in range(len(newCsv)):
 			try:
 				image_name = item['Image_Name']
 			except:
-				print "Warning: Image Name not formatted in SKU: " + sku
+				print ("Warning: Image Name not formatted in SKU: " + sku)
 				continue
 	try:
 		item_name = item['item_name']
@@ -154,10 +163,18 @@ for i in range(len(newCsv)):
 			try:
 				item_name = item['title']
 			except:
-				print "Please format the input with a Title/ItemName Field"
+				print ("Error: Please format the input with an item_name Field")
+				exit()
 
 	if len(item_name) > 188:
-		print "Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
+		print ("Error: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters.")
+		exit()
+
+	if check_titles != "":
+		if item_name in deque:
+			print ("\nError: duplicate item name in SKU: " + sku)
+			exit()
+		deque.append(item_name)
 	
 	try:
 		kind = item['kind']
@@ -168,7 +185,7 @@ for i in range(len(newCsv)):
 			try:
 				kind = item['category']				
 			except:
-				print "Error: Format the input to include an item kind or category: Photos, Maps or Prints."
+				print ("Error: Format the input to include an item kind or category: Photos, Maps or Prints.")
 				exit()
 	try:
 		keywords = item['keywords']
@@ -176,11 +193,12 @@ for i in range(len(newCsv)):
 		try:
 			keywords = item['Keywords']
 		except:
-			print "Error: Format the input to include a Keywords/keywords field."
+			print ("Error: Format the input to include a Keywords/keywords field.")
 			exit()
 
 	if len(keywords) > 250:
-		print "Warning: Description character count in SKU: " + sku + " exceeds 250 characters."
+		print ("Error: Description character count in SKU: " + sku + " exceeds 250 characters.")
+		exit()
 
 	try:
 		image_folder = item['image_folder']
@@ -188,7 +206,7 @@ for i in range(len(newCsv)):
 		try:
 			kind = item['ImageFolder']
 		except:
-			print "Error: Format the input to include an an image folder."
+			print ("Error: Format the input to include an an image folder.")
 			exit()
 
 	try:
@@ -197,13 +215,13 @@ for i in range(len(newCsv)):
 		try:
 			product_description = item['product description']
 		except:
-			print "Warning: No product description found for SKU: " + sku
+			print ("Warning: No product description found for SKU: " + sku)
 	
 	if len(product_description) > 2000:
-		print "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
+		print ("Error: Description character count in SKU: " + sku + " exceeds 2000 characters.")
 		exit()
 
-	main_image_url = "www.historicpictoric.com/media" + image_folder +  image_name
+	main_image_url = "www.historicpictoric.com/media" + '/' + image_folder + '/' + image_name
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
@@ -211,8 +229,9 @@ for i in range(len(newCsv)):
 	item_type = "prints"
 	update_delete = ""
 
-	if item['is_parent'] == 't':
+	if item['is_parent'] == 't' or item['is_parent'] == 'TRUE':
 		parent_name = sku
+		parent_sku = sku 
 
 		# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
 		if kind == "Map" or kind == "Maps":
@@ -233,46 +252,22 @@ for i in range(len(newCsv)):
 			options = int(options)	
 			long_side_squared = options * options
 
-			for i in xrange(len(item_sizes) -1, -1, -1):
+			for i in range(len(item_sizes) -1, -1, -1):
 				size = item_sizes[i]					
 				sqin = int(size['SqIn'])
 				if long_side_squared < sqin:
 					del item_sizes[i]
 
-		#-------------------------- Generate Parent
-
-		parent_sku = sku 
-		part_number =  parent_sku 
-		parent_child = "parent" 
-		item_sku = parent_sku
-		relationship_type = ""
-		size_name = ""
-		standard_price = ""
-		quantity = ""
-		product_tax_code = 'a_gen_tax'
-		item_package_quantity = ""
-		website_shipping_weight = ""
-		website_shipping_weight_unit_of_measure = ""
-		merchant_shipping_group_name = ""
-		
-		write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
-			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
-			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
-			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
-
-		upload_list.append(write_tuple)
-
 	# ---------------------------------------- Validation here
 	else:
-		if item['parent_sku_id'] == parent_name:
-			
+		if item['image_sku_id'] == parent_name:
+
 			#validate the sizenames
 			item_size_name = item['size_name']	
 			item_price = item['price']
 			valid = False
 
-			for i in xrange(len(item_sizes) -1, -1, -1):
+			for i in range(len(item_sizes) -1, -1, -1):
 				record = item_sizes[i]					
 				if record['SizeName'] == item_size_name:
 					valid = True	
@@ -286,7 +281,7 @@ for i in range(len(newCsv)):
 				delete_writer.writerow(delete_tuple)	
 
 			if next_item != None:
-				if next_item['is_parent'] == 't':
+				if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE':
 					for size in item_sizes:
 						part_number_str = re.sub('[ xin]', '', size['SizeName'])
 						part_number =  parent_name + "_" + part_number_str
@@ -298,6 +293,7 @@ for i in range(len(newCsv)):
 						quantity = "10"
 						item_package_quantity = "1"
 						website_shipping_weight = "1"
+						product_tax_code = 'a_gen_tax'
 						website_shipping_weight_unit_of_measure = "lbs"
 						merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 						item_name_with_size = item_name + " " + size_name
@@ -328,6 +324,7 @@ for i in range(len(newCsv)):
 					quantity = "10"
 					item_package_quantity = "1"
 					website_shipping_weight = "1"
+					product_tax_code = 'a_gen_tax'
 					website_shipping_weight_unit_of_measure = "lbs"
 					merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 					item_name_with_size = item_name + " " + size_name
@@ -351,7 +348,7 @@ for i in range(len(newCsv)):
 for sku in upload_list:
 	upload_writer.writerow(sku)
 
-print "\nFile written to " + upload_output
-print "\nFile written to " + delete_output
-print "\nFile written to " + price_output
+print ("\nFile written to " + upload_output)
+print ("\nFile written to " + delete_output)
+print ("\nFile written to " + price_output)
 upload_file.close()

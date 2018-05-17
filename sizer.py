@@ -22,6 +22,7 @@ output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
 newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
 totallines = 0
+
 # open the file from console arguments
 with open(filename, 'rb') as csvfile:
 	reader = csv.DictReader(csvfile)
@@ -49,7 +50,8 @@ writer.writerow(header_row1)
 writer.writerow(header_row2)
 writer.writerow(header_row3)
 
-
+#this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
+deque = deque( maxlen= 200)
 
 standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
 						'18in x 24in', '16in x 24in', '24in x 30in', '24in x 36in', '10in x 08in', '12in x 08in',
@@ -125,6 +127,12 @@ for item in newCsv:
 				item_name = item['title']
 			except:
 				print "Please format the input with a Title/ItemName Field"
+
+	if item_name in deque:
+		print ("\nError: duplicate item name in SKU: " + sku)
+		exit()
+	#
+	deque.append(item_name)
 
 	if len(item_name) > 188:
 		print "Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."

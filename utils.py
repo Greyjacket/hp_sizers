@@ -456,7 +456,7 @@ def generate_item_info(size, orientation, ratio, ratio_raw, sku):
 			height = size
 			width = size2
 	else:
-		print "Faulty orientation."
+		print ("Faulty orientation.")
 		exit()
 
 	# set the square inches
