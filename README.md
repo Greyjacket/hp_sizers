@@ -2,7 +2,7 @@
 Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
-
+- 5/18 Added deque to validator.
 - 5/07 Changed 3:2 grouping to 1.39 and above, as opposed to 1.415.
 - 4/26 Changed map sizing to scale with the natural ratio for 44 sizes.
 - 4/25 Changed bullets according to standard sizes
@@ -52,7 +52,9 @@ image_height **OR** height
 
 image_width **OR** width
 
-kind **OR** Kind **OR** category
+kind **OR** Kind **OR** category:
+	
+	Use 'photos', 'photo', 'Photograph', or 'photograph' for the field value.
 
 item_name **OR** Title **OR** title
 

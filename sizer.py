@@ -6,8 +6,8 @@ from collections import deque
 try:
 	filename = sys.argv[1]
 except:
-	print "\nPlease input a valid CSV filename.\n"
-	print "Format: python scriptname filename.\n"
+	print ("\nPlease input a valid CSV filename.\n")
+	print ("Format: python scriptname filename.\n")
 	exit()
 
 try:
@@ -94,7 +94,7 @@ for item in newCsv:
 		try:
 			image_width = float(item['width'])
 		except:
-			print "Warning: image_width not formatted in SKU: " + sku
+			print ("Warning: image_width not formatted in SKU: " + sku)
 			continue
 
 	try:
@@ -103,7 +103,7 @@ for item in newCsv:
 		try:
 			image_height = float(item['height'])
 		except:
-			print "Warning: Image Height not formatted in SKU: " + sku
+			print ("Warning: Image Height not formatted in SKU: " + sku)
 			continue
 
 	try:
@@ -115,7 +115,7 @@ for item in newCsv:
 			try:
 				image_name = item['Image_Name']
 			except:
-				print "Warning: Image Name not formatted in SKU: " + sku
+				print ("Warning: Image Name not formatted in SKU: " + sku)
 				continue
 	try:
 		item_name = item['item_name']
@@ -126,7 +126,7 @@ for item in newCsv:
 			try:
 				item_name = item['title']
 			except:
-				print "Please format the input with a Title/ItemName Field"
+				print ("Please format the input with a Title/ItemName Field")
 
 	if item_name in deque:
 		print ("\nError: duplicate item name in SKU: " + sku)
@@ -135,7 +135,7 @@ for item in newCsv:
 	deque.append(item_name)
 
 	if len(item_name) > 188:
-		print "Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
+		print ("Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters.")
 	
 	try:
 		kind = item['kind']
@@ -146,7 +146,7 @@ for item in newCsv:
 			try:
 				kind = item['category']				
 			except:
-				print "Error: Format the input to include an item kind or category: Photos, Maps or Prints."
+				print ("Error: Format the input to include an item kind or category: Photos, Maps or Prints.")
 				exit()
 	try:
 		keywords = item['keywords']
@@ -154,11 +154,11 @@ for item in newCsv:
 		try:
 			keywords = item['Keywords']
 		except:
-			print "Error: Format the input to include a Keywords/keywords field."
+			print ("Error: Format the input to include a Keywords/keywords field.")
 			exit()
 
 	if len(keywords) > 2000:
-		print "Warning: Keyword character count in SKU: " + sku + " exceeds 250 characters."
+		print ("Warning: Keyword character count in SKU: " + sku + " exceeds 250 characters.")
 
 	try:
 		image_folder = item['image_folder']
@@ -166,7 +166,7 @@ for item in newCsv:
 		try:
 			kind = item['ImageFolder']
 		except:
-			print "Error: Format the input to include an an image folder."
+			print ("Error: Format the input to include an an image folder.")
 			exit()
 
 	try:
@@ -175,10 +175,10 @@ for item in newCsv:
 		try:
 			product_description = item['product description']
 		except:
-			print "Warning: No product description found for SKU: " + sku
+			print ("Warning: No product description found for SKU: " + sku)
 	
 	if len(product_description) > 2000:
-		print "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
+		print ("Error: Description character count in SKU: " + sku + " exceeds 2000 characters.")
 		exit()
 
 	# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
@@ -190,7 +190,7 @@ for item in newCsv:
 		bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
 
-		if kind == "Photograph" or kind == "Photo" or kind == "photo":
+		if kind == "Photograph" or kind == "Photo" or kind == "photo" or kind == "photos":
 			bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
@@ -274,5 +274,5 @@ for item in newCsv:
 
 		item_name_with_size = ""
 
-print "\nFile written to " + output
+print ("\nFile written to " + output)
 newFile.close()

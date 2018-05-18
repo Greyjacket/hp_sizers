@@ -43,7 +43,7 @@ def process_photo_size(size, ratio):
 			size2 = 44.0		
 		else:
 			size2 = 60.0
-	elif ratio >= 1.39 and ratio < 1.6:
+	elif ratio >= 1.39 and ratio < 1.9:
 		if size == 8.0:
 			size2 = 12.0
 		elif size == 16.0:
@@ -54,7 +54,7 @@ def process_photo_size(size, ratio):
 			size2 = 44.0
 		else:
 			size2 = 66.0
-	elif ratio >= 1.6 and ratio < 3.0:
+	elif ratio >= 1.9 and ratio < 3.0:
 		if size == 16.0:
 			size2 = 32.0
 		elif size == 20.0:
