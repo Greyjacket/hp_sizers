@@ -44,12 +44,12 @@ header_row1 = ('TemplateType=home', 'Version=2014.1119')
 header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Product Type', 
 	'Brand Name', 'Manufacturer', 'Manufacturer Part Number', 'SKU', 'Parent SKU', 'Parentage', 'Relationship Type', 
 	'Variation Theme', 'Size', 'Update Delete', 'Standard Price', 'Quantity', 'Product Tax Code', 'Package Quantity', 'Shipping Weight', 'Website Shipping Weight Unit Of Measure', 
-	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms')
+	'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5','Main Image URL', 'Shipping-Template', 'Search Terms', 'Subject Matter', 'Other Attributes')
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer','part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
 	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
-	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1')
+	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1', 'thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
 
 # initialize csv writer
 upload_writer = csv.writer(upload_file)
@@ -187,6 +187,22 @@ for i in range(len(newCsv)):
 			except:
 				print ("Error: Format the input to include an item kind or category: Photos, Maps or Prints.")
 				exit()
+
+	try:
+		collection = item['collection']
+	except:
+		try:
+			collection = item['Collection']
+		except:
+			collection = ""
+			print ("Warning: No collection specified in Sku: " + sku)
+
+	try:
+		root_sku = item['root_sku']
+	except:
+		root_sku = ""	
+		print ("Warning: No root_sku specified in Sku: " + sku)
+
 	try:
 		keywords = item['keywords']
 	except:
@@ -309,7 +325,7 @@ for i in range(len(newCsv)):
 							part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 							update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 							website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-							bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
+							bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
 						upload_list.append(write_tuple)
 			else:
@@ -340,7 +356,7 @@ for i in range(len(newCsv)):
 						part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 						website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-						bullet_point5, main_image_url, merchant_shipping_group_name, keywords)
+						bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
 					upload_list.append(write_tuple)					
 
