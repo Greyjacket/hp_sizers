@@ -112,7 +112,7 @@ for i in range(len(newCsv)):
 		next_item = newCsv[i+1]
 	except:
 		next_item = None
-
+	
 	try:			
 		sku = item['item_sku']
 	except:
@@ -122,8 +122,8 @@ for i in range(len(newCsv)):
 			try:
 				sku = item['SKU']
 			except:
-				print( "Warning: image_width not formatted in SKU: " + sku)
-				continue
+				print( "Warning: Couldn't find a sku field.")
+				exit()
 
 	try:
 		image_width = float(item['image_width'])
@@ -222,8 +222,7 @@ for i in range(len(newCsv)):
 		try:
 			kind = item['ImageFolder']
 		except:
-			print ("Error: Format the input to include an an image folder.")
-			exit()
+			image_folder = ""
 
 	try:
 		product_description = item['product_description'] 
