@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import csv, sys, math, operator, re, os, time
 from utils import photo_sizer, map_sizer
 from collections import deque
@@ -26,6 +25,7 @@ input_name = os.path.splitext(filename)[0]
 upload_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 delete_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_delete.csv'
 price_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_price.csv'
+error_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.csv'
 
 totallines = 0
 # open the file from console arguments
@@ -35,9 +35,10 @@ with open(filename) as csvfile:
 		newCsv.append(row)
 		totallines += 1
 
-delete_file = open(delete_output, 'w') #wb for windows, else you'll see newlines added to csv
-upload_file = open(upload_output, 'w') 
-price_file = open(price_output, 'w')
+delete_file = open(delete_output, 'w', newline='') 
+upload_file = open(upload_output, 'w', newline='') 
+price_file = open(price_output, 'w', newline='')
+error_file = open(error_output, 'w', newline='')
 
 header_row1 = ('TemplateType=home', 'Version=2014.1119')
 
@@ -59,6 +60,7 @@ upload_writer.writerow(header_row1)
 upload_writer.writerow(header_row2)
 upload_writer.writerow(header_row3)
 
+# write the amazon headers
 header_row2 = ('SKU', 'Update Delete')
 header_row3 = ('item_sku', 'update_delete')
 delete_writer = csv.writer(delete_file)
@@ -72,6 +74,10 @@ price_writer = csv.writer(price_file)
 price_writer.writerow(header_row1)
 price_writer.writerow(header_row2)
 price_writer.writerow(header_row3)
+
+header_row2 = ('SKU', 'Error')
+error_writer = csv.writer(error_file)
+error_writer.writerow(header_row2)
 
 count = 0;
 mod = math.ceil(totallines/20.0)
@@ -92,6 +98,8 @@ standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in
 #for item in newCsv:
 
 for i in range(len(newCsv)):
+
+	error_string = "" 
 
 	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
 	bullet_point4 = "Perfect for the Home or Office. Makes a great gift!"
@@ -131,8 +139,9 @@ for i in range(len(newCsv)):
 		try:
 			image_width = float(item['width'])
 		except:
-			print ("Warning: image_width not formatted in SKU: " + sku)
-			continue
+			errormessage = "Warning: image_width not formatted in SKU: " + sku
+			print (errormessage)
+			error_string = error_string + errormessage
 
 	try:
 		image_height = float(item['image_height'])
@@ -140,8 +149,9 @@ for i in range(len(newCsv)):
 		try:
 			image_height = float(item['height'])
 		except:
-			print ("Warning: Image Height not formatted in SKU: " + sku)
-			continue
+			errormessage = "Warning: Image Height not formatted in SKU: " + sku
+			print (errormessage)
+			error_string = error_string + errormessage + '. '
 
 	try:
 		image_name = item['image_name']
@@ -152,8 +162,9 @@ for i in range(len(newCsv)):
 			try:
 				image_name = item['Image_Name']
 			except:
-				print ("Warning: Image Name not formatted in SKU: " + sku)
-				continue
+				errormessage = "Warning: Image Name not formatted in SKU: " + sku
+				print (errormessage)
+				error_string = error_string + errormessage + '. '
 	try:
 		item_name = item['item_name']
 	except:
@@ -163,12 +174,14 @@ for i in range(len(newCsv)):
 			try:
 				item_name = item['title']
 			except:
-				print ("Error: Please format the input with an item_name Field")
-				exit()
+				errormessage = "Error: Please format the input with an item_name Field in SKU: " + sku
+				print (errormessage)
+				error_string = error_string + errormessage + '. '
 
 	if len(item_name) > 188:
-		print ("Error: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters.")
-		exit()
+		errormessage = "Error: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
+		print (errormessage)
+		error_string = error_string + errormessage + '. '
 
 	if check_titles != "":
 		if item_name in deque:
@@ -185,8 +198,9 @@ for i in range(len(newCsv)):
 			try:
 				kind = item['category']				
 			except:
-				print ("Error: Format the input to include an item kind or category: Photos, Maps or Prints.")
-				exit()
+				errormessage = "Error: Format the input to include an item kind or category: Photos, Maps or Prints in SKU: " + sku 
+				print (errormessage)
+				error_string = error_string + errormessage + '. '
 
 	try:
 		collection = item['collection']
@@ -213,8 +227,9 @@ for i in range(len(newCsv)):
 			exit()
 
 	if len(keywords) > 250:
-		print ("Error: Description character count in SKU: " + sku + " exceeds 250 characters.")
-		exit()
+		errormessage = "Error: Description character count in SKU: " + sku + " exceeds 250 characters."
+		print (errormessage)
+		error_string = error_string + errormessage + '. '
 
 	try:
 		image_folder = item['image_folder']
@@ -230,11 +245,20 @@ for i in range(len(newCsv)):
 		try:
 			product_description = item['product description']
 		except:
-			print ("Warning: No product description found for SKU: " + sku)
-	
+			errormessage = "Warning: No product description found for SKU: " + sku
+			print (errormessage)
+			error_string = error_string + errormessage + '. '
+
 	if len(product_description) > 2000:
-		print ("Error: Description character count in SKU: " + sku + " exceeds 2000 characters.")
-		exit()
+		errormessage = "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
+		print (errormessage)
+		error_string = error_string + errormessage + '. '
+
+	# stop here if there have not been any errors for this record.
+	if error_string != "":
+		error_tuple = (sku, error_string)
+		error_writer.writerow(error_tuple)
+		continue
 
 	main_image_url = "www.historicpictoric.com/media" + '/' + image_folder + '/' + image_name
 	brand_name = 'Historic Pictoric'
@@ -257,7 +281,7 @@ for i in range(len(newCsv)):
 			bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
 
-			if kind == "Photograph" or kind == "Photo" or kind == "photo":
+			if kind == "Photograph" or kind == "Photo" or kind == "photo" or kind == "photos":
 				bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 				bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
@@ -360,10 +384,15 @@ for i in range(len(newCsv)):
 					upload_list.append(write_tuple)					
 
 			
-for sku in upload_list:
-	upload_writer.writerow(sku)
+for record in upload_list:
+	upload_writer.writerow(record)
 
 print ("\nFile written to " + upload_output)
 print ("\nFile written to " + delete_output)
 print ("\nFile written to " + price_output)
+print ("\nFile written to " + error_output)
+
 upload_file.close()
+delete_file.close()
+price_file.close()
+error_file.close()
