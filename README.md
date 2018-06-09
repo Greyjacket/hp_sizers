@@ -2,6 +2,7 @@
 Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
+ -6/8 Validator includes singles
  -5/19 Added collection and root sku to validator and sizer.
 - 5/17 Added deque to validator.
 - 5/07 Changed 3:2 grouping to 1.39 and above, as opposed to 1.415.

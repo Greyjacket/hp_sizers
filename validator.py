@@ -267,11 +267,11 @@ for i in range(len(newCsv)):
 	variation_theme = "size"
 	item_type = "prints"
 	update_delete = ""
+	unique = False
 
 	if item['is_parent'] == 't' or item['is_parent'] == 'TRUE':
 		parent_name = sku
 		parent_sku = sku 
-
 		# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
 		if kind == "Map" or kind == "Maps":
 			bullet_point1 = "Giclee Art Print on High Quality Matte Paper"
@@ -297,8 +297,13 @@ for i in range(len(newCsv)):
 				if long_side_squared < sqin:
 					del item_sizes[i]
 
+		# check next item
+		if next_item != None:
+			if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE':
+				unique = True
+
 	# ---------------------------------------- Validation here
-	else:
+	if item['is_parent'] != 't' or item['is_parent'] != 'TRUE' or unique == True:
 		if item['image_sku_id'] == parent_name:
 
 			#validate the sizenames
@@ -349,7 +354,6 @@ for i in range(len(newCsv)):
 							update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 							website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 							bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
-
 						upload_list.append(write_tuple)
 			else:
 				for size in item_sizes:
@@ -383,7 +387,6 @@ for i in range(len(newCsv)):
 
 					upload_list.append(write_tuple)					
 
-			
 for record in upload_list:
 	upload_writer.writerow(record)
 
