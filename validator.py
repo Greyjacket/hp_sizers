@@ -276,7 +276,7 @@ for i in range(len(newCsv)):
 		if kind == "Map" or kind == "Maps":
 			bullet_point1 = "Giclee Art Print on High Quality Matte Paper"
 			bullet_point2 = "Professionally Printed Vintage Map Reproduction"
-			item_sizes = map_sizer(image_height, image_width, sku)
+			item_sizes = map_sizer(image_height, image_width, root_sku)
 		else:
 			bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
@@ -285,7 +285,7 @@ for i in range(len(newCsv)):
 				bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 				bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
-			item_sizes = photo_sizer(image_height, image_width, sku)
+			item_sizes = photo_sizer(image_height, image_width, root_sku)
 
 		if options != "":
 			options = int(options)	
@@ -297,15 +297,41 @@ for i in range(len(newCsv)):
 				if long_side_squared < sqin:
 					del item_sizes[i]
 
+	# ---------------------------------------- Generate parent
+
 		# check next item
 		if next_item != None:
-			if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE':
+
+			if (next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE'):
 				unique = True
 
-	# ---------------------------------------- Validation here
-	if item['is_parent'] != 't' or item['is_parent'] != 'TRUE' or unique == True:
-		if item['image_sku_id'] == parent_name:
+			parent_sku = parent_name 
+			part_number =  parent_sku 
+			parent_child = "parent" 
+			item_sku = parent_sku
+			relationship_type = ""
+			size_name = ""
+			standard_price = ""
+			quantity = ""
+			product_tax_code = 'a_gen_tax'
+			item_package_quantity = ""
+			website_shipping_weight = ""
+			website_shipping_weight_unit_of_measure = ""
+			merchant_shipping_group_name = ""
+			update_delete = "PartialUpdate"
+			
+			write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
+				part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
+				update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
+				website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
+				bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
+			upload_list.append(write_tuple)
+
+	# ---------------------------------------- Validation here
+
+	if (item['is_parent'] != 't' and item['is_parent'] != 'TRUE') or unique == True:
+		if item['image_sku_id'] == parent_name:
 			#validate the sizenames
 			item_size_name = item['size_name']	
 			item_price = item['price']
@@ -328,7 +354,7 @@ for i in range(len(newCsv)):
 				if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE':
 					for size in item_sizes:
 						part_number_str = re.sub('[ xin]', '', size['SizeName'])
-						part_number =  parent_name + "_" + part_number_str
+						part_number =  root_sku + "_" + part_number_str
 						parent_child = "" # leave blank for children
 						item_sku = part_number
 						relationship_type = "variation"
@@ -358,7 +384,7 @@ for i in range(len(newCsv)):
 			else:
 				for size in item_sizes:
 					part_number_str = re.sub('[ xin]', '', size['SizeName'])
-					part_number =  parent_name + "_" + part_number_str
+					part_number =  root_sku + "_" + part_number_str
 					parent_child = "" # leave blank for children
 					item_sku = part_number
 					relationship_type = "variation"
