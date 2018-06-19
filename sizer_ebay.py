@@ -223,10 +223,18 @@ for item in newCsv:
 	relationship = ''
 	size_name = ""
 	standard_price = ""
+	quantity = '100'
+	paypal_accepted = '1'
+	paypal_email = 'brian@historicpictoric.com'
+	location = 'NY, USA'
+	shipping_option = 'USPSFirstClass'
+	shipping_cost = '0'
+	dispatch_time_max = '2'
+	returns_accepted = 'ReturnsAccepted'
 
 	write_tuple = ('Add', parent_sku, item_sku, '98466', '', item_name, '',	relationship, relationship_details,	'', '',	'',	'', '',	'',
-	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	pic_url, '', product_description,	'FixedPrice',	'', standard_price,	'',	'',	'',	'',	'',	'',	'',	
-	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'','')
+	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	pic_url, '', product_description,	'FixedPrice', 'GTC', standard_price, '', quantity,	paypal_accepted, paypal_email,	'',	'',	location,	
+	'',	shipping_option, shipping_cost,	'',	'',	dispatch_time_max,	'',	'',	'',	returns_accepted,	'',	'',	'',	'','')
 
 	writer.writerow(write_tuple)
 
@@ -245,8 +253,8 @@ for item in newCsv:
 		item_name_with_size = item_name + " " + size_name
 		
 		write_tuple = ('Add', parent_sku, item_sku, '98466', '', item_name_with_size, '',	relationship, relationship_details,	'', '',	'',	'', '',	'',
-		'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	pic_url, '', product_description,	'FixedPrice',	'', standard_price,	'',	'',	'',	'',	'',	'',	'',	
-		'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'','')
+		'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	pic_url, '', product_description,	'FixedPrice', 'GTC', standard_price, '', quantity,	paypal_accepted, paypal_email,	'',	'',	location,	
+		'',	shipping_option, shipping_cost,	'',	'',	dispatch_time_max,	'',	'',	'',	returns_accepted,	'',	'',	'',	'','')
 	
 		writer.writerow(write_tuple)
 

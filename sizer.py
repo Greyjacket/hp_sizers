@@ -198,7 +198,7 @@ for item in newCsv:
 		exit()
 
 	# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
-	if kind == "Map" or kind == "Maps":
+	if kind == "Map" or kind == "Maps" or kind == "maps" or kind == "maps":
 		bullet_point1 = "Giclee Art Print on High Quality Matte Paper"
 		bullet_point2 = "Professionally Printed Vintage Map Reproduction"
 		item_sizes = map_sizer(image_height, image_width, sku)
