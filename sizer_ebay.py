@@ -20,7 +20,7 @@ newCsv = []
 input_name = os.path.splitext(filename)[0]
 output = 'Ebay_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
-newFile = open(output, 'w') #wb for windows, else you'll see newlines added to csv
+newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
 totallines = 0
 
 # open the file from console arguments
@@ -40,7 +40,7 @@ writer = csv.writer(newFile)
 # write the amazon headers
 writer.writerow(header_row1)
 
-#this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
+#this deque keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
 deque = deque( maxlen= 200)
 
 standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
