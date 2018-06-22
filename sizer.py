@@ -20,11 +20,11 @@ newCsv = []
 input_name = os.path.splitext(filename)[0]
 output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
-newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
+newFile = open(output, 'w') #wb for windows, else you'll see newlines added to csv
 totallines = 0
 
 # open the file from console arguments
-with open(filename, 'rb') as csvfile:
+with open(filename, 'rt') as csvfile:
 	reader = csv.DictReader(csvfile)
 	for row in reader:
 		newCsv.append(row)
@@ -43,6 +43,7 @@ header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_ty
 	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1', 'thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
 
 # initialize csv writer
+# writer = csv.writer(newFile, delimiter='\t')
 writer = csv.writer(newFile)
 
 # write the amazon headers
@@ -86,7 +87,8 @@ for item in newCsv:
 			try:
 				sku = item['SKU']
 			except:
-				sku = item['Title']
+				print ("No item sku found in input. (Possible BOM?)")
+				exit()
 
 	try:
 		image_width = float(item['image_width'])
@@ -217,7 +219,7 @@ for item in newCsv:
 		options = int(options)	
 		long_side_squared = options * options
 
-		for i in xrange(len(item_sizes) -1, -1, -1):
+		for i in range(len(item_sizes) -1, -1, -1):
 			size = item_sizes[i]					
 			sqin = int(size['SqIn'])
 			if long_side_squared < sqin:

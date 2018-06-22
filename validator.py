@@ -29,7 +29,7 @@ error_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.c
 
 totallines = 0
 # open the file from console arguments
-with open(filename) as csvfile:
+with open(filename, 'rt') as csvfile:
 	reader = csv.DictReader(csvfile)
 	for row in reader:
 		newCsv.append(row)
