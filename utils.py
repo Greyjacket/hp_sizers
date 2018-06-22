@@ -302,9 +302,6 @@ def map_sizer(image_height, image_width, sku):
 	aspect_ratio = ratio_description
 
 	if ratio_rounded == 1.0:
-		item_size = generate_item_info(12, 'up',ratio_normalized, ratio_raw, sku)
-		if item_size:		
-			item_sizes.append(item_size)
 		
 		item_size = generate_item_info(16, 'up',ratio_normalized, ratio_raw, sku)
 		if item_size:		
