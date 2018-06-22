@@ -20,7 +20,7 @@ newCsv = []
 input_name = os.path.splitext(filename)[0]
 output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
-newFile = open(output, 'w') #wb for windows, else you'll see newlines added to csv
+newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
 totallines = 0
 
 # open the file from console arguments
