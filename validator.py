@@ -24,12 +24,12 @@ newCsv = []
 input_name = os.path.splitext(filename)[0]
 upload_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 delete_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_delete.csv'
-price_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_price.csv'
+update_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_update.csv'
 error_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.csv'
 
 totallines = 0
 # open the file from console arguments
-with open(filename, 'rt') as csvfile:
+with open(filename) as csvfile:
 	reader = csv.DictReader(csvfile)
 	for row in reader:
 		newCsv.append(row)
@@ -37,7 +37,7 @@ with open(filename, 'rt') as csvfile:
 
 delete_file = open(delete_output, 'w', newline='') 
 upload_file = open(upload_output, 'w', newline='') 
-price_file = open(price_output, 'w', newline='')
+update_file = open(update_output, 'w', newline='')
 error_file = open(error_output, 'w', newline='')
 
 header_row1 = ('TemplateType=home', 'Version=2014.1119')
@@ -68,12 +68,14 @@ delete_writer.writerow(header_row1)
 delete_writer.writerow(header_row2)
 delete_writer.writerow(header_row3)
 
-header_row2 = ('SKU', 'Update Delete', 'Standard Price')
-header_row3 = ('item_sku', 'update_delete', 'standard_price')
-price_writer = csv.writer(price_file)
-price_writer.writerow(header_row1)
-price_writer.writerow(header_row2)
-price_writer.writerow(header_row3)
+#header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price', 'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5')
+#header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price' 'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5')
+header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price')
+header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price')
+update_writer = csv.writer(update_file)
+update_writer.writerow(header_row1)
+update_writer.writerow(header_row2)
+update_writer.writerow(header_row3)
 
 header_row2 = ('SKU', 'Error')
 error_writer = csv.writer(error_file)
@@ -154,13 +156,13 @@ for i in range(len(newCsv)):
 			error_string = error_string + errormessage + '. '
 
 	try:
-		image_name = item['image_name']
+		image_filename = item['image_filename']
 	except:
 		try:
-			image_name = item['name']
+			image_filename = item['name']
 		except:
 			try:
-				image_name = item['Image_Name']
+				image_filename = item['Image_Name']
 			except:
 				errormessage = "Warning: Image Name not formatted in SKU: " + sku
 				print (errormessage)
@@ -177,11 +179,24 @@ for i in range(len(newCsv)):
 				errormessage = "Error: Please format the input with an item_name Field in SKU: " + sku
 				print (errormessage)
 				error_string = error_string + errormessage + '. '
-
+	
 	if len(item_name) > 188:
 		errormessage = "Error: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
 		print (errormessage)
 		error_string = error_string + errormessage + '. '
+
+	try:
+		image_title = item['image_title']
+	except:
+			errormessage = "Error: Please format the input with an image_title Field in SKU: " + sku
+			print (errormessage)
+			error_string = error_string + errormessage + '. '
+	
+	if len(image_title) > 188:
+		errormessage = "Error: image_title character count in SKU: " + sku + " exceeds 188 characters."
+		print (errormessage)
+		error_string = error_string + errormessage + '. '
+
 
 	if check_titles != "":
 		if item_name in deque:
@@ -260,7 +275,7 @@ for i in range(len(newCsv)):
 		error_writer.writerow(error_tuple)
 		continue
 
-	main_image_url = "www.historicpictoric.com/media" + '/' + image_folder + '/' + image_name
+	main_image_url = "www.historicpictoric.com/media" + '/' + image_folder + '/' + image_filename
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
@@ -297,7 +312,11 @@ for i in range(len(newCsv)):
 				if long_side_squared < sqin:
 					del item_sizes[i]
 
-	# ---------------------------------------- Generate parent
+		if item_name != image_title or product_description != item['image_description']:
+			update_tuple = (item['item_sku'], 'PartialUpdate', image_title, item['image_description'])
+			update_writer.writerow(update_tuple)
+
+	# ---------------------------------------- Validate parent
 
 		# check next item
 		if next_item != None:
@@ -305,6 +324,7 @@ for i in range(len(newCsv)):
 			if (next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE'):
 				unique = True
 
+			'''
 			parent_sku = parent_name 
 			part_number =  parent_sku 
 			parent_child = "parent" 
@@ -319,32 +339,38 @@ for i in range(len(newCsv)):
 			website_shipping_weight_unit_of_measure = ""
 			merchant_shipping_group_name = ""
 			update_delete = "PartialUpdate"
+
 			
-			write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
+			write_tuple = (item_type, image_title, product_description, feed_product_type, brand_name, manufacturer,
 				part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
 				update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 				website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 				bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
 			upload_list.append(write_tuple)
+			'''
 
-	# ---------------------------------------- Validation here
+	# ---------------------------------------- Validate children
 
 	if (item['is_parent'] != 't' and item['is_parent'] != 'TRUE') or unique == True:
+		
 		if item['image_sku_id'] == parent_name:
 			#validate the sizenames
 			item_size_name = item['size_name']	
 			item_price = item['price']
 			valid = False
 
+			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
-				record = item_sizes[i]					
+				record = item_sizes[i]
+
 				if record['SizeName'] == item_size_name:
 					valid = True	
-					del item_sizes[i]		
-					if record['Price'] != item_price:
-						price_tuple = (item['item_sku'], 'PartialUpdate', record['Price'])
-						price_writer.writerow(price_tuple)
+					del item_sizes[i]
+					item_name_with_size = image_title + " " + record['SizeName']			
+					if record['Price'] != item_price or item_name != item_name_with_size or product_description != item['image_description']:
+						update_tuple = (item['item_sku'], 'PartialUpdate', item_name_with_size, item['image_description'], record['Price'])
+						update_writer.writerow(update_tuple)
 
 			if valid == False:
 				delete_tuple = (item['item_sku'], 'Delete')
@@ -396,14 +422,14 @@ for i in range(len(newCsv)):
 					product_tax_code = 'a_gen_tax'
 					website_shipping_weight_unit_of_measure = "lbs"
 					merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
-					item_name_with_size = item_name + " " + size_name
-
+					item_name_with_size = image_title + " " + size_name
+					update_delete = ""
 					# check if size is standard, if not, change the bullets.
 					if size_name not in standard_size_names:
 
 						bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 						bullet_point4 = "100% Satisfaction Guaranteed."
-						bullet_point5 = item_name	
+						bullet_point5 = image_title	
 
 					write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 						part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
@@ -418,10 +444,10 @@ for record in upload_list:
 
 print ("\nFile written to " + upload_output)
 print ("\nFile written to " + delete_output)
-print ("\nFile written to " + price_output)
+print ("\nFile written to " + update_output)
 print ("\nFile written to " + error_output)
 
 upload_file.close()
 delete_file.close()
-price_file.close()
+update_file.close()
 error_file.close()

@@ -72,7 +72,8 @@ for item in newCsv:
 			try:
 				sku = item['SKU']
 			except:
-				sku = item['Title']
+				print ("No item sku found in input. (Possible BOM?)")
+				exit()
 
 	try:
 		image_width = float(item['image_width'])

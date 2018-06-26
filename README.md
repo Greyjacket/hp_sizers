@@ -126,7 +126,6 @@ Use 'maps', 'map', 'Map', or 'Maps' for the field value.
 For maps, the ratio is rounded to one of the ratios below.
 
 	if ratio = 1.0:
-		12 x 12
 		16 x 16
 		24 x 24
 		36 x 36
