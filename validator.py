@@ -29,16 +29,23 @@ error_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.c
 
 totallines = 0
 # open the file from console arguments
-with open(filename) as csvfile:
-	reader = csv.DictReader(csvfile)
-	for row in reader:
-		newCsv.append(row)
-		totallines += 1
+if os.name is 'nt':
+	with open(filename, 'r', encoding="utf-8") as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			newCsv.append(row)
+			totallines += 1
+else:
+	with open(filename, 'r', encoding="utf-8") as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			newCsv.append(row)
+			totallines += 1	
 
-delete_file = open(delete_output, 'w', newline='') 
-upload_file = open(upload_output, 'w', newline='') 
-update_file = open(update_output, 'w', newline='')
-error_file = open(error_output, 'w', newline='')
+delete_file = open(delete_output, 'w', newline='', encoding="utf-8") 
+upload_file = open(upload_output, 'w', newline='', encoding="utf-8") 
+update_file = open(update_output, 'w', newline='', encoding="utf-8")
+error_file = open(error_output, 'w', newline='', encoding="utf-8")
 
 header_row1 = ('TemplateType=home', 'Version=2014.1119')
 
@@ -353,7 +360,7 @@ for i in range(len(newCsv)):
 	# ---------------------------------------- Validate children
 
 	if (item['is_parent'] != 't' and item['is_parent'] != 'TRUE') or unique == True:
-		
+
 		if item['image_sku_id'] == parent_name:
 			#validate the sizenames
 			item_size_name = item['size_name']	
@@ -372,7 +379,7 @@ for i in range(len(newCsv)):
 						update_tuple = (item['item_sku'], 'PartialUpdate', item_name_with_size, item['image_description'], record['Price'])
 						update_writer.writerow(update_tuple)
 
-			if valid == False:
+			if valid == False and unique == False:
 				delete_tuple = (item['item_sku'], 'Delete')
 				delete_writer.writerow(delete_tuple)	
 
