@@ -187,10 +187,9 @@ for i in range(len(newCsv)):
 				print (errormessage)
 				error_string = error_string + errormessage + '. '
 	
-	if len(item_name) > 188:
-		errormessage = "Error: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters."
+	if len(item_name) > 200:
+		errormessage = "Error: Title/Item Name character count in SKU: " + sku + " exceeds 200 characters."
 		print (errormessage)
-		error_string = error_string + errormessage + '. '
 
 	try:
 		image_title = item['image_title']
@@ -249,7 +248,7 @@ for i in range(len(newCsv)):
 			exit()
 
 	if len(keywords) > 250:
-		errormessage = "Error: Description character count in SKU: " + sku + " exceeds 250 characters."
+		errormessage = "Error: Keywords character count in SKU: " + sku + " exceeds 250 characters."
 		print (errormessage)
 		error_string = error_string + errormessage + '. '
 
@@ -399,16 +398,16 @@ for i in range(len(newCsv)):
 						product_tax_code = 'a_gen_tax'
 						website_shipping_weight_unit_of_measure = "lbs"
 						merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
-						item_name_with_size = item_name + " " + size_name
+						item_name_with_size = image_title + " " + size_name
 						
 						# check if size is standard, if not, change the bullets.
 						if size_name not in standard_size_names:
 
 							bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 							bullet_point4 = "100% Satisfaction Guaranteed."
-							bullet_point5 = item_name
+							bullet_point5 = image_title
 
-						write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
+						write_tuple = (item_type, item_name_with_size, item['image_description'], feed_product_type, brand_name, manufacturer,
 							part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 							update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 							website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
@@ -438,7 +437,7 @@ for i in range(len(newCsv)):
 						bullet_point4 = "100% Satisfaction Guaranteed."
 						bullet_point5 = image_title	
 
-					write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
+					write_tuple = (item_type, item_name_with_size, item['image_description'], feed_product_type, brand_name, manufacturer,
 						part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 						website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,

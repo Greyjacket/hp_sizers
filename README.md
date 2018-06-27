@@ -38,6 +38,10 @@ The validator outputs three files:
 - 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_delete.csv'
 - 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_price.csv'
 
+The file needs to be a table join using the amazon variation table and the image table.
+
+Also, the resultant CSV needs to be sorted in ascending order by Id, else the validator won't function correctly.
+
 ---------------------------------------------------------------------------------
 
 **options** is an integer representing the longest side of the sizes you wish to generate.
