@@ -240,17 +240,20 @@ for i in range(len(newCsv)):
 
 	try:
 		keywords = item['keywords']
+		if len(keywords) > 250:
+			errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters. Falling back to image original."
+			error_string = error_string + errormessage + '. '
+			try:
+				keywords = item['original_keywords']
+				if len(keywords) > 250:
+					errormessage = "Warning: Keywords character count in Image item: " + item['sku'] + " exceeds 250 characters. Falling back to image original."
+					error_string = error_string + errormessage + '. '					
+			except:
+				print ("Error: Format the input to include an original_keywords field.")
+				exit()
 	except:
-		try:
-			keywords = item['Keywords']
-		except:
-			print ("Error: Format the input to include a Keywords/keywords field.")
-			exit()
-
-	if len(keywords) > 250:
-		errormessage = "Error: Keywords character count in SKU: " + sku + " exceeds 250 characters."
-		print (errormessage)
-		error_string = error_string + errormessage + '. '
+		print ("Error: Format the input to include a keywords field.")
+		exit()	
 
 	try:
 		image_folder = item['image_folder']
@@ -321,6 +324,7 @@ for i in range(len(newCsv)):
 		if item_name != image_title or product_description != item['image_description']:
 			update_tuple = (item['item_sku'], 'PartialUpdate', image_title, item['image_description'])
 			update_writer.writerow(update_tuple)
+
 
 	# ---------------------------------------- Validate parent
 
@@ -430,6 +434,7 @@ for i in range(len(newCsv)):
 					merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 					item_name_with_size = image_title + " " + size_name
 					update_delete = ""
+
 					# check if size is standard, if not, change the bullets.
 					if size_name not in standard_size_names:
 
