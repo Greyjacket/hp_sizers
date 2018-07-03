@@ -84,7 +84,7 @@ update_writer.writerow(header_row1)
 update_writer.writerow(header_row2)
 update_writer.writerow(header_row3)
 
-header_row2 = ('SKU', 'Error')
+header_row2 = ('SKU', 'Error', 'Field Value')
 error_writer = csv.writer(error_file)
 error_writer.writerow(header_row2)
 
@@ -96,7 +96,7 @@ price_list = []
 upload_list = []
 item_sizes = []
 parent_name = ""
-
+field_value = ""
 #this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
 deque = deque(maxlen= 200)
 
@@ -188,6 +188,7 @@ for i in range(len(newCsv)):
 				error_string = error_string + errormessage + '. '
 	
 	if len(item_name) > 200:
+		field_value = item_name
 		errormessage = "Error: Title/Item Name character count in SKU: " + sku + " exceeds 200 characters."
 		print (errormessage)
 
@@ -199,6 +200,7 @@ for i in range(len(newCsv)):
 			error_string = error_string + errormessage + '. '
 	
 	if len(image_title) > 188:
+		field_value = image_title
 		errormessage = "Error: image_title character count in SKU: " + sku + " exceeds 188 characters."
 		print (errormessage)
 		error_string = error_string + errormessage + '. '
@@ -233,10 +235,10 @@ for i in range(len(newCsv)):
 			print ("Warning: No collection specified in Sku: " + sku)
 
 	try:
-		root_sku = item['root_sku']
+		root_sku = item['image_sku_id']
 	except:
 		root_sku = ""	
-		print ("Warning: No root_sku specified in Sku: " + sku)
+		print ("Warning: No image_sku_id specified in Sku: " + sku)
 
 	try:
 		keywords = item['keywords']
@@ -246,6 +248,7 @@ for i in range(len(newCsv)):
 			try:
 				keywords = item['original_keywords']
 				if len(keywords) > 250:
+					field_value = keywords
 					errormessage = "Warning: Keywords character count in Image item: " + item['sku'] + " exceeds 250 characters. Falling back to image original."
 					error_string = error_string + errormessage + '. '					
 			except:
@@ -271,16 +274,17 @@ for i in range(len(newCsv)):
 		except:
 			errormessage = "Warning: No product description found for SKU: " + sku
 			print (errormessage)
-			error_string = error_string + errormessage + '. '
+
 
 	if len(product_description) > 2000:
+		field_value = product_description
 		errormessage = "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
 		print (errormessage)
 		error_string = error_string + errormessage + '. '
 
 	# stop here if there have not been any errors for this record.
 	if error_string != "":
-		error_tuple = (sku, error_string)
+		error_tuple = (sku, error_string, field_value)
 		error_writer.writerow(error_tuple)
 		continue
 
@@ -293,7 +297,7 @@ for i in range(len(newCsv)):
 	update_delete = ""
 	unique = False
 
-	if item['is_parent'] == 't' or item['is_parent'] == 'TRUE':
+	if item['is_parent'] == 't' or item['is_parent'] == 'TRUE' or item['is_parent'] == 'true':
 		parent_name = sku
 		parent_sku = sku 
 		# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
@@ -309,6 +313,10 @@ for i in range(len(newCsv)):
 				bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
 				bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
+		if collection == "Biodiversity Library":
+			bullet_point1 = "This is a high quality single print - NOT the entire catalog/magazine"
+			bullet_point2 = "Professionally Printed Fine Art Reproduction - Giclee Art Print on High Quality Matte Paper"			
+					
 			item_sizes = photo_sizer(image_height, image_width, root_sku)
 
 		if options != "":
@@ -331,7 +339,7 @@ for i in range(len(newCsv)):
 		# check next item
 		if next_item != None:
 
-			if (next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE'):
+			if (next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE' or next_item['is_parent'] == 'true'):
 				unique = True
 
 			'''
@@ -362,13 +370,13 @@ for i in range(len(newCsv)):
 
 	# ---------------------------------------- Validate children
 
-	if (item['is_parent'] != 't' and item['is_parent'] != 'TRUE') or unique == True:
-
+	if (item['is_parent'] != 't' and item['is_parent'] != 'TRUE' and item['is_parent'] != 'true') or unique == True:
 		if item['image_sku_id'] == parent_name:
 			#validate the sizenames
 			item_size_name = item['size_name']	
 			item_price = item['price']
 			valid = False
+			
 
 			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
@@ -387,7 +395,7 @@ for i in range(len(newCsv)):
 				delete_writer.writerow(delete_tuple)	
 
 			if next_item != None:
-				if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE':
+				if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE' or next_item['is_parent'] == 'true':
 					for size in item_sizes:
 						part_number_str = re.sub('[ xin]', '', size['SizeName'])
 						part_number =  root_sku + "_" + part_number_str
