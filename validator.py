@@ -323,7 +323,7 @@ for i in range(len(newCsv)):
 			
 			item_sizes = photo_sizer(image_height, image_width, root_sku)
 
-		if options != "":
+		if options:
 			options = int(options)	
 			long_side_squared = options * options
 
