@@ -2,6 +2,8 @@
 Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
+- 7/3 pythonized validator.
+- 6/30 Fixed plenty of bugs.
 - 6/15 Ebay sizer first draft added.
 - 6/15 Validator outputs parent as an updated field.
 - 6/8 Validator includes singles (check this)
@@ -32,7 +34,7 @@ python validator.py FILENAME.csv options
 
 FILENAME being the name of the csv file you wish to process.
 
-The validator outputs three files:
+The validator outputs three files into a target directory called AMZ_ + input name:
 
 - 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '.csv'
 - 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_delete.csv'
@@ -124,6 +126,8 @@ Use 'maps', 'map', 'Map', or 'Maps' for the field value.
 		24 x 48
 		44 x 88
 
+A ratio larger than 3.0 will be scaled accordingly.
+
 ---------------------------------------------------------------------------------
 #### Map sizing:
 
@@ -160,11 +164,7 @@ For maps, the ratio is rounded to one of the ratios below.
 		30 x 44
 		44 x 66
 
-	if ratio == 2.0:
-		16 x 32
-		20 x 40
-		24 x 48
-		44 x 88
+A ratio larger than 1.6 will be scale accordingly.
 
 ---------------------------------------------------------------------------------
 

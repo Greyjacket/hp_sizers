@@ -19,15 +19,22 @@ try:
 except:
 	check_titles = ""
 
+#------------------------------------------------------- Create write directory and filenames
+input_name = os.path.splitext(filename)[0]
+
+target_directory = 'AMZ_' + input_name
+if not os.path.exists(target_directory):
+    os.makedirs(target_directory)
+
+upload_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
+delete_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_delete.csv'
+update_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_update.csv'
+error_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.csv'
+
+#------------------------------------------------------- Create target files
+totallines = 0
 newCsv = []
 
-input_name = os.path.splitext(filename)[0]
-upload_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
-delete_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_delete.csv'
-update_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_update.csv'
-error_output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.csv'
-
-totallines = 0
 # open the file from console arguments
 if os.name is 'nt':
 	with open(filename, 'r', encoding="utf-8") as csvfile:
@@ -62,12 +69,11 @@ header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_ty
 # initialize csv writer
 upload_writer = csv.writer(upload_file)
 
-# write the amazon headers
+#------------------------------------------------------- write the amazon headers
 upload_writer.writerow(header_row1)
 upload_writer.writerow(header_row2)
 upload_writer.writerow(header_row3)
 
-# write the amazon headers
 header_row2 = ('SKU', 'Update Delete')
 header_row3 = ('item_sku', 'update_delete')
 delete_writer = csv.writer(delete_file)
@@ -75,8 +81,6 @@ delete_writer.writerow(header_row1)
 delete_writer.writerow(header_row2)
 delete_writer.writerow(header_row3)
 
-#header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price', 'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5')
-#header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price' 'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5')
 header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price')
 header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price')
 update_writer = csv.writer(update_file)
@@ -88,26 +92,24 @@ header_row2 = ('SKU', 'Error', 'Field Value')
 error_writer = csv.writer(error_file)
 error_writer.writerow(header_row2)
 
-count = 0;
-mod = math.ceil(totallines/20.0)
-percent = 0
-
 price_list = []
 upload_list = []
 item_sizes = []
 parent_name = ""
 field_value = ""
-#this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
+
+#------------------------------------------------------- this deque  keeps track of duplicate item names
 deque = deque(maxlen= 200)
 
 standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
 						'18in x 24in', '16in x 24in', '24in x 30in', '24in x 36in', '10in x 08in', '12in x 08in',
 						'14in x 11in', '20in x 16in', '24in x 18in', '24in x 16in', '30in x 24in', '36in x 24in']
 
-#for item in newCsv:
+count = 0;
+mod = math.ceil(totallines/20.0)
+percent = 0
 
 for i in range(len(newCsv)):
-
 	error_string = "" 
 
 	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
@@ -295,13 +297,19 @@ for i in range(len(newCsv)):
 	variation_theme = "size"
 	item_type = "prints"
 	update_delete = ""
-	unique = False
+	is_parent = True if item['is_parent'] in ['True', 'true', 'TRUE', 't', 'T'] else False
+	is_unique = False
+	
+	if is_parent:
 
-	if item['is_parent'] == 't' or item['is_parent'] == 'TRUE' or item['is_parent'] == 'true':
+		is_map = True if kind in ['Maps', 'maps', 'Map', 'map'] else False
+		is_photograph = True if kind in ['Photograph', 'Photos', 'Photo', 'photo', 'photos'] else False
+
 		parent_name = sku
 		parent_sku = sku 
+
 		# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
-		if kind == "Map" or kind == "Maps":
+		if is_map:
 			bullet_point1 = "Giclee Art Print on High Quality Matte Paper"
 			bullet_point2 = "Professionally Printed Vintage Map Reproduction"
 			item_sizes = map_sizer(image_height, image_width, root_sku)
@@ -309,14 +317,10 @@ for i in range(len(newCsv)):
 			bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
 
-			if kind == "Photograph" or kind == "Photo" or kind == "photo" or kind == "photos":
+			if is_photograph:
 				bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
-				bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
-
-		if collection == "Biodiversity Library":
-			bullet_point1 = "This is a high quality single print - NOT the entire catalog/magazine"
-			bullet_point2 = "Professionally Printed Fine Art Reproduction - Giclee Art Print on High Quality Matte Paper"			
-					
+				bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"	
+			
 			item_sizes = photo_sizer(image_height, image_width, root_sku)
 
 		if options != "":
@@ -333,51 +337,52 @@ for i in range(len(newCsv)):
 			update_tuple = (item['item_sku'], 'PartialUpdate', image_title, item['image_description'])
 			update_writer.writerow(update_tuple)
 
+		if collection == "Biodiversity Library":
+			bullet_point1 = "This is a high quality single print - NOT the entire catalog/magazine"
+			bullet_point2 = "Professionally Printed Fine Art Reproduction - Giclee Art Print on High Quality Matte Paper"
 
-	# ---------------------------------------- Validate parent
+		# check if item is its own parent
+		if next_item:
+			is_unique = True if next_item['is_parent'] in ['True', 'true', 'TRUE', 't', 'T'] else False
+		else:
+			is_unique = True
 
-		# check next item
-		if next_item != None:
+		'''
+		parent_sku = parent_name 
+		part_number =  parent_sku 
+		parent_child = "parent" 
+		item_sku = parent_sku
+		relationship_type = ""
+		size_name = ""
+		standard_price = ""
+		quantity = ""
+		product_tax_code = 'a_gen_tax'
+		item_package_quantity = ""
+		website_shipping_weight = ""
+		website_shipping_weight_unit_of_measure = ""
+		merchant_shipping_group_name = ""
+		update_delete = "PartialUpdate"
 
-			if (next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE' or next_item['is_parent'] == 'true'):
-				unique = True
+		
+		write_tuple = (item_type, image_title, product_description, feed_product_type, brand_name, manufacturer,
+			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
+			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
+			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
+			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
-			'''
-			parent_sku = parent_name 
-			part_number =  parent_sku 
-			parent_child = "parent" 
-			item_sku = parent_sku
-			relationship_type = ""
-			size_name = ""
-			standard_price = ""
-			quantity = ""
-			product_tax_code = 'a_gen_tax'
-			item_package_quantity = ""
-			website_shipping_weight = ""
-			website_shipping_weight_unit_of_measure = ""
-			merchant_shipping_group_name = ""
-			update_delete = "PartialUpdate"
-
-			
-			write_tuple = (item_type, image_title, product_description, feed_product_type, brand_name, manufacturer,
-				part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
-				update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
-				website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-				bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
-
-			upload_list.append(write_tuple)
-			'''
+		upload_list.append(write_tuple)
+		'''
 
 	# ---------------------------------------- Validate children
 
-	if (item['is_parent'] != 't' and item['is_parent'] != 'TRUE' and item['is_parent'] != 'true') or unique == True:
+	if not is_parent or is_unique:
+
 		if item['image_sku_id'] == parent_name:
-			#validate the sizenames
+
 			item_size_name = item['size_name']	
 			item_price = item['price']
 			valid = False
-			
-
+					
 			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
 				record = item_sizes[i]
@@ -390,12 +395,13 @@ for i in range(len(newCsv)):
 						update_tuple = (item['item_sku'], 'PartialUpdate', item_name_with_size, item['image_description'], record['Price'])
 						update_writer.writerow(update_tuple)
 
-			if valid == False and unique == False:
+			if valid == False and is_unique == False:
 				delete_tuple = (item['item_sku'], 'Delete')
 				delete_writer.writerow(delete_tuple)	
 
-			if next_item != None:
+			if next_item:
 				if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE' or next_item['is_parent'] == 'true':
+
 					for size in item_sizes:
 						part_number_str = re.sub('[ xin]', '', size['SizeName'])
 						part_number =  root_sku + "_" + part_number_str
