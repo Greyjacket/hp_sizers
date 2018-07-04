@@ -303,7 +303,6 @@ for i in range(len(newCsv)):
 	if is_parent:
 
 		is_map = True if kind in ['Maps', 'maps', 'Map', 'map'] else False
-		is_photograph = True if kind in ['Photograph', 'Photos', 'Photo', 'photo', 'photos'] else False
 
 		parent_name = sku
 		parent_sku = sku 
@@ -316,6 +315,8 @@ for i in range(len(newCsv)):
 		else:
 			bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
+			
+			is_photograph = True if kind in ['Photograph', 'Photos', 'Photo', 'photo', 'photos'] else False
 
 			if is_photograph:
 				bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
@@ -382,7 +383,8 @@ for i in range(len(newCsv)):
 			item_size_name = item['size_name']	
 			item_price = item['price']
 			valid = False
-					
+			
+			print('test' is 'test')	
 			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
 				record = item_sizes[i]
@@ -426,7 +428,7 @@ for i in range(len(newCsv)):
 							bullet_point5 = image_title
 
 						write_tuple = (item_type, item_name_with_size, item['image_description'], feed_product_type, brand_name, manufacturer,
-							part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+							part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
 							update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 							website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 							bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
@@ -457,7 +459,7 @@ for i in range(len(newCsv)):
 						bullet_point5 = image_title	
 
 					write_tuple = (item_type, item_name_with_size, item['image_description'], feed_product_type, brand_name, manufacturer,
-						part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
+						part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 						website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 						bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
