@@ -1,5 +1,7 @@
 import csv, sys, math, operator, re, os, time
 from utils import photo_sizer, map_sizer
+from row_reader import extract_items
+from product_addition import description_text
 from collections import deque
 
 try:
@@ -110,6 +112,7 @@ mod = math.ceil(totallines/20.0)
 percent = 0
 
 for i in range(len(newCsv)):
+	
 	error_string = "" 
 
 	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
@@ -130,156 +133,47 @@ for i in range(len(newCsv)):
 	try:
 		next_item = newCsv[i+1]
 	except:
-		next_item = None
+		next_item = None	
 	
-	try:			
-		sku = item['item_sku']
-	except:
-		try:
-			sku = item['sku']
-		except:
-			try:
-				sku = item['SKU']
-			except:
-				print( "Warning: Couldn't find a sku field.")
-				exit()
+	return_dict = extract_items(item)
 
-	try:
-		image_width = float(item['image_width'])
-	except:
-		try:
-			image_width = float(item['width'])
-		except:
-			errormessage = "Warning: image_width not formatted in SKU: " + sku
-			print (errormessage)
-			error_string = error_string + errormessage
+	sku = return_dict['sku']
+	item_name = return_dict['item_name']
+	image_title = return_dict['image_title']
+	keywords = return_dict['keywords']
+	amz_description = return_dict['product_description']
+	product_description = return_dict['image_description'] + description_text #add additional description
+	collection = return_dict['collection']
+	category = return_dict['category']
+	image_folder = return_dict['image_folder']
+	image_filename = return_dict['image_filename']
+	image_height = return_dict['image_height']
+	image_width = return_dict['image_width']
+	root_sku = return_dict['root_sku']
 
-	try:
-		image_height = float(item['image_height'])
-	except:
-		try:
-			image_height = float(item['height'])
-		except:
-			errormessage = "Warning: Image Height not formatted in SKU: " + sku
-			print (errormessage)
-			error_string = error_string + errormessage + '. '
-
-	try:
-		image_filename = item['image_filename']
-	except:
-		try:
-			image_filename = item['name']
-		except:
-			try:
-				image_filename = item['Image_Name']
-			except:
-				errormessage = "Warning: Image Name not formatted in SKU: " + sku
-				print (errormessage)
-				error_string = error_string + errormessage + '. '
-	try:
-		item_name = item['item_name']
-	except:
-		try: 
-			item_name = item['Title']
-		except:
-			try:
-				item_name = item['title']
-			except:
-				errormessage = "Error: Please format the input with an item_name Field in SKU: " + sku
-				print (errormessage)
-				error_string = error_string + errormessage + '. '
-	
 	if len(item_name) > 200:
-		field_value = item_name
+		field_value = 'item_name'
 		errormessage = "Error: Title/Item Name character count in SKU: " + sku + " exceeds 200 characters."
 		print (errormessage)
-
-	try:
-		image_title = item['image_title']
-	except:
-			errormessage = "Error: Please format the input with an image_title Field in SKU: " + sku
-			print (errormessage)
-			error_string = error_string + errormessage + '. '
 	
 	if len(image_title) > 188:
-		field_value = image_title
+		field_value = 'image_title'
 		errormessage = "Error: image_title character count in SKU: " + sku + " exceeds 188 characters."
 		print (errormessage)
 		error_string = error_string + errormessage + '. '
-
 
 	if check_titles != "":
 		if item_name in deque:
 			print ("\nError: duplicate item name in SKU: " + sku)
 			exit()
 		deque.append(item_name)
-	
-	try:
-		kind = item['kind']
-	except:
-		try:
-			kind = item['Kind']
-		except:
-			try:
-				kind = item['category']				
-			except:
-				errormessage = "Error: Format the input to include an item kind or category: Photos, Maps or Prints in SKU: " + sku 
-				print (errormessage)
-				error_string = error_string + errormessage + '. '
 
-	try:
-		collection = item['collection']
-	except:
-		try:
-			collection = item['Collection']
-		except:
-			collection = ""
-			print ("Warning: No collection specified in Sku: " + sku)
-
-	try:
-		root_sku = item['image_sku_id']
-	except:
-		root_sku = ""	
-		print ("Warning: No image_sku_id specified in Sku: " + sku)
-
-	try:
-		keywords = item['keywords']
-		if len(keywords) > 250:
-			errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters. Falling back to image original."
-			error_string = error_string + errormessage + '. '
-			try:
-				keywords = item['original_keywords']
-				if len(keywords) > 250:
-					field_value = keywords
-					errormessage = "Warning: Keywords character count in Image item: " + item['sku'] + " exceeds 250 characters. Falling back to image original."
-					error_string = error_string + errormessage + '. '					
-			except:
-				print ("Error: Format the input to include an original_keywords field.")
-				exit()
-	except:
-		print ("Error: Format the input to include a keywords field.")
-		exit()	
-
-	try:
-		image_folder = item['image_folder']
-	except:
-		try:
-			kind = item['ImageFolder']
-		except:
-			image_folder = ""
-
-	try:
-		product_description = item['product_description'] 
-	except:
-		try:
-			product_description = item['product description']
-		except:
-			errormessage = "Warning: No product description found for SKU: " + sku
-			print (errormessage)
-
+	if len(keywords) > 250:
+		errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters. Falling back to image original."
+		error_string = error_string + errormessage + '. '
 
 	if len(product_description) > 2000:
-		field_value = product_description
+		field_value = 'product_description'
 		errormessage = "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
 		print (errormessage)
 		error_string = error_string + errormessage + '. '
@@ -302,7 +196,7 @@ for i in range(len(newCsv)):
 	
 	if is_parent:
 
-		is_map = True if kind in ['Maps', 'maps', 'Map', 'map'] else False
+		is_map = True if category in ['Maps', 'maps', 'Map', 'map'] else False
 
 		parent_name = sku
 		parent_sku = sku 
@@ -316,7 +210,7 @@ for i in range(len(newCsv)):
 			bullet_point1 = "Giclee Art Print on High Quality Archival Matte Paper"
 			bullet_point2 = "Professionally Printed Vintage Fine Art Poster Reproduction"
 			
-			is_photograph = True if kind in ['Photograph', 'Photos', 'Photo', 'photo', 'photos'] else False
+			is_photograph = True if category in ['Photograph', 'Photos', 'Photo', 'photo', 'photos'] else False
 
 			if is_photograph:
 				bullet_point1 = "Giclee Photo Print on High Quality Archival Luster Photo Paper"
@@ -334,8 +228,8 @@ for i in range(len(newCsv)):
 				if long_side_squared < sqin:
 					del item_sizes[i]
 
-		if item_name != image_title or product_description != item['image_description']:
-			update_tuple = (item['item_sku'], 'PartialUpdate', image_title, item['image_description'])
+		if item_name != image_title or product_description != amz_description:
+			update_tuple = (sku, 'PartialUpdate', image_title, product_description)
 			update_writer.writerow(update_tuple)
 
 		if collection == "Biodiversity Library":
@@ -384,7 +278,6 @@ for i in range(len(newCsv)):
 			item_price = item['price']
 			valid = False
 			
-			print('test' is 'test')	
 			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
 				record = item_sizes[i]
@@ -427,7 +320,7 @@ for i in range(len(newCsv)):
 							bullet_point4 = "100% Satisfaction Guaranteed."
 							bullet_point5 = image_title
 
-						write_tuple = (item_type, item_name_with_size, item['image_description'], feed_product_type, brand_name, manufacturer,
+						write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 							part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
 							update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 							website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
@@ -458,7 +351,7 @@ for i in range(len(newCsv)):
 						bullet_point4 = "100% Satisfaction Guaranteed."
 						bullet_point5 = image_title	
 
-					write_tuple = (item_type, item_name_with_size, item['image_description'], feed_product_type, brand_name, manufacturer,
+					write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 						part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 						website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
