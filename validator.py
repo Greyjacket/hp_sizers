@@ -132,9 +132,11 @@ for i in range(len(newCsv)):
 	item = newCsv[i]
 	try:
 		next_item = newCsv[i+1]
+		last_child = next_item['is_parent'] in ['True', 'true', 'TRUE', 't', 'T']
 	except:
 		next_item = None	
-	
+		last_child = True
+
 	return_dict = extract_items(item)
 
 	sku = return_dict['sku']
@@ -142,7 +144,7 @@ for i in range(len(newCsv)):
 	image_title = return_dict['image_title']
 	keywords = return_dict['keywords']
 	amz_description = return_dict['product_description']
-	product_description = return_dict['image_description'] + description_text #add additional description
+	product_description = '<p>' + return_dict['image_description'] + description_text + '</p>' #add additional description and tags
 	collection = return_dict['collection']
 	category = return_dict['category']
 	image_folder = return_dict['image_folder']
@@ -161,12 +163,6 @@ for i in range(len(newCsv)):
 		errormessage = "Error: image_title character count in SKU: " + sku + " exceeds 188 characters."
 		print (errormessage)
 		error_string = error_string + errormessage + '. '
-
-	if check_titles != "":
-		if item_name in deque:
-			print ("\nError: duplicate item name in SKU: " + sku)
-			exit()
-		deque.append(item_name)
 
 	if len(keywords) > 250:
 		errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters. Falling back to image original."
@@ -192,7 +188,7 @@ for i in range(len(newCsv)):
 	item_type = "prints"
 	update_delete = ""
 	is_parent = True if item['is_parent'] in ['True', 'true', 'TRUE', 't', 'T'] else False
-	is_unique = False
+	unique = False
 	
 	if is_parent:
 
@@ -238,9 +234,9 @@ for i in range(len(newCsv)):
 
 		# check if item is its own parent
 		if next_item:
-			is_unique = True if next_item['is_parent'] in ['True', 'true', 'TRUE', 't', 'T'] else False
+			unique = True if next_item['is_parent'] in ['True', 'true', 'TRUE', 't', 'T'] else False
 		else:
-			is_unique = True
+			unique = True
 
 		'''
 		parent_sku = parent_name 
@@ -270,7 +266,7 @@ for i in range(len(newCsv)):
 
 	# ---------------------------------------- Validate children
 
-	if not is_parent or is_unique:
+	if not is_parent or unique:
 
 		if item['image_sku_id'] == parent_name:
 
@@ -290,43 +286,12 @@ for i in range(len(newCsv)):
 						update_tuple = (item['item_sku'], 'PartialUpdate', item_name_with_size, item['image_description'], record['Price'])
 						update_writer.writerow(update_tuple)
 
-			if valid == False and is_unique == False:
+			#delete if not valid and child is not its own parent
+			if not valid and not unique:
 				delete_tuple = (item['item_sku'], 'Delete')
 				delete_writer.writerow(delete_tuple)	
 
-			if next_item:
-				if next_item['is_parent'] == 't' or next_item['is_parent'] == 'TRUE' or next_item['is_parent'] == 'true':
-
-					for size in item_sizes:
-						part_number_str = re.sub('[ xin]', '', size['SizeName'])
-						part_number =  root_sku + "_" + part_number_str
-						parent_child = "" # leave blank for children
-						item_sku = part_number
-						relationship_type = "variation"
-						size_name = size['SizeName']
-						standard_price = size['Price']
-						quantity = "10"
-						item_package_quantity = "1"
-						website_shipping_weight = "1"
-						product_tax_code = 'a_gen_tax'
-						website_shipping_weight_unit_of_measure = "lbs"
-						merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
-						item_name_with_size = image_title + " " + size_name
-						
-						# check if size is standard, if not, change the bullets.
-						if size_name not in standard_size_names:
-
-							bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
-							bullet_point4 = "100% Satisfaction Guaranteed."
-							bullet_point5 = image_title
-
-						write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
-							part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
-							update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
-							website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-							bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
-						upload_list.append(write_tuple)
-			else:
+			if last_child:
 				for size in item_sizes:
 					part_number_str = re.sub('[ xin]', '', size['SizeName'])
 					part_number =  root_sku + "_" + part_number_str
@@ -342,22 +307,25 @@ for i in range(len(newCsv)):
 					website_shipping_weight_unit_of_measure = "lbs"
 					merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 					item_name_with_size = image_title + " " + size_name
-					update_delete = ""
-
+					
 					# check if size is standard, if not, change the bullets.
 					if size_name not in standard_size_names:
 
 						bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
 						bullet_point4 = "100% Satisfaction Guaranteed."
-						bullet_point5 = image_title	
+						bullet_point5 = image_title
+
+					if item_name_with_size in deque:
+						print ("\nError: duplicate item name in SKU: " + sku)
+						exit()
+					deque.append(item_name_with_size)
 
 					write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 						part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 						website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 						bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
-
-					upload_list.append(write_tuple)					
+					upload_list.append(write_tuple)
 
 for record in upload_list:
 	upload_writer.writerow(record)
