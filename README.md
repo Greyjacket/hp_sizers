@@ -2,6 +2,7 @@
 Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
+- 7/6 Added test case and abstracted return dictionary
 - 7/3 pythonized validator.
 - 6/30 Fixed plenty of bugs.
 - 6/15 Ebay sizer first draft added.
@@ -95,7 +96,7 @@ Use 'maps', 'map', 'Map', or 'Maps' for the field value.
 		24 x 24
 		36 x 36
 		44 x 44
-		
+
 	ratio between 1.1 and 1.3:
 		8 x 10
 		11 x 14
