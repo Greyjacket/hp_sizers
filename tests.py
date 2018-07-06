@@ -4,7 +4,7 @@ from utils import photo_sizer, map_sizer
 class TestPhotoSizer(unittest.TestCase):
 
     def setUp(self):
-        self.photo_sizes1 = photo_sizer(1095, 1000, '###')
+        self.photo_sizes1 = photo_sizer(1055, 1000, '###')
         self.photo_sizes2 = photo_sizer(1000,  1095, '###')
         self.photo_sizes3 = photo_sizer(1000,  1200, '###')
         self.photo_sizes4 = photo_sizer(1000,  1333, '###')
@@ -22,8 +22,8 @@ class TestPhotoSizer(unittest.TestCase):
         self.photo_size16 = photo_sizer(1000,  1000, '###')
 
     def test_sizenames(self):
-        list1 = ['12in x 12in', '16in x 16in', '24in x 24in', '36in x 36in']
-        assertion = True for size in self.photosizes1 if size['SizeName'] in list1 
+        list1 = ['12in x 12in', '16in x 16in', '24in x 24in', '36in x 36in', '44in x 44in']
+        assertion = True if False not in [size['SizeName'] in list1 for size in self.photo_sizes1 ] else False
         self.assertTrue(assertion)
     '''
     def test_isupper(self):

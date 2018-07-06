@@ -94,7 +94,8 @@ Use 'maps', 'map', 'Map', or 'Maps' for the field value.
 		16 x 16
 		24 x 24
 		36 x 36
-
+		44 x 44
+		
 	ratio between 1.1 and 1.3:
 		8 x 10
 		11 x 14
