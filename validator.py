@@ -1,8 +1,9 @@
 import csv, sys, math, operator, re, os, time
 from utils import photo_sizer, map_sizer
 from row_reader import extract_items
-from product_addition import description_text
+from product_addition import description_text1, description_text2, description_text3
 from collections import deque
+from functools import reduce
 
 try:
 	filename = sys.argv[1]
@@ -76,21 +77,22 @@ upload_writer.writerow(header_row1)
 upload_writer.writerow(header_row2)
 upload_writer.writerow(header_row3)
 
-header_row2 = ('SKU', 'Update Delete')
+header_row2 = ('Sku', 'Update Delete')
 header_row3 = ('item_sku', 'update_delete')
 delete_writer = csv.writer(delete_file)
 delete_writer.writerow(header_row1)
 delete_writer.writerow(header_row2)
 delete_writer.writerow(header_row3)
 
-header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price')
-header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price')
+header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price', 'Size', 'Subject Matter', 'Other Attributes')
+header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price', 'size_name', 'thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
+
 update_writer = csv.writer(update_file)
 update_writer.writerow(header_row1)
 update_writer.writerow(header_row2)
 update_writer.writerow(header_row3)
 
-header_row2 = ('SKU', 'Error', 'Field Value')
+header_row2 = ('sku', 'Error', 'Field Value')
 error_writer = csv.writer(error_file)
 error_writer.writerow(header_row2)
 
@@ -101,7 +103,7 @@ parent_name = ""
 field_value = ""
 
 #------------------------------------------------------- this deque  keeps track of duplicate item names
-deque = deque(maxlen= 200)
+deque = deque(maxlen= 2000)
 
 standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
 						'18in x 24in', '16in x 24in', '24in x 30in', '24in x 36in', '10in x 08in', '12in x 08in',
@@ -144,7 +146,17 @@ for i in range(len(newCsv)):
 	image_title = return_dict['image_title']
 	keywords = return_dict['keywords']
 	amz_description = return_dict['product_description']
-	product_description = '<p>' + return_dict['image_description'] + description_text + '</p>' #add additional description and tags
+	product_description_tagged = '<p>' + return_dict['image_description'] + '</p>'
+
+	if len(product_description_tagged  + '<p>' + description_text1 + '</p>') <= 2000:
+		correct_product_description = product_description_tagged  + '<p>' + description_text1 + '</p>'
+	elif len(product_description_tagged  + '<p>' + description_text2 + '</p>') <= 2000:
+		correct_product_description = product_description_tagged + '<p>' + description_text2 + '</p>'
+	elif len(product_description_tagged  + '<p>' + description_text3 + '</p>') <= 2000:
+		correct_product_description = product_description_tagged + '<p>' + description_text3 + '</p>'
+	else:
+		correct_product_description = product_description_tagged
+
 	collection = return_dict['collection']
 	category = return_dict['category']
 	image_folder = return_dict['image_folder']
@@ -155,24 +167,25 @@ for i in range(len(newCsv)):
 
 	if len(item_name) > 200:
 		field_value = 'item_name'
-		errormessage = "Error: Title/Item Name character count in SKU: " + sku + " exceeds 200 characters."
+		errormessage = "Error: AMZ item name character count in SKU: " + sku + " exceeds 200 characters."
+		error_string = error_string + errormessage 
 		print (errormessage)
 	
 	if len(image_title) > 188:
 		field_value = 'image_title'
 		errormessage = "Error: image_title character count in SKU: " + sku + " exceeds 188 characters."
 		print (errormessage)
-		error_string = error_string + errormessage + '. '
+		error_string = error_string + errormessage 
 
 	if len(keywords) > 250:
 		errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters. Falling back to image original."
-		error_string = error_string + errormessage + '. '
+		error_string = error_string + errormessage 
 
-	if len(product_description) > 2000:
+	if len(correct_product_description) > 2000:
 		field_value = 'product_description'
-		errormessage = "Error: Description character count in SKU: " + sku + " exceeds 2000 characters."
+		errormessage = "Warning: Product Description character count in SKU: " + sku + " exceeds 2000 characters."
 		print (errormessage)
-		error_string = error_string + errormessage + '. '
+		error_string = error_string + errormessage 
 
 	# stop here if there have not been any errors for this record.
 	if error_string != "":
@@ -180,7 +193,7 @@ for i in range(len(newCsv)):
 		error_writer.writerow(error_tuple)
 		continue
 
-	main_image_url = "www.historicpictoric.com/media" + '/' + image_folder + '/' + image_filename
+	main_image_url = "###PATH###" + '/' + image_folder + '/' + image_filename
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
@@ -224,10 +237,6 @@ for i in range(len(newCsv)):
 				if long_side_squared < sqin:
 					del item_sizes[i]
 
-		if item_name != image_title or product_description != amz_description:
-			update_tuple = (sku, 'PartialUpdate', image_title, product_description)
-			update_writer.writerow(update_tuple)
-
 		if collection == "Biodiversity Library":
 			bullet_point1 = "This is a high quality single print - NOT the entire catalog/magazine"
 			bullet_point2 = "Professionally Printed Fine Art Reproduction - Giclee Art Print on High Quality Matte Paper"
@@ -238,32 +247,6 @@ for i in range(len(newCsv)):
 		else:
 			unique = True
 
-		'''
-		parent_sku = parent_name 
-		part_number =  parent_sku 
-		parent_child = "parent" 
-		item_sku = parent_sku
-		relationship_type = ""
-		size_name = ""
-		standard_price = ""
-		quantity = ""
-		product_tax_code = 'a_gen_tax'
-		item_package_quantity = ""
-		website_shipping_weight = ""
-		website_shipping_weight_unit_of_measure = ""
-		merchant_shipping_group_name = ""
-		update_delete = "PartialUpdate"
-
-		
-		write_tuple = (item_type, image_title, product_description, feed_product_type, brand_name, manufacturer,
-			part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
-			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
-			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
-			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
-
-		upload_list.append(write_tuple)
-		'''
-
 	# ---------------------------------------- Validate children
 
 	if not is_parent or unique:
@@ -273,24 +256,79 @@ for i in range(len(newCsv)):
 			item_size_name = item['size_name']	
 			item_price = item['price']
 			valid = False
-			
+			sales = float(item['sales'])
+			closest_record = ''
+			smallest_sqin = 100000
+
 			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
 				record = item_sizes[i]
+				correct_size_name = record['SizeName']
+				correct_item_name = image_title + " " + correct_size_name
+				correct_price = record['Price']
 
-				if record['SizeName'] == item_size_name:
+				# this is to preserve sales history
+				if correct_size_name != item_size_name:
+
+					if sales > 0:
+						size_values1 = [int(s) for s in item_size_name.replace('in', '').split() if s.isdigit()]
+						size_values2 = [int(s) for s in correct_size_name.replace('in', '').split() if s.isdigit()]
+						
+						if not size_values1:
+							item_size_name_adjusted = item_size_name.replace('x', ' x ')
+							size_values1 = [int(s) for s in item_size_name_adjusted.replace('in', '').split() if s.isdigit()]
+
+							if not size_values1:
+								print('Error: Check size name of record: ' + item_sku + '. Value is: ' + item_size_name)
+								exit()
+
+						sqin1 = reduce(lambda x, y: x*y, size_values1)
+						sqin2 = reduce(lambda x, y: x*y, size_values2)
+
+						if abs(sqin2 - sqin1) <= smallest_sqin:
+							smallest_sqin = abs(sqin2 - sqin1)
+							closest_record = record
+
+						# item is valid if orientation is wrong
+						if set(size_values1).issubset(size_values2):
+							valid = True
+							del item_sizes[i]
+
+							if correct_price != item_price or correct_item_name != item_name or correct_product_description != amz_description:
+								update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, collection, parent_sku)
+								update_writer.writerow(update_tuple)
+							
+							else:
+								update_tuple = (item['item_sku'], 'PartialUpdate', '', '', '', size_name, collection, parent_sku)
+								update_writer.writerow(update_tuple)	
+
+				else:					
 					valid = True	
 					del item_sizes[i]
-					item_name_with_size = image_title + " " + record['SizeName']			
-					if record['Price'] != item_price or item_name != item_name_with_size or product_description != item['image_description']:
-						update_tuple = (item['item_sku'], 'PartialUpdate', item_name_with_size, item['image_description'], record['Price'])
+					if correct_price != item_price or item_name != correct_item_name or product_description != amz_description:
+						update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name)
 						update_writer.writerow(update_tuple)
+			
+			# clear the closest size if necessary (else we'll have duplicates)
+			if not valid and sales > 0:
+				valid = True
+				for i in range(len(item_sizes) -1, -1, -1):
+					record = item_sizes[i]
+					if closest_record['SizeName'] == record['SizeName']:
+						del item_sizes[i]
+
+				correct_size_name = closest_record['SizeName']
+				correct_item_name = image_title + " " + correct_size_name
+				correct_price = closest_record['Price']
+				update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, collection, parent_sku)
+				update_writer.writerow(update_tuple)
 
 			#delete if not valid and child is not its own parent
 			if not valid and not unique:
 				delete_tuple = (item['item_sku'], 'Delete')
 				delete_writer.writerow(delete_tuple)	
 
+			#check if we've reached the last child in the list
 			if last_child:
 				for size in item_sizes:
 					part_number_str = re.sub('[ xin]', '', size['SizeName'])
@@ -315,12 +353,16 @@ for i in range(len(newCsv)):
 						bullet_point4 = "100% Satisfaction Guaranteed."
 						bullet_point5 = image_title
 
-					if item_name_with_size in deque:
-						print ("\nError: duplicate item name in SKU: " + sku)
-						exit()
-					deque.append(item_name_with_size)
+					# check for duplication
+					deque_tuple = (parent_sku,item_name_with_size)
+					for item in deque:
+						if item[1] == item_name_with_size: 
+							error_tuple = (parent_sku, "\nError: duplicate item name in child sku: " + part_number + '\n' + item_name_with_size + '.' +
+								' Conflicting sku is: ' + item[0] + ' with item name: ' + item[1], 'item_name')
+							error_writer.writerow(error_tuple)
+					deque.append(deque_tuple)
 
-					write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
+					write_tuple = (item_type, item_name_with_size, correct_product_description, feed_product_type, brand_name, manufacturer,
 						part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 						website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,

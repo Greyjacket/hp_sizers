@@ -111,7 +111,7 @@ def photo_sizer(image_height, image_width, sku):
 def get_photo_sizes(ratio):
 
 	if ratio < 1.1:
-		sizes = [12.0, 16.0, 24.0, 36.0, 44.0]
+		sizes = [16.0, 24.0, 36.0, 44.0]
 	elif ratio >= 1.1 and ratio < 1.39:
 		sizes = [11.0, 16.0, 18.0, 24.0, 32.0, 44.0]
 	elif ratio >= 1.39 and ratio < 1.9:
@@ -184,9 +184,7 @@ def calculate_photo_dimensions(size, orientation, ratio, sku):
 def process_map_size(size, ratio, ratio_raw, direction):
 
 	if ratio == 1.0:
-		if size == 12.0:
-			size2 = 12.0
-		elif size == 16.0:
+		if size == 16.0:
 			size2 = 16.0
 		elif size == 24.0:
 			size2 = 24.0		
@@ -508,9 +506,9 @@ def get_aspect_ratio(ratio):
 		return ("1:1", 1.0)
 	elif ratio >= 1.09 and ratio < 1.15:
 		return ('', 1.1)
-	elif ratio >= 1.15 and ratio < 1.3:
+	elif ratio >= 1.15 and ratio < 1.25:
 		return ("6:5", 1.25)
-	elif ratio >= 1.3 and ratio < 1.39:
+	elif ratio >= 1.25 and ratio < 1.39:
 		return ("4:3", 1.33)
 	elif ratio >= 1.39 and ratio < 1.6:
 		return ("3:2", 1.5)

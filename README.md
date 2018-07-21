@@ -2,6 +2,8 @@
 Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
+- 7/20 Added sales history check
+- 7/18 Updated map ratio
 - 7/6 Added test case and abstracted return dictionary
 - 7/3 pythonized validator.
 - 6/30 Fixed plenty of bugs.
@@ -73,6 +75,8 @@ keywords **OR** Keywords
 
 image_folder **OR** ImageFolder
 
+sales (for sales history.)
+
 ---------------------------------------------------------------------------------
 
 Constraints:
@@ -135,38 +139,38 @@ A ratio larger than 3.0 will be scaled accordingly.
 
 For maps, the ratio is rounded to one of the ratios below.
 
-	if ratio = 1.0:
+	if ratio < 1.09:
 		16 x 16
 		24 x 24
 		36 x 36
 		44 x 44
 
-	if ratio == 1.1:
+	if ratio between 1.09 and 1.15:
 		16 x 18
 		22 x 24
 		32 x 36
-		40 x 40
-		44 x 49
+		44 scaled down
+		44 scaled up
 
-	if ratio == 1.25:
+	if ratio between 1.15 and 1.25:
+		20 x 24
+		24 x 30
+		44 scaled down
+		44 scaled up
+
+	if ratio between 1.25 and 1.39:
 		18 x 24
 		24 x 30
-		32 x 44
-		44 x 55
+		44 scaled down
+		44 scaled up
 
-	if ratio == 1.33:
-		18 x 24
-		24 x 32
-		32 x 44
-		44 x 60
-
-	if ratio == 1.5:
+	if ratio between 1.39 and 1.6:
 		16 x 24
-		24 x 32
-		30 x 44
-		44 x 66
+		24 x 36
+		44 scaled down
+		44 scaled up
 
-A ratio larger than 1.6 will be scale accordingly.
+	A ratio larger than 1.6 will be scale accordingly.
 
 ---------------------------------------------------------------------------------
 

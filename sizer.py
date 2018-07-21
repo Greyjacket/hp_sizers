@@ -225,7 +225,7 @@ for item in newCsv:
 			if long_side_squared < sqin:
 				del item_sizes[i]
 
-	main_image_url = "www.historicpictoric.com/media" + image_folder +  image_name
+	main_image_url = "###PATH###" + '/' + image_folder + '/' + image_filename
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
