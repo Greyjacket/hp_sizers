@@ -47,7 +47,7 @@ product_description **OR** product description
 
 keywords **OR** Keywords
 
-image_folder **OR** ImageFolder
+image_folder **OR** ImageFolder: Be sure to include the full path to the image folder. The image filename will be concatenated to the end of the pathname.
 
 
 ---------------------------------------------------------------------------------
