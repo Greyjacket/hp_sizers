@@ -29,32 +29,6 @@ FILENAME being the name of the csv file you wish to process.
 
 The file created will be outputted as "AMZ_' + input_filename + '_' + ("%m_%d_%Y") + '.csv"
 
----------------------------------------------------------------------------------
-
-To run validator:
-
-python validator.py FILENAME.csv options
-
-FILENAME being the name of the csv file you wish to process.
-
-The validator outputs three files into a target directory called AMZ_ + input name:
-
-- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '.csv'
-- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_delete.csv'
-- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_price.csv'
-
-The file needs to be a table join using the amazon variation table and the image table.
-
-Also, the resultant CSV needs to be sorted in ascending order by Id, else the validator won't function correctly.
-
----------------------------------------------------------------------------------
-
-**options** is an integer representing the longest side of the sizes you wish to generate.
-
-If no value is specified for options, then all sizes will be generated.
-
----------------------------------------------------------------------------------
-
 The CSV's fields must be formatted according to the schema below:
 
 item_sku **OR** Sku **OR** SKU 
@@ -75,15 +49,41 @@ keywords **OR** Keywords
 
 image_folder **OR** ImageFolder
 
-sales (for sales history.)
 
 ---------------------------------------------------------------------------------
 
+**options** is an integer representing the longest side of the sizes you wish to generate.
+
+If no value is specified for options, then all sizes will be generated.
+
+---------------------------------------------------------------------------------
+
+To run validator:
+
+python validator.py FILENAME.csv options
+
+FILENAME being the name of the csv file you wish to process.
+
+The validator outputs four files into a target directory called AMZ_ + input name:
+
+- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '.csv'
+- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_delete.csv'
+- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_price.csv'
+- 'AMZ_' + input_name + '_' + ("%m_%d_%Y") + '_error.csv'
+
+The file needs to be a table join using the amazon variation table and the image table.
+
+Also, the resultant CSV needs to be sorted in ascending order by Id, else the validator won't function correctly.
+
 Constraints:
 
-** When using the validator, include is_parent. The data must be retrieved from the most recent database.**
+The validator requires a CSV of the table join between Images and Amazon.
 
-Title must be <= 188 characters.
+The CSV input must contain the following fields:
+
+id, item_sku, item_name, product_description, asin, size_name, is_parent, keywords, price, sales, image_sku_id, image_height, image_width, image_title, image_description, image_filename, category, collection, original_keywords
+
+---------------------------------------------------------------------------------
 
 For photos:
 Use 'photos', 'photo', 'Photograph', or 'photograph' for the field value.

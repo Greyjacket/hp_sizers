@@ -2,6 +2,7 @@
 import csv, sys, math, operator, re, os, time
 from utils import photo_sizer, map_sizer
 from collections import deque
+from product_addition import description_text1, description_text2, description_text3
 
 try:
 	filename = sys.argv[1]
@@ -20,7 +21,11 @@ newCsv = []
 input_name = os.path.splitext(filename)[0]
 output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
-newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
+if os.name is 'nt':
+	newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
+else:
+	newFile = open(output, 'w') 
+
 totallines = 0
 
 # open the file from console arguments
@@ -52,7 +57,7 @@ writer.writerow(header_row2)
 writer.writerow(header_row3)
 
 #this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
-deque = deque( maxlen= 200)
+deque = deque( maxlen= 2000)
 
 standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
 						'18in x 24in', '16in x 24in', '24in x 30in', '24in x 36in', '10in x 08in', '12in x 08in',
@@ -87,7 +92,7 @@ for item in newCsv:
 			try:
 				sku = item['SKU']
 			except:
-				print ("No item sku found in input. (Possible BOM?)")
+				print ("No item sku found in input. There may be a BOM in the input, or the header row may not be formatted correctly.")
 				exit()
 
 	try:
@@ -109,13 +114,13 @@ for item in newCsv:
 			continue
 
 	try:
-		image_name = item['image_name']
+		image_filename = item['image_name']
 	except:
 		try:
-			image_name = item['name']
+			image_filename = item['name']
 		except:
 			try:
-				image_name = item['Image_Name']
+				image_filename = item['Image_Name']
 			except:
 				print ("Warning: Image Name not formatted in SKU: " + sku)
 				continue
@@ -129,12 +134,6 @@ for item in newCsv:
 				item_name = item['title']
 			except:
 				print ("Please format the input with a Title/ItemName Field")
-
-	if item_name in deque:
-		print ("\nError: duplicate item name in SKU: " + sku)
-		exit()
-	#
-	deque.append(item_name)
 
 	if len(item_name) > 188:
 		print ("Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters.")
@@ -175,7 +174,7 @@ for item in newCsv:
 			print ("Error: Format the input to include a Keywords/keywords field.")
 			exit()
 
-	if len(keywords) > 2000:
+	if len(keywords) > 250:
 		print ("Warning: Keyword character count in SKU: " + sku + " exceeds 250 characters.")
 
 	try:
@@ -195,9 +194,19 @@ for item in newCsv:
 		except:
 			print ("Warning: No product description found for SKU: " + sku)
 	
-	if len(product_description) > 2000:
-		print ("Error: Description character count in SKU: " + sku + " exceeds 2000 characters.")
-		exit()
+	product_description_tagged = '<p>' + product_description + '</p>'
+
+	# add product disclaimer, shorten if necessary
+	if len(product_description_tagged  + '<p>' + description_text1 + '</p>') <= 2000:
+		correct_product_description = product_description_tagged  + '<p>' + description_text1 + '</p>'
+	elif len(product_description_tagged  + '<p>' + description_text2 + '</p>') <= 2000:
+		correct_product_description = product_description_tagged + '<p>' + description_text2 + '</p>'
+	elif len(product_description_tagged  + '<p>' + description_text3 + '</p>') <= 2000:
+		correct_product_description = product_description_tagged + '<p>' + description_text3 + '</p>'
+	else:
+		correct_product_description = product_description_tagged
+
+	product_description = correct_product_description
 
 	# size the image accordingly: map, photo, or print. Prints and photos share the same algorithm.
 	if kind == "Map" or kind == "Maps" or kind == "maps" or kind == "maps":
@@ -213,8 +222,7 @@ for item in newCsv:
 			bullet_point2 = "Professionally Printed Vintage Fine Art Photographic Reproduction"
 
 		item_sizes = photo_sizer(image_height, image_width, sku)
-
-	# 
+ 
 	if options != "":
 		options = int(options)	
 		long_side_squared = options * options
@@ -281,7 +289,13 @@ for item in newCsv:
 		website_shipping_weight_unit_of_measure = "lbs"
 		merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 		item_name_with_size = item_name + " " + size_name
-		
+
+		# check for duplication
+		deque_tuple = (sku,item_name_with_size)
+		for item in deque:
+			if item[1] == item_name_with_size: 
+				print('Warning: Duplicate found in skus: ' + sku +' and ' + item[0])
+
 		write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
 			update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 

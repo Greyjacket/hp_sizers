@@ -12,7 +12,7 @@ def extract_items(item):
 			try:
 				return_dict['sku'] = item['SKU']
 			except:
-				print( "Error: Couldn't find a sku field.")
+				print( "Error: Couldn't find a sku field. There may be a BOM in the input, or the header row may not be formatted correctly.")
 				exit()
 
 	try:
