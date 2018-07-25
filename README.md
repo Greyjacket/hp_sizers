@@ -2,6 +2,7 @@
 Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
+- 7/25 Added BOM check
 - 7/20 Added sales history check
 - 7/18 Updated map ratio
 - 7/6 Added test case and abstracted return dictionary

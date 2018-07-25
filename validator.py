@@ -22,6 +22,9 @@ try:
 except:
 	check_titles = ""
 
+# remove any BOMs
+remove_bom_inplace(filename)
+
 #------------------------------------------------------- Create write directory and filenames
 input_name = os.path.splitext(filename)[0]
 
@@ -341,12 +344,12 @@ for i in range(len(newCsv)):
 				update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, bullet_point1, bullet_point2, bullet_point3, bullet_point4, bullet_point5, collection, parent_sku)
 				update_writer.writerow(update_tuple)
 
-			#delete if not valid and child is not its own parent
+			# delete if not valid and child is not its own parent
 			if not valid and not unique:
 				delete_tuple = (item['item_sku'], 'Delete')
 				delete_writer.writerow(delete_tuple)	
 
-			#check if we've reached the last child in the list
+			# check if we've reached the last child in the list
 			if last_child:
 				for size in item_sizes:
 					part_number_str = re.sub('[ xin]', '', size['SizeName'])

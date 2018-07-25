@@ -18,7 +18,9 @@ except:
 
 newCsv = []
 
+# remove any BOMs
 remove_bom_inplace(filename)
+
 input_name = os.path.splitext(filename)[0]
 output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
