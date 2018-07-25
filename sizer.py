@@ -295,6 +295,8 @@ for item in newCsv:
 		for item in deque:
 			if item[1] == item_name_with_size: 
 				print('Warning: Duplicate found in skus: ' + sku +' and ' + item[0])
+		deque.append(deque_tuple)
+
 
 		write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,

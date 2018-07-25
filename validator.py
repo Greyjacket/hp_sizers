@@ -84,8 +84,8 @@ delete_writer.writerow(header_row1)
 delete_writer.writerow(header_row2)
 delete_writer.writerow(header_row3)
 
-header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price', 'Size', 'Subject Matter', 'Other Attributes')
-header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price', 'size_name', 'thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
+header_row2 = ('SKU', 'Update Delete', 'Product Name', 'Product Description', 'Standard Price', 'Size', 'Key Product Features1', 'Key Product Features2', 'Key Product Features3', 'Key Product Features4', 'Key Product Features5', 'Subject Matter', 'Other Attributes')
+header_row3 = ('item_sku', 'update_delete', 'item_name','product_description', 'standard_price', 'size_name', 'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
 
 update_writer = csv.writer(update_file)
 update_writer.writerow(header_row1)
@@ -178,7 +178,7 @@ for i in range(len(newCsv)):
 		error_string = error_string + errormessage 
 
 	if len(keywords) > 250:
-		errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters. Falling back to image original."
+		errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters."
 		error_string = error_string + errormessage 
 
 	if len(correct_product_description) > 2000:
@@ -241,11 +241,16 @@ for i in range(len(newCsv)):
 			bullet_point1 = "This is a high quality single print - NOT the entire catalog/magazine"
 			bullet_point2 = "Professionally Printed Fine Art Reproduction - Giclee Art Print on High Quality Matte Paper"
 
+		if item_name != image_title:
+			update_tuple = (item['item_sku'], 'PartialUpdate', image_title, '', '', '', '', '', '', '', '', '', '')
+			update_writer.writerow(update_tuple)
+
 		# check if item is its own parent
 		if next_item:
 			unique = True if next_item['is_parent'] in ['True', 'true', 'TRUE', 't', 'T'] else False
 		else:
 			unique = True
+
 
 	# ---------------------------------------- Validate children
 
@@ -259,6 +264,7 @@ for i in range(len(newCsv)):
 			sales = float(item['sales'])
 			closest_record = ''
 			smallest_sqin = 100000
+			
 
 			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
@@ -295,18 +301,24 @@ for i in range(len(newCsv)):
 							del item_sizes[i]
 
 							if correct_price != item_price or correct_item_name != item_name or correct_product_description != amz_description:
-								update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, collection, parent_sku)
+								update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, bullet_point1, bullet_point2, bullet_point3, bullet_point4, bullet_point5, collection, parent_sku)
 								update_writer.writerow(update_tuple)
 							
 							else:
-								update_tuple = (item['item_sku'], 'PartialUpdate', '', '', '', size_name, collection, parent_sku)
+								update_tuple = (item['item_sku'], 'PartialUpdate', '', '', '', size_name, bullet_point1, bullet_point2, bullet_point3, bullet_point4, bullet_point5, collection, parent_sku)
 								update_writer.writerow(update_tuple)	
 
 				else:					
 					valid = True	
 					del item_sizes[i]
+
+					if correct_size_name not in standard_size_names:
+						bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
+						bullet_point4 = "100% Satisfaction Guaranteed."
+						bullet_point5 = image_title
+
 					if correct_price != item_price or item_name != correct_item_name or product_description != amz_description:
-						update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name)
+						update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, bullet_point1, bullet_point2, bullet_point3, bullet_point4, bullet_point5, collection, parent_sku)
 						update_writer.writerow(update_tuple)
 			
 			# clear the closest size if necessary (else we'll have duplicates)
@@ -320,7 +332,13 @@ for i in range(len(newCsv)):
 				correct_size_name = closest_record['SizeName']
 				correct_item_name = image_title + " " + correct_size_name
 				correct_price = closest_record['Price']
-				update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, collection, parent_sku)
+
+				if correct_size_name not in standard_size_names:
+					bullet_point3 = "Perfect for the Home or Office. Makes a great gift!"
+					bullet_point4 = "100% Satisfaction Guaranteed."
+					bullet_point5 = image_title
+
+				update_tuple = (item['item_sku'], 'PartialUpdate', correct_item_name, correct_product_description, correct_price, correct_size_name, bullet_point1, bullet_point2, bullet_point3, bullet_point4, bullet_point5, collection, parent_sku)
 				update_writer.writerow(update_tuple)
 
 			#delete if not valid and child is not its own parent
@@ -357,7 +375,7 @@ for i in range(len(newCsv)):
 					deque_tuple = (parent_sku,item_name_with_size)
 					for item in deque:
 						if item[1] == item_name_with_size: 
-							error_tuple = (parent_sku, "\nError: duplicate item name in child sku: " + part_number + '\n' + item_name_with_size + '.' +
+							error_tuple = (parent_sku, "Error: duplicate item name in child sku: " + part_number + '\n' + item_name_with_size + '.' +
 								' Conflicting sku is: ' + item[0] + ' with item name: ' + item[1], 'item_name')
 							error_writer.writerow(error_tuple)
 					deque.append(deque_tuple)
