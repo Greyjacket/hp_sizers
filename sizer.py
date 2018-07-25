@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import csv, sys, math, operator, re, os, time
-from utils import photo_sizer, map_sizer
+from utils import photo_sizer, map_sizer, remove_bom_inplace
 from collections import deque
 from product_addition import description_text1, description_text2, description_text3
 
@@ -18,6 +18,7 @@ except:
 
 newCsv = []
 
+remove_bom_inplace(filename)
 input_name = os.path.splitext(filename)[0]
 output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
