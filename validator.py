@@ -1,5 +1,5 @@
 import csv, sys, math, operator, re, os, time
-from utils import photo_sizer, map_sizer
+from utils import photo_sizer, map_sizer, remove_bom_inplace
 from row_reader import extract_items
 from product_addition import description_text1, description_text2, description_text3
 from collections import deque
@@ -24,7 +24,6 @@ except:
 
 # remove any BOMs
 remove_bom_inplace(filename)
-
 #------------------------------------------------------- Create write directory and filenames
 input_name = os.path.splitext(filename)[0]
 
@@ -117,7 +116,7 @@ mod = math.ceil(totallines/20.0)
 percent = 0
 
 for i in range(len(newCsv)):
-	
+
 	error_string = "" 
 
 	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
@@ -259,15 +258,14 @@ for i in range(len(newCsv)):
 
 	if not is_parent or unique:
 
-		if item['image_sku_id'] == parent_name:
+		if item['image_sku_id'] == parent_name or (item['image_sku_id']+'P') == parent_name:
 
 			item_size_name = item['size_name']	
 			item_price = item['price']
 			valid = False
 			sales = float(item['sales'])
 			closest_record = ''
-			smallest_sqin = 100000
-			
+			smallest_sqin = 100000			
 
 			# validate size, titles, descriptions, prices against what it should be
 			for i in range(len(item_sizes) -1, -1, -1):
@@ -366,7 +364,7 @@ for i in range(len(newCsv)):
 					website_shipping_weight_unit_of_measure = "lbs"
 					merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 					item_name_with_size = image_title + " " + size_name
-					
+
 					# check if size is standard, if not, change the bullets.
 					if size_name not in standard_size_names:
 

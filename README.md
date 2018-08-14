@@ -165,13 +165,13 @@ For maps, the ratio is rounded to one of the ratios below.
 		44 scaled down
 		44 scaled up
 
-	if ratio between 1.39 and 1.6:
+	if ratio between 1.39 and 1.66:
 		16 x 24
 		24 x 36
 		44 scaled down
 		44 scaled up
 
-	A ratio larger than 1.6 will be scale accordingly.
+	A ratio larger than 1.66 will be scaled accordingly.
 
 ---------------------------------------------------------------------------------
 

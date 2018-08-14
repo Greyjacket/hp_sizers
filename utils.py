@@ -257,17 +257,6 @@ def process_map_size(size, ratio, ratio_raw, direction):
 			size2 = process_second_map_size(44.0 * 1/ratio_raw)
 		else:
 			size2 = process_second_map_size(44.0 * ratio_raw)
-
-	elif ratio == 1.6:
-		if size == 24.0 and direction == 'down':
-			size2 = process_second_map_size(24.0 * 1/ratio_raw)
-		elif size == 24.0 and direction == 'up':
-			size2 = process_second_map_size(24.0 * ratio_raw)
-		elif size == 36.0 and direction == 'down':
-			size2 = process_second_map_size(36.0 * 1/ratio_raw)
-		else:
-			size2 = process_second_map_size(44.0 * ratio_raw)
-
 	else:
 		if size == 24.0 and direction == 'down':
 			size2 = process_second_map_size(24.0 * 1/ratio_raw)
@@ -411,23 +400,6 @@ def map_sizer(image_height, image_width, sku):
 		item_size = generate_item_info(44.0, 'up',ratio_normalized, ratio_raw, sku)
 		if item_size:
 			item_sizes.append(item_size)
-	
-	elif ratio_rounded == 1.6:
-		item_size = generate_item_info(24.0, 'down',ratio_normalized, ratio_raw, sku)
-		if item_size:		
-			item_sizes.append(item_size)
-
-		item_size = generate_item_info(24.0, 'up',ratio_normalized, ratio_raw, sku)
-		if item_size:		
-			item_sizes.append(item_size)
-
-		item_size = generate_item_info(36.0, 'down',ratio_normalized, ratio_raw, sku)
-		if item_size:
-			item_sizes.append(item_size)
-
-		item_size = generate_item_info(44.0, 'up',ratio_normalized, ratio_raw, sku)
-		if item_size:
-			item_sizes.append(item_size)
 
 	else:
 		item_size = generate_item_info(24.0, 'down',ratio_normalized, ratio_raw, sku)
@@ -531,9 +503,9 @@ def get_aspect_ratio(ratio):
 		return ("6:5", 1.25)
 	elif ratio >= 1.25 and ratio < 1.39:
 		return ("4:3", 1.33)
-	elif ratio >= 1.39 and ratio < 1.6:
+	elif ratio >= 1.39 and ratio < 1.66:
 		return ("3:2", 1.5)
-	elif ratio >= 1.6 and ratio < 2.1:
+	elif ratio >= 1.66 and ratio < 2.1:
 		return ("scaled", 1.6)
 	else:
 		return ("oversize", 2.5)

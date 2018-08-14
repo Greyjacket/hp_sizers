@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import csv, sys, math, operator, re, os, time
 from utils import photo_sizer, map_sizer, remove_bom_inplace
 from collections import deque
@@ -32,7 +31,7 @@ else:
 totallines = 0
 
 # open the file from console arguments
-with open(filename, 'rt') as csvfile:
+with open(filename, 'r') as csvfile:
 	reader = csv.DictReader(csvfile)
 	for row in reader:
 		newCsv.append(row)
@@ -51,7 +50,6 @@ header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_ty
 	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1', 'thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
 
 # initialize csv writer
-# writer = csv.writer(newFile, delimiter='\t')
 writer = csv.writer(newFile)
 
 # write the amazon headers
@@ -177,8 +175,8 @@ for item in newCsv:
 			print ("Error: Format the input to include a Keywords/keywords field.")
 			exit()
 
-	if len(keywords) > 250:
-		print ("Warning: Keyword character count in SKU: " + sku + " exceeds 250 characters.")
+	if len(keywords) >= 250:
+		print ("Warning: Keyword character count in SKU: " + sku + " exceeds 249 characters.")
 
 	try:
 		image_folder = item['image_folder']
