@@ -185,12 +185,10 @@ For maps, the ratio is rounded to one of the ratios below.
 		price = 49.99
 	 square_inches >= 500 and square_inches <= 599:
 		price = 54.99
-	 square_inches >= 600 and square_inches <= 699:
+	 square_inches >= 600 and square_inches <= 799:
 		price = 59.99
-	 square_inches >= 700 and square_inches <= 799:
-		price = 64.99
 	 square_inches >= 800 and square_inches <= 899:
-		price = 69.99	
+		price = 64.99	
 	 square_inches >= 900 and square_inches <= 999:
 		price = 74.99
 	 square_inches >= 1000 and square_inches <= 1099:
