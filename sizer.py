@@ -20,22 +20,45 @@ newCsv = []
 # remove any BOMs
 remove_bom_inplace(filename)
 
+#------------------------------------------------------- Create write directory and filenames
 input_name = os.path.splitext(filename)[0]
-output = 'AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
+
+target_directory = 'AMZ_sizer_' + input_name
+if not os.path.exists(target_directory):
+    os.makedirs(target_directory)
+
+#------------------------------------------------------- Create target files
+
+output = target_directory + '/AMZ_sizer_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
+error_output = target_directory + '/AMZ_sizer_errors_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
 
 if os.name is 'nt':
-	newFile = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
+	output_file = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
+	error_file = open(error_output, 'wb', newline='')
 else:
-	newFile = open(output, 'w') 
+	output_file = open(output, 'w') 
+	error_file = open(error_output, 'w', newline='')
 
 totallines = 0
 
 # open the file from console arguments
-with open(filename, 'r') as csvfile:
-	reader = csv.DictReader(csvfile)
-	for row in reader:
-		newCsv.append(row)
-		totallines += 1
+try:
+	with open(filename, 'r') as csvfile:
+		reader = csv.DictReader(csvfile)
+		for row in reader:
+			newCsv.append(row)
+			totallines += 1
+except:
+	print('Possible unicode error in the input file. Trying Latin1.\n')
+	try:
+		with open(filename, 'r', encoding = 'latin1') as csvfile:
+			reader = csv.DictReader(csvfile)
+			for row in reader:
+				newCsv.append(row)
+				totallines += 1
+	except:
+		print("There's a problem with the file's encoding. Ensure the file is properly encoded in UTF-8.")
+		exit()		
 
 header_row1 = ('TemplateType=home', 'Version=2014.1119')
 
@@ -46,18 +69,24 @@ header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Prod
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer','part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
-	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
+	'varaition_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
 	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1', 'thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
 
 # initialize csv writer
-writer = csv.writer(newFile)
+output_writer = csv.writer(output_file)
 
 # write the amazon headers
-writer.writerow(header_row1)
-writer.writerow(header_row2)
-writer.writerow(header_row3)
+output_writer.writerow(header_row1)
+output_writer.writerow(header_row2)
+output_writer.writerow(header_row3)
 
-#this deque  keeps track of duplicate item names, which causes problems on Amazon (and most likely elsewhere)
+error_writer = csv.writer(error_file)
+
+header_row1 = ('sku', 'Error')
+error_writer = csv.writer(error_file)
+error_writer.writerow(header_row1)
+
+#------------------------------------------------------- this deque  keeps track of duplicate item names
 deque = deque( maxlen= 2000)
 
 standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in',
@@ -69,6 +98,8 @@ percent = 0
 
 for item in newCsv:
 	
+	error_string = "" 
+
 	bullet_point3 = 'Ready to Frame - Fits Standard Size Frames'
 	bullet_point4 = "Perfect for the Home or Office. Makes a great gift!"
 	bullet_point5 = "100% Satisfaction Guaranteed."
@@ -102,7 +133,8 @@ for item in newCsv:
 		try:
 			image_width = float(item['width'])
 		except:
-			print ("Warning: image_width not formatted in SKU: " + sku)
+			errormessage = "image_width not formatted. "
+			error_string = error_string + errormessage
 			continue
 
 	try:
@@ -111,7 +143,8 @@ for item in newCsv:
 		try:
 			image_height = float(item['height'])
 		except:
-			print ("Warning: Image Height not formatted in SKU: " + sku)
+			errormessage = "image_height not formatted. "
+			error_string = error_string + errormessage
 			continue
 
 	try:
@@ -123,8 +156,10 @@ for item in newCsv:
 			try:
 				image_filename = item['Image_Name']
 			except:
-				print ("Warning: Image Name not formatted in SKU: " + sku)
+				errormessage = "image_name not formatted. "
+				error_string = error_string + errormessage
 				continue
+
 	try:
 		item_name = item['item_name']
 	except:
@@ -134,10 +169,13 @@ for item in newCsv:
 			try:
 				item_name = item['title']
 			except:
-				print ("Please format the input with a Title/ItemName Field")
+				errormessage = "item_name not formatted. "
+				error_string = error_string + errormessage
+				continue
 
 	if len(item_name) > 188:
-		print ("Warning: Title/Item Name character count in SKU: " + sku + " exceeds 188 characters.")
+		errormessage = "Title/Item Name character count exceeds 188 characters."
+		error_string = error_string + errormessage
 	
 	try:
 		kind = item['kind']
@@ -148,8 +186,8 @@ for item in newCsv:
 			try:
 				kind = item['category']				
 			except:
-				print ("Error: Format the input to include an item kind or category: Photos, Maps or Prints.")
-				exit()
+				errormessage = "No category specified. "
+				error_string = error_string + errormessage
 
 	try:
 		collection = item['collection']
@@ -157,14 +195,16 @@ for item in newCsv:
 		try:
 			collection = item['Collection']
 		except:
-			collection = ""
-			print ("Warning: No collection specified in Sku: " + sku)
+			errormessage = "No collection specified. "
+			error_string = error_string + errormessage
+			continue
 
 	try:
 		root_sku = item['root_sku']
 	except:
 		root_sku = ""	
-		print ("Warning: No root_sku specified in Sku: " + sku)
+		errormessage = "No root_sku specified. "
+		error_string = error_string + errormessage
 
 	try:
 		keywords = item['keywords']
@@ -172,11 +212,13 @@ for item in newCsv:
 		try:
 			keywords = item['Keywords']
 		except:
-			print ("Error: Format the input to include a Keywords/keywords field.")
-			exit()
+			keywords = ""
+			errormessage = "No keyword field specified. "
+			error_string = error_string + errormessage
 
 	if len(keywords) >= 250:
-		print ("Warning: Keyword character count in SKU: " + sku + " exceeds 249 characters.")
+		errormessage = "Keyword character count exceeds 249 characters. "
+		error_string = error_string + errormessage
 
 	try:
 		image_folder = item['image_folder']
@@ -184,8 +226,9 @@ for item in newCsv:
 		try:
 			kind = item['ImageFolder']
 		except:
-			print ("Error: Format the input to include an an image folder.")
-			exit()
+			image_folder = ""
+			errormessage = "Image folder field not formatted."
+			error_string = error_string + errormessage
 
 	try:
 		product_description = item['product_description'] 
@@ -193,7 +236,9 @@ for item in newCsv:
 		try:
 			product_description = item['product description']
 		except:
-			print ("Warning: No product description found for SKU: " + sku)
+			product_description = ""
+			errormessage = "No product description found. "
+			error_string = error_string + errormessage
 	
 	product_description_tagged = '<p>' + product_description + '</p>'
 
@@ -206,6 +251,10 @@ for item in newCsv:
 		correct_product_description = product_description_tagged + '<p>' + description_text3 + '</p>'
 	else:
 		correct_product_description = product_description_tagged
+
+	if len(correct_product_description) > 2000:
+		errormessage = "Product Description character exceeds 2000 characters. "
+		error_string = error_string + errormessage 
 
 	product_description = correct_product_description
 
@@ -224,7 +273,7 @@ for item in newCsv:
 
 		item_sizes = photo_sizer(image_height, image_width, sku)
  
-	if options != "":
+	if options:
 		options = int(options)	
 		long_side_squared = options * options
 
@@ -234,7 +283,11 @@ for item in newCsv:
 			if long_side_squared < sqin:
 				del item_sizes[i]
 
-	main_image_url = image_folder + '/' + image_filename
+	if error_string:
+		error_tuple = (sku, error_string)
+		error_writer.writerow(error_tuple)
+
+	main_image_url = "###PATH###" + '/' + image_folder + '/' + image_filename
 	brand_name = 'Historic Pictoric'
 	manufacturer = 'Historic Pictoric'
 	feed_product_type = "art"
@@ -264,7 +317,7 @@ for item in newCsv:
 		website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 		bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
-	writer.writerow(write_tuple)
+	output_writer.writerow(write_tuple)
 
 	#-------------------------- Generate Variations
 
@@ -295,9 +348,11 @@ for item in newCsv:
 		deque_tuple = (sku,item_name_with_size)
 		for item in deque:
 			if item[1] == item_name_with_size: 
-				print('Warning: Duplicate found in skus: ' + sku +' and ' + item[0])
+				error_tuple = (sku, "Duplicate item name in child sku: " + part_number + '\n' + item_name_with_size + '.' +
+					' Conflicting sku is: ' + item[0] + ' with item name: ' + item[1])				
+				error_writer.writerow(error_tuple)
+		
 		deque.append(deque_tuple)
-
 
 		write_tuple = (item_type, item_name_with_size, product_description, feed_product_type, brand_name, manufacturer,
 			part_number, item_sku, parent_sku, parent_child, relationship_type, variation_theme, size_name,
@@ -305,9 +360,11 @@ for item in newCsv:
 			website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,
 			bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
-		writer.writerow(write_tuple)
+		output_writer.writerow(write_tuple)
 
 		item_name_with_size = ""
 
 print ("\nFile written to " + output)
-newFile.close()
+
+output_file.close()
+error_file.close()

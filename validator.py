@@ -27,16 +27,17 @@ remove_bom_inplace(filename)
 #------------------------------------------------------- Create write directory and filenames
 input_name = os.path.splitext(filename)[0]
 
-target_directory = 'AMZ_' + input_name
+target_directory = 'AMZ_validation_' + input_name
 if not os.path.exists(target_directory):
     os.makedirs(target_directory)
 
-upload_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
-delete_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_delete.csv'
-update_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_update.csv'
-error_output = target_directory + '/AMZ_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.csv'
-
 #------------------------------------------------------- Create target files
+
+upload_output = target_directory + '/AMZ_validation_' + input_name + '_' + time.strftime("%m_%d_%Y") + '.csv'
+delete_output = target_directory + '/AMZ_validation_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_delete.csv'
+update_output = target_directory + '/AMZ_validation_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_update.csv'
+error_output = target_directory + '/AMZ_validation_' + input_name + '_' + time.strftime("%m_%d_%Y") + '_error.csv'
+
 totallines = 0
 newCsv = []
 
@@ -190,7 +191,7 @@ for i in range(len(newCsv)):
 		error_string = error_string + errormessage 
 
 	# stop here if there have not been any errors for this record.
-	if error_string != "":
+	if error_string:
 		error_tuple = (sku, error_string, field_value)
 		error_writer.writerow(error_tuple)
 		continue
@@ -381,7 +382,7 @@ for i in range(len(newCsv)):
 							error_writer.writerow(error_tuple)
 					deque.append(deque_tuple)
 
-					write_tuple = (item_type, item_name_with_size, correct_product_description, feed_product_type, brand_name, manufacturer,
+					write_tuple = (item_type, tem_name_with_size, correct_product_description, feed_product_type, brand_name, manufacturer,
 						part_number, item_sku, parent_name, parent_child, relationship_type, variation_theme, size_name,
 						update_delete, standard_price, quantity, product_tax_code, item_package_quantity, website_shipping_weight, 
 						website_shipping_weight_unit_of_measure, bullet_point1, bullet_point2, bullet_point3, bullet_point4,

@@ -2,6 +2,8 @@
 Amazon Sizer and Validator for Historic Pictoric
 
 ### Log:
+- 8/15 Added error log for sizer.
+- 8/15 Changed sizing for map ratios 1.66-2.1 to ignore going down from 44.
 - 7/25 Added BOM check
 - 7/20 Added sales history check
 - 7/18 Updated map ratio
@@ -171,7 +173,17 @@ For maps, the ratio is rounded to one of the ratios below.
 		44 scaled down
 		44 scaled up
 
-	A ratio larger than 1.66 will be scaled accordingly.
+	if ratio between 1.66 and 2.1:
+		24 scaled down
+		24 scaled up 
+		44 scaled up (44 scaled down comes too close)
+
+	all other ratios:
+		24 scaled down
+		24 scaled up
+		36 scaled up
+		44 scaled down
+
 
 ---------------------------------------------------------------------------------
 
