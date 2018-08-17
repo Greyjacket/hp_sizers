@@ -34,7 +34,7 @@ error_output = target_directory + '/AMZ_sizer_errors_' + input_name + '_' + time
 
 if os.name is 'nt':
 	output_file = open(output, 'wb') #wb for windows, else you'll see newlines added to csv
-	error_file = open(error_output, 'wb', newline='')
+	error_file = open(error_output, 'wb')
 else:
 	output_file = open(output, 'w') 
 	error_file = open(error_output, 'w', newline='')
