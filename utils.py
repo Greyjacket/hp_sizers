@@ -263,6 +263,8 @@ def process_map_size(size, ratio, ratio_raw, direction):
 			size2 = process_second_map_size(24.0 * 1/ratio_raw)
 		elif size == 24.0 and direction == 'up':
 			size2 = process_second_map_size(24.0 * ratio_raw)
+		elif size == 36.0 and direction == 'down':
+			size2 = process_second_map_size(36.0 * 1/ratio_raw)
 		else:
 			size2 = process_second_map_size(44.0 * ratio_raw)	
 
@@ -416,6 +418,10 @@ def map_sizer(image_height, image_width, sku):
 			item_sizes.append(item_size)
 
 		item_size = generate_item_info(24.0, 'up',ratio_normalized, ratio_raw, sku)
+		if item_size:		
+			item_sizes.append(item_size)
+
+		item_size = generate_item_info(36.0, 'down',ratio_normalized, ratio_raw, sku)
 		if item_size:		
 			item_sizes.append(item_size)
 
