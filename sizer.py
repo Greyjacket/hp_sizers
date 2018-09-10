@@ -69,7 +69,7 @@ header_row2 = ('Item Type Keyword', 'Product Name', 'Product Description', 'Prod
 
 header_row3 = ('item_type', 'item_name', 'product_description', 'feed_product_type', 
 	'brand_name', 'manufacturer','part_number', 'item_sku', 'parent_sku','parent_child', 'relationship_type', 
-	'varaition_theme', 'size_name', 'update_delete', 'standard_price', 'Quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
+	'variation_theme', 'size_name', 'update_delete', 'standard_price', 'quantity', 'product_tax_code', 'item_package_quantity', 'website_shipping_weight', 'website_shipping_weight_unit_of_measure',
 	'bullet_point1', 'bullet_point2', 'bullet_point3', 'bullet_point4', 'bullet_point5','main_image_url', 'merchant_shipping_group_name', 'generic_keywords1', 'thesaurus_subject_keywords1', 'thesaurus_attribute_keywords1')
 
 # initialize csv writer
@@ -309,7 +309,7 @@ for item in newCsv:
 	item_package_quantity = ""
 	website_shipping_weight = ""
 	website_shipping_weight_unit_of_measure = ""
-	merchant_shipping_group_name = ""
+	merchant_shipping_group_name = "Free_Economy_Shipping_16x20"
 	
 	write_tuple = (item_type, item_name, product_description, feed_product_type, brand_name, manufacturer,
 		part_number, item_sku, "", parent_child, relationship_type, variation_theme, size_name,
