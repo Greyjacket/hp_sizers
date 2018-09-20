@@ -180,8 +180,8 @@ for i in range(len(newCsv)):
 		print (errormessage)
 		error_string = error_string + errormessage 
 
-	if len(keywords) > 250:
-		errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 250 characters."
+	if len(keywords) > 249:
+		errormessage = "Warning: Keywords character count in Amazon item: " + sku + " exceeds 249 characters."
 		error_string = error_string + errormessage 
 
 	if len(correct_product_description) > 2000:

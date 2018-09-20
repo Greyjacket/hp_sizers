@@ -130,6 +130,7 @@ Use 'maps', 'map', 'Map', or 'Maps' for the field value.
 		44 x 66
 
 	 ratio between 1.9 and 3.0:
+	 	scale down from 24
 		16 x 32
 		20 x 40
 		24 x 48

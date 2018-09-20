@@ -95,6 +95,7 @@ standard_size_names = ['08in x 10in', '08in x 12in', '11in x 14in', '16in x 20in
 count = 0;
 mod = math.ceil(totallines/20.0)
 percent = 0
+has_error = False
 
 for item in newCsv:
 	
@@ -171,7 +172,6 @@ for item in newCsv:
 			except:
 				errormessage = "item_name not formatted. "
 				error_string = error_string + errormessage
-				continue
 
 	if len(item_name) > 188:
 		errormessage = "Title/Item Name character count exceeds 188 characters."
@@ -186,7 +186,8 @@ for item in newCsv:
 			try:
 				kind = item['category']				
 			except:
-				errormessage = "No category specified. "
+				errormessage = "No category/kind specified. "
+				category = ''
 				error_string = error_string + errormessage
 
 	try:
@@ -196,8 +197,8 @@ for item in newCsv:
 			collection = item['Collection']
 		except:
 			errormessage = "No collection specified. "
+			collection = ''
 			error_string = error_string + errormessage
-			continue
 
 	try:
 		root_sku = item['root_sku']
@@ -286,6 +287,7 @@ for item in newCsv:
 	if error_string:
 		error_tuple = (sku, error_string)
 		error_writer.writerow(error_tuple)
+		has_error = True
 
 	main_image_url = "###PATH###" + '/' + image_folder + '/' + image_filename
 	brand_name = 'Historic Pictoric'
@@ -318,7 +320,6 @@ for item in newCsv:
 		bullet_point5, main_image_url, merchant_shipping_group_name, keywords, collection, root_sku)
 
 	output_writer.writerow(write_tuple)
-
 	#-------------------------- Generate Variations
 
 	for size in item_sizes:
@@ -363,6 +364,9 @@ for item in newCsv:
 		output_writer.writerow(write_tuple)
 
 		item_name_with_size = ""
+
+if has_error:
+	print("\nThe input file contains errors. Please address the issues in the input file and run the sizer again.")
 
 print ("\nFile written to " + output)
 
